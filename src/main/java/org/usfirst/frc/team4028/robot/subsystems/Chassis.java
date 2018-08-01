@@ -1,0 +1,174 @@
+package org.usfirst.frc.team4028.robot.subsystems;
+
+import org.usfirst.frc.team4028.robot.Constants;
+import org.usfirst.frc.team4028.robot.RobotMap;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.command.Subsystem;
+import org.usfirst.frc.team4028.robot.commands.DriveWithControllers;
+import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
+import org.usfirst.frc.team4028.robot.util.LogDataBE;
+
+/**
+ * This class defines the Chassis Subsystem, it is responsible for:
+ * 	- Left & Right drive Motors
+ *  - Solenoid that controls the shifting
+ */
+public class Chassis extends Subsystem 
+{
+
+	private TalonSRX _leftMaster, _leftSlave, _rightMaster, _rightSlave;
+	private DoubleSolenoid _shifter;
+	
+	private NavXGyro _navX = NavXGyro.getInstance();
+	
+	private static final double ENCODER_COUNTS_PER_WHEEL_REV = 30725.425;		// account for gear boxes
+	
+	//=====================================================================================
+	// Define Singleton Pattern
+	//=====================================================================================
+	private static Chassis _instance = new Chassis();
+	
+	public static Chassis getInstance() 
+	{
+		return _instance;
+	}
+	
+	// private constructor for singleton pattern
+	private Chassis() {
+		_leftMaster = new TalonSRX(RobotMap.LEFT_DRIVE_MASTER_CAN_ADDR);
+		_leftSlave = new TalonSRX(RobotMap.LEFT_DRIVE_SLAVE_CAN_ADDR);
+		_rightMaster = new TalonSRX(RobotMap.RIGHT_DRIVE_MASTER_CAN_ADDR);
+		_rightSlave = new TalonSRX(RobotMap.RIGHT_DRIVE_SLAVE_CAN_ADDR);
+		
+		_leftSlave.follow(_leftMaster);
+		_rightSlave.follow(_rightMaster);
+		
+		_leftMaster.setInverted(true);
+		_leftSlave.setInverted(true);
+		_rightMaster.setInverted(false);
+		_rightSlave.setInverted(false);
+		
+		configMasterMotors(_leftMaster);
+		configMasterMotors(_rightMaster);
+        
+        configDriveMotors(_leftMaster);
+        configDriveMotors(_rightMaster);
+        configDriveMotors(_leftSlave);
+        configDriveMotors(_rightSlave);
+
+		_shifter = new DoubleSolenoid(RobotMap.PCM_CAN_ADDR, RobotMap.SHIFTER_EXTEND_PCM_PORT, RobotMap.SHIFTER_RETRACT_PCM_PORT);
+	}
+	
+	/* ===== Chassis State: PERCENT VBUS ===== */
+	/** Arcade drive with throttle and turn inputs. Includes anti-tipping. */
+	public synchronized void arcadeDrive(double throttle, double turn) {
+		//_chassisState = ChassisState.PERCENT_VBUS;
+		
+		if(_navX.isPitchPastThreshhold()) 
+		{
+			setLeftRightCommand(ControlMode.PercentOutput, 0.0, 0.0);
+			DriverStation.reportError("Tipping Threshold", false);
+		} 
+		else if ((Math.abs(getLeftVelocityInchesPerSec() - getRightVelocityInchesPerSec())) < 5.0) {
+			setLeftRightCommand(ControlMode.PercentOutput, throttle + 0.7 * turn, throttle - 0.7 * turn);
+		} 
+		else {
+			setLeftRightCommand(ControlMode.PercentOutput, throttle + 0.5 * turn, throttle - 0.5 * turn);
+		} 
+	}
+	
+	/* ===== SHIFTER ===== */
+    public synchronized void toggleShifter() {
+    	setHighGear(!getIsHighGear());	// Inverse of current solenoid state
+    }
+	
+	public synchronized void setHighGear(boolean isHighGear) {
+		if (isHighGear) 
+			_shifter.set(Constants.SHIFTER_HIGH_GEAR_POS);
+		else 
+			_shifter.set(Constants.SHIFTER_LOW_GEAR_POS);
+	}
+	
+	private synchronized boolean getIsHighGear() {
+		return _shifter.get() == Constants.SHIFTER_HIGH_GEAR_POS;
+	}
+	
+	// ======== Private Helper methods below
+	private void setLeftRightCommand(ControlMode mode, double leftCommand, double rightCommand) {
+		_leftMaster.set(mode, leftCommand);
+		_rightMaster.set(mode, rightCommand);
+	}
+	
+    public double getLeftVelocityInchesPerSec() {
+        return rpmToInchesPerSecond(getLeftSpeed());
+    }
+
+    public double getRightVelocityInchesPerSec() {
+        return rpmToInchesPerSecond(getRightSpeed());
+    }
+    
+    private static double rpmToInchesPerSecond(double rpm) {
+        return rotationsToInches(rpm) / 60;
+    }
+    
+    private static double rotationsToInches(double rot) {
+        return rot * (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI);
+    } 
+    
+	public double getLeftSpeed() {
+		return _leftMaster.getSelectedSensorVelocity(0) * (600 / ENCODER_COUNTS_PER_WHEEL_REV);
+	}
+	
+	public double getRightSpeed() {
+		return -_rightMaster.getSelectedSensorVelocity(0) * (600 / ENCODER_COUNTS_PER_WHEEL_REV);
+	}
+	
+	private void configMasterMotors(TalonSRX talon) {
+		talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+		talon.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
+	
+        talon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+        talon.configVelocityMeasurementWindow(32, 0);
+        
+        talon.configOpenloopRamp(0.4, 10);
+        talon.configClosedloopRamp(0.0, 0);
+	}
+	
+	private void configDriveMotors(TalonSRX talon) {
+		talon.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		talon.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+        
+        talon.enableCurrentLimit(false);
+        
+        talon.configPeakOutputForward(1.0, 10);
+        talon.configPeakOutputReverse(-1.0, 10);
+        talon.configNominalOutputForward(0, 10);
+        talon.configNominalOutputReverse(0, 10);
+        talon.configContinuousCurrentLimit(Constants.BIG_NUMBER, 10);
+	}
+	
+    // Put methods for controlling this subsystem
+    // here. Call these from Commands.
+
+    public void initDefaultCommand() 
+    {
+		setDefaultCommand(new DriveWithControllers());
+    }
+    
+	public void updateLogData(LogDataBE logData) {
+	}
+	
+	public void outputToShuffleboard() 
+	{
+	}
+}
