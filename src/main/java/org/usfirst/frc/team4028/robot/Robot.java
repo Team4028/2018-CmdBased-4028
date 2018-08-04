@@ -7,6 +7,7 @@
 
 package org.usfirst.frc.team4028.robot;
 
+// #region Import Statements
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -19,6 +20,7 @@ import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.commands.ZeroElevator;
 import org.usfirst.frc.team4028.robot.commands.ZeroInfeedArms;
+import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.robot.subsystems.Climber;
@@ -29,6 +31,7 @@ import org.usfirst.frc.team4028.robot.util.LogDataBE;
 import org.usfirst.frc.team4028.robot.util.MovingAverage;
 import org.usfirst.frc.team4028.robot.util.DataLogger;
 import org.usfirst.frc.team4028.robot.subsystems.ClimberServo;
+// #endregion
 
 /**
  * The VM is configured to automatically run this class
@@ -47,6 +50,8 @@ public class Robot extends TimedRobot
 	private Elevator _elevator = Elevator.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
 	private ClimberServo _skyHook = ClimberServo.getInstance();
+
+	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
 	
 	// class level working variables
 	private DataLogger _dataLogger = null;
@@ -187,11 +192,11 @@ public class Robot extends TimedRobot
     		// each subsystem should add a call to a outputToSmartDashboard method
     		// to push its data out to the dashboard
 
-    		_chassis.outputToShuffleboard(); 
-    		_elevator.outputToShuffleboard();
-    		_infeed.outputToShuffleboard();
-    		_carriage.outputToShuffleboard();
-	    	_climber.outputToShuffleboard();
+    		_chassis.updateDashboard(); 
+    		_elevator.updateDashboard();
+    		_infeed.updateDashboard();
+    		_carriage.updateDashboard();
+	    	_climber.updateDashboard();
 	    	
     		// write the overall robot dashboard info
 	    	SmartDashboard.putString("Robot Build", _buildMsg);

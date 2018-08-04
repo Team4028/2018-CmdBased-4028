@@ -14,8 +14,11 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc.team4028.robot.commands.DriveWithControllers;
 import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
+import org.usfirst.frc.team4028.robot.util.GeneralUtilities;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
 
 /**
@@ -79,7 +82,7 @@ public class Chassis extends Subsystem
 			setLeftRightCommand(ControlMode.PercentOutput, 0.0, 0.0);
 			DriverStation.reportError("Tipping Threshold", false);
 		} 
-		else if ((Math.abs(getLeftVelocityInchesPerSec() - getRightVelocityInchesPerSec())) < 5.0) {
+		else if ((Math.abs(get_leftVelocityInchesPerSec() - get_rightVelocityInchesPerSec())) < 5.0) {
 			setLeftRightCommand(ControlMode.PercentOutput, throttle + 0.7 * turn, throttle - 0.7 * turn);
 		} 
 		else {
@@ -89,7 +92,7 @@ public class Chassis extends Subsystem
 	
 	/* ===== SHIFTER ===== */
     public synchronized void toggleShifter() {
-    	setHighGear(!getIsHighGear());	// Inverse of current solenoid state
+    	setHighGear(!get_isHighGear());	// Inverse of current solenoid state
     }
 	
 	public synchronized void setHighGear(boolean isHighGear) {
@@ -97,40 +100,6 @@ public class Chassis extends Subsystem
 			_shifter.set(Constants.SHIFTER_HIGH_GEAR_POS);
 		else 
 			_shifter.set(Constants.SHIFTER_LOW_GEAR_POS);
-	}
-	
-	private synchronized boolean getIsHighGear() {
-		return _shifter.get() == Constants.SHIFTER_HIGH_GEAR_POS;
-	}
-	
-	// ======== Private Helper methods below
-	private void setLeftRightCommand(ControlMode mode, double leftCommand, double rightCommand) {
-		_leftMaster.set(mode, leftCommand);
-		_rightMaster.set(mode, rightCommand);
-	}
-	
-    public double getLeftVelocityInchesPerSec() {
-        return rpmToInchesPerSecond(getLeftSpeed());
-    }
-
-    public double getRightVelocityInchesPerSec() {
-        return rpmToInchesPerSecond(getRightSpeed());
-    }
-    
-    private static double rpmToInchesPerSecond(double rpm) {
-        return rotationsToInches(rpm) / 60;
-    }
-    
-    private static double rotationsToInches(double rot) {
-        return rot * (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI);
-    } 
-    
-	public double getLeftSpeed() {
-		return _leftMaster.getSelectedSensorVelocity(0) * (600 / ENCODER_COUNTS_PER_WHEEL_REV);
-	}
-	
-	public double getRightSpeed() {
-		return -_rightMaster.getSelectedSensorVelocity(0) * (600 / ENCODER_COUNTS_PER_WHEEL_REV);
 	}
 	
 	private void configMasterMotors(TalonSRX talon) {
@@ -164,11 +133,79 @@ public class Chassis extends Subsystem
     {
 		setDefaultCommand(new DriveWithControllers());
     }
-    
-	public void updateLogData(LogDataBE logData) {
+	
+	//=====================================================================================
+	// Property Accessors
+	//=====================================================================================
+	public double get_leftSpeed() {
+		return _leftMaster.getSelectedSensorVelocity(0) * (600 / ENCODER_COUNTS_PER_WHEEL_REV);
 	}
 	
-	public void outputToShuffleboard() 
+	public double get_rightSpeed() {
+		return -_rightMaster.getSelectedSensorVelocity(0) * (600 / ENCODER_COUNTS_PER_WHEEL_REV);
+	}
+
+    public double get_leftVelocityInchesPerSec() {
+        return rpmToInchesPerSecond(get_leftSpeed());
+    }
+
+    public double get_rightVelocityInchesPerSec() {
+        return rpmToInchesPerSecond(get_rightSpeed());
+	}
+	
+	private synchronized boolean get_isHighGear() {
+		return _shifter.get() == Constants.SHIFTER_HIGH_GEAR_POS;
+	}
+	
+	//=====================================================================================
+	// Private Helper methods below
+	//=====================================================================================
+	private void setLeftRightCommand(ControlMode mode, double leftCommand, double rightCommand) {
+		_leftMaster.set(mode, leftCommand);
+		_rightMaster.set(mode, rightCommand);
+	}
+	   
+    private static double rpmToInchesPerSecond(double rpm) {
+        return rotationsToInches(rpm) / 60;
+    }
+    
+    private static double rotationsToInches(double rot) {
+        return rot * (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI);
+    } 
+
+	//=====================================================================================
+	// Support Methods
+	//=====================================================================================
+	public void updateLogData(LogDataBE logData) 
 	{
+		logData.AddData("Left Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(get_leftVelocityInchesPerSec(), 2)));
+		//logData.AddData("Left Target Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(_leftTargetVelocity, 2)));
+		logData.AddData("Left Output Current", String.valueOf(GeneralUtilities.roundDouble(_leftMaster.getOutputCurrent(), 2)));
+		
+		logData.AddData("Right Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(-get_rightVelocityInchesPerSec(), 2)));
+		//logData.AddData("Right Target Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(_rightTargetVelocity, 2)));
+		logData.AddData("Right Output Current", String.valueOf(GeneralUtilities.roundDouble(_rightMaster.getOutputCurrent(), 2)));
+		
+		//logData.AddData("Pose X", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().x()));
+		//logData.AddData("Pose Y", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().y()));
+		//logData.AddData("Pose Angle", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getRotation().getDegrees()));
+		//logData.AddData("Remaining Distance", String.valueOf(getRemainingPathDistance()));
+		
+		//logData.AddData("Center Target Velocity", String.valueOf(GeneralUtilities.roundDouble(_centerTargetVelocity, 2)));
+
+	}
+	
+	public void updateDashboard() 
+	{
+		SmartDashboard.putBoolean("IsHighGear", get_isHighGear());
+		SmartDashboard.putNumber("Chassis: Left Velocity", -1); //GeneralUtilities.roundDouble(getLeftVelocityInchesPerSec(), 2));
+		SmartDashboard.putNumber("Chassis: Right Velocity", -1); //GeneralUtilities.roundDouble(getLeftVelocityInchesPerSec(), 2));
+		
+		SmartDashboard.putNumber("Chassis: Left Wheel Target Velocity", -1); //GeneralUtilities.roundDouble(_leftTargetVelocity, 2));
+		SmartDashboard.putNumber("Chasiss: Right Wheel Target Velocity", -1); //GeneralUtilities.roundDouble(_leftTargetVelocity, 2));
+		
+		SmartDashboard.putNumber("Chassis: Angle", -1); //GeneralUtilities.roundDouble(getHeading(), 2));
+		SmartDashboard.putString("Chassis: Robot Pose", "N/A"); //RobotState.getInstance().getLatestFieldToVehicle().getValue().toString());
+
 	}
 }

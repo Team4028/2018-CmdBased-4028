@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4028.robot;
 
+// #region
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// #endregion
 
 /**
  *  This class contains code to interface with the Dashboard on the Driver's Station
@@ -36,7 +38,6 @@ public class Dashboard {
 		EXPERIMENTAL,
 		TEST_AUTON
 	}
-	
 	private enum STARTING_SIDE {
 		LEFT,
 		RIGHT

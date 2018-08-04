@@ -14,6 +14,7 @@ import org.usfirst.frc.team4028.robot.commands.RunInfeedWheels;
 import org.usfirst.frc.team4028.robot.commands.ZeroInfeedArms;
 import org.usfirst.frc.team4028.robot.commands.RunInfeedWheels.INFEED_WHEELS_FUNCTION;
 import org.usfirst.frc.team4028.robot.commands.ShiftGear;
+import org.usfirst.frc.team4028.robot.commands.ToggleActiveCamera;
 import org.usfirst.frc.team4028.robot.commands.ToggleClimberServoPosition;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
@@ -208,6 +209,7 @@ public class OI {
 		OPERATOR_BACK_BUTTON.whenPressed(new MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.CLIMB_HEIGHT));
 		OPERATOR_RBUMPER.whenPressed(new MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SWITCH_HEIGHT));
 		OPERATOR_LBUMPER.whenPressed(new ToggleClimberServoPosition());
+		OPERATOR_START_BUTTON.whenPressed(new ToggleActiveCamera());	
 	}
 	
 	public double getDriver_Throttle_JoystickCmd() {

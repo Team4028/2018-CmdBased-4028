@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.robot.RobotMap;
-import org.usfirst.frc.team4028.robot.commands.ClimbWithControllers;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
 
 import edu.wpi.first.wpilibj.Servo;
@@ -75,6 +74,6 @@ public class ClimberServo extends Subsystem
 	public void updateLogData(LogDataBE logData) {
 	}
 	
-	public void outputToShuffleboard() {
+	public void updateDashboard() {
 	}
 }

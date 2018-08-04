@@ -1,6 +1,9 @@
 package org.usfirst.frc.team4028.robot.util;
 
+//region import statements
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +18,7 @@ import org.usfirst.frc.team4028.robot.Robot;
 import org.usfirst.frc.team4028.robot.util.DataLogger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+//#endregion
 
 public class GeneralUtilities 
 {
@@ -89,5 +93,12 @@ public class GeneralUtilities
     	}
     	
     	return dataLogger;
+	}
+
+	// This method rounds a double to the specified # of decimal places
+	public static double roundDouble(Double originalValue, int decimalPlaces) {
+		BigDecimal bd = new BigDecimal(originalValue).setScale(decimalPlaces, RoundingMode.HALF_EVEN);
+		
+		return bd.doubleValue();
 	}
 }
