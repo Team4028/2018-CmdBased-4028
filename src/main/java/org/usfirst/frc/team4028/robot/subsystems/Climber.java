@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class defines the Climber Subsystem, it is responsible for:
@@ -94,11 +95,29 @@ public class Climber extends Subsystem
         //setDefaultCommand(new MySpecialCommand());
     	setDefaultCommand(new ClimbWithControllers());
     }
-    
-	public void updateLogData(LogDataBE logData) {
+	
+	//=====================================================================================
+	// Property Accessors
+	//=====================================================================================
+	private double get_climberMotorCurrent()	{
+		return _climberMotor.getOutputCurrent();
+	}
+
+	private boolean get_isClimberServoOpen()	{
+		return false; //_climberMotor.getOutputCurrent();
+	}
+
+	//=====================================================================================
+	// LogData & Dashboard cmds
+	//=====================================================================================
+	public void updateLogData(LogDataBE logData) 
+	{
+		logData.AddData("Climber: Current", String.valueOf(get_climberMotorCurrent()));
 	}
 	
 	public void updateDashboard() 
 	{
+		SmartDashboard.putNumber("Climber:Current:", get_climberMotorCurrent());
+		//SmartDashboard.putBoolean("Is Climber Servo Open?:", _isClimberServoOpen);
 	}
 }
