@@ -5,15 +5,11 @@ import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITI
 
 import edu.wpi.first.wpilibj.command.Command;
 
-/**
- *
- */
 public class MoveElevatorToPresetPosition extends Command {
 	private Elevator _elevator = Elevator.getInstance();
 	ELEVATOR_TARGET_POSITION _presetPosition;
 
-    public MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION presetPosition) 
-    {
+    public MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION presetPosition) {
         requires(_elevator);
         setInterruptible(true);
         _presetPosition = presetPosition;

@@ -7,29 +7,31 @@
 
 package org.usfirst.frc.team4028.robot;
 
+//#region Define Imports
 import org.usfirst.frc.team4028.robot.commands.MoveElevatorToPresetPosition;
 import org.usfirst.frc.team4028.robot.commands.MoveInfeedArmsToPresetPosition;
+import org.usfirst.frc.team4028.robot.commands.RunInfeedWheels;
 import org.usfirst.frc.team4028.robot.commands.ZeroInfeedArms;
+import org.usfirst.frc.team4028.robot.commands.RunInfeedWheels.INFEED_WHEELS_FUNCTION;
 import org.usfirst.frc.team4028.robot.commands.ShiftGear;
 import org.usfirst.frc.team4028.robot.commands.ToggleClimberServoPosition;
-import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.buttons.Trigger;
+//#endregion
 
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
-	//// CREATING BUTTONS
+	//#region CREATING BUTTONS
 	// One type of button is a joystick button which is any button on a
-	//// joystick.
+	// joystick.
 	// You create one by telling it which joystick it's on and which button
 	// number it is.
 	// Joystick stick = new Joystick(port);
@@ -54,7 +56,8 @@ public class OI {
 	// Start the command when the button is released and let it run the command
 	// until it is finished as determined by it's isFinished method.
 	// button.whenReleased(new ExampleCommand());
-	
+	//#endregion
+
 	private XboxController DriverController;
 	private XboxController OperatorController;
 	
@@ -99,6 +102,8 @@ public class OI {
 	public JoystickButton DRIVER_RSTICK_BUTTON;
 	public JoystickButton DRIVER_START_BUTTON;
 	public JoystickButton DRIVER_BACK_BUTTON;
+	public Trigger DRIVER_LTRIGGER;
+	public Trigger DRIVER_RTRIGGER;
 	
 	public JoystickButton OPERATOR_UP;
 	public JoystickButton OPERATOR_DOWN;
@@ -151,14 +156,26 @@ public class OI {
 		
 		DRIVER_START_BUTTON = new JoystickButton(DriverController, XBOX_START_BUTTON);
 		DRIVER_BACK_BUTTON = new JoystickButton(DriverController, XBOX_BACK_BUTTON);
+
+		DRIVER_LTRIGGER = new JoystickButton(DriverController, XBOX_LTRIGGER_PORT);
+		DRIVER_RTRIGGER = new JoystickButton(DriverController, XBOX_RTRIGGER_PORT);
 		
 		// Driver Controller -> Command Mapping
 		DRIVER_A.whenPressed(new MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE));
 		DRIVER_B.whenPressed(new MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE));
 		DRIVER_X.whenPressed(new MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.STORE));
 		DRIVER_Y.whenPressed(new ZeroInfeedArms());
-		DRIVER_START_BUTTON.whenPressed(new ShiftGear());	
+		DRIVER_LBUMPER.whenPressed(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.SpinCW));
+		DRIVER_RBUMPER.whenPressed(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.SpinCCW));
+		DRIVER_LTRIGGER.whenActive(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.Infeed));
+		DRIVER_RTRIGGER.whenActive(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.Outfeed)); 
+		DRIVER_START_BUTTON.whenPressed(new ShiftGear());
 		
+		DRIVER_LBUMPER.whenReleased(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
+		DRIVER_RBUMPER.whenReleased(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
+		DRIVER_LTRIGGER.whenInactive(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
+		DRIVER_RTRIGGER.whenInactive(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels)); 
+				
 		// =========== Operator ======================================
 		OperatorController = new XboxController(RobotMap.OPERATOR_GAMEPAD_USB_PORT);
 		//==========================================================

@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
+//#region Define Imports
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.RobotMap;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
@@ -13,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+//#endregion
 
 /**
  * This class defines the Infeed Subsystem, it is responsible for:
@@ -43,6 +45,8 @@ public class Infeed extends Subsystem
 	private boolean _hasRightArmBeenHomed;
 	private double _targetLeftInfeedArmPosition;
 	private double _targetRightInfeedArmPosition;
+
+	private double _currentInFeedWheelsVBusCmd = .50;
 	
 	//====================================================================================
 	//	Constants for Closed Loop Gains for Infeed Motors
@@ -295,7 +299,56 @@ public class Infeed extends Subsystem
 		_leftSwitchbladeArmMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(_targetLeftInfeedArmPosition));
 		_rightSwitchbladeArmMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(_targetRightInfeedArmPosition));
 	}
+
+	//=====================================================================================
+	// Methods for Driving Infeed Wheels
+	//=====================================================================================
+	public void feedIn() {
+		_leftInfeedWheelMotor.set(ControlMode.PercentOutput, _currentInFeedWheelsVBusCmd);
+		_rightInfeedWheelMotor.set(ControlMode.PercentOutput, -1.0 * _currentInFeedWheelsVBusCmd);
+	}
 	
+	public void feedOut() {
+		_leftInfeedWheelMotor.set(ControlMode.PercentOutput, -1.0 * _currentInFeedWheelsVBusCmd);
+		_rightInfeedWheelMotor.set(ControlMode.PercentOutput, _currentInFeedWheelsVBusCmd);
+	}   
+	
+	public void infeedWheels_SpinCube_CCW() {
+		_leftInfeedWheelMotor.set(ControlMode.PercentOutput, -1.0 * _currentInFeedWheelsVBusCmd);
+		_rightInfeedWheelMotor.set(ControlMode.PercentOutput, -1.0 * _currentInFeedWheelsVBusCmd);
+	}
+	
+	public void infeedWheels_SpinCube_CW() {
+		_leftInfeedWheelMotor.set(ControlMode.PercentOutput, _currentInFeedWheelsVBusCmd);
+		_rightInfeedWheelMotor.set(ControlMode.PercentOutput, _currentInFeedWheelsVBusCmd);
+	}
+	
+	public void infeedWheels_SpinCube_Auton() {
+	}
+	
+	public void infeedWheels_VBusCmd_BumpUp() {
+		double newCmd = _currentInFeedWheelsVBusCmd + INFEED_DRIVE_WHEELS_VBUS_COMMAND_BUMP;
+		
+		// only bump if new cmd is not over max
+		if(newCmd <= 1.0) {
+			_currentInFeedWheelsVBusCmd = newCmd;
+		}
+	}
+	
+	public void infeedWheels_VBusCmd_BumpDown() {		
+		double newCmd = _currentInFeedWheelsVBusCmd - INFEED_DRIVE_WHEELS_VBUS_COMMAND_BUMP;
+		
+		// only bump if new cmd is not under min
+		if(newCmd >= 0.0) {
+			_currentInFeedWheelsVBusCmd = newCmd;
+		}
+	}
+
+	public void stopInfeedWheels(){
+		_leftInfeedWheelMotor.set(ControlMode.PercentOutput, 0);
+		_rightInfeedWheelMotor.set(ControlMode.PercentOutput, 0);
+	}
+
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());

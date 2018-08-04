@@ -32,6 +32,9 @@ public class Carriage extends Subsystem
 	private DigitalInput _carriageLimitSwitch;
 	private DoubleSolenoid _squeezeCylinder;
 	private DoubleSolenoid _tiltCylinder;
+
+	private double _currentCarriageWheelsFeedInVBusCmd = .45;
+	private double _currentCarriageWheelsJoystickVBusCmd = 0;
 	
 	//=====================================================================================
 	// Define Singleton Pattern
