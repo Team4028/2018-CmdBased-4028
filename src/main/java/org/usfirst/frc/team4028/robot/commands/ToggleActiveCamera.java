@@ -1,9 +1,9 @@
 package org.usfirst.frc.team4028.robot.commands;
 
+// #region
 import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
-import org.usfirst.frc.team4028.robot.subsystems.Chassis;
-
 import edu.wpi.first.wpilibj.command.Command;
+//#endregion
 
 /**
  * This command implements support for Toggling the active camera

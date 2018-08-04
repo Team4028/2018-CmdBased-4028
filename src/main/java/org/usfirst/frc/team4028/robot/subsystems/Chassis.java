@@ -168,7 +168,7 @@ public class Chassis extends Subsystem
 	public void updateLogData(LogDataBE logData) {
 	}
 	
-	public void outputToShuffleboard() 
+	public void updateDashboard() 
 	{
 	}
 }

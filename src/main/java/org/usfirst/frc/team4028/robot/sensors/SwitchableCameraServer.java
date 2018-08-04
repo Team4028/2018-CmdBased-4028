@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4028.robot.sensors;
 
+// #region Imports
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
@@ -7,13 +8,15 @@ import java.nio.file.Paths;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
-import edu.wpi.first.wpilibj.CameraServer;
+// #endregion
 
+// This class encapsulates interactions with the Diver / Operator Camera
 public class SwitchableCameraServer
 {
 	// =================================================================================================================
 	// Define Enums for the Camera
 	public enum CAMERA_CHOICE {
+		UNKNOWN,
 		DRIVER,
 		CARRIAGE
 	}
@@ -28,9 +31,9 @@ public class SwitchableCameraServer
 	
     private static final int CAMERA_TCP_PORT = 1180;
       
-    private UsbCamera _camera1;
-	private UsbCamera _camera2;
-	private int _currentCameraId;
+    private UsbCamera _cameraRoboRioUsbPort1;
+	private UsbCamera _cameraRoboRioUsbPort2;
+	private CAMERA_CHOICE _currentCamera;
 	
 	private MjpegServer _rawVideoServer;
 		
@@ -54,73 +57,96 @@ public class SwitchableCameraServer
 		_rawVideoServer = new MjpegServer("raw_video_server", CAMERA_TCP_PORT);    
 		
 		// =======================
-		//  drivers camera
+		//  drivers camera (MegaPixel USB Camera)
 		// ======================= 
 		if (Files.exists(Paths.get(USB1_DEVICE_PATH), LinkOption.NOFOLLOW_LINKS)) 
 		{
 			System.out.println ("...camera1 exists");
-			_camera1 = new UsbCamera(USB1_NAME, USB1_DEVICE_PATH);
-			_camera1.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera1.setExposureManual(5);
-			_camera1.setWhiteBalanceManual(50);
+			_cameraRoboRioUsbPort1 = new UsbCamera(USB1_NAME, USB1_DEVICE_PATH);
+			_cameraRoboRioUsbPort1.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
+			_cameraRoboRioUsbPort1.setExposureManual(5);
+			_cameraRoboRioUsbPort1.setWhiteBalanceManual(50);
 		}
 		
 		// =======================
-		//  carriage camera
+		//  carriage camera (Microsoft LifeCam)
 		// ======================= 
 		if (Files.exists(Paths.get(USB2_DEVICE_PATH), LinkOption.NOFOLLOW_LINKS)) 
 		{
 			System.out.println ("...camera2 exists");
-			_camera2 = new UsbCamera(USB2_NAME, USB2_DEVICE_PATH);
-			_camera2.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera2.setExposureManual(60);
-			_camera2.setWhiteBalanceManual(50);
+			_cameraRoboRioUsbPort2 = new UsbCamera(USB2_NAME, USB2_DEVICE_PATH);
+			_cameraRoboRioUsbPort2.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
+			_cameraRoboRioUsbPort2.setExposureManual(60);
+			_cameraRoboRioUsbPort2.setWhiteBalanceManual(50);
 		}
 		
-		if(_camera1 != null)
+		// set the initial camera
+		if(_cameraRoboRioUsbPort1 != null)
 		{
-			_currentCameraId = 1;
-			_rawVideoServer.setSource(_camera1);
+			setCamera(CAMERA_CHOICE.DRIVER);
 		}
-		else if(_camera2 != null)
+		else if(_cameraRoboRioUsbPort2 != null)
 		{
-			_currentCameraId = 2;
-			_rawVideoServer.setSource(_camera2);
+			setCamera(CAMERA_CHOICE.CARRIAGE);
 		}
 	}
 	
+	// swap between the 2 installed camera
 	public void toggle()
 	{
-		if (_currentCameraId == 1)
+		if (_currentCamera == CAMERA_CHOICE.DRIVER)
 		{
 			setCamera(CAMERA_CHOICE.CARRIAGE);
 		}	
-		else if (_currentCameraId == 2)
+		else 
 		{
-			setCamera(CAMERA_CHOICE.CARRIAGE);
+			setCamera(CAMERA_CHOICE.DRIVER);
 		}
 	}
 	
+	// switch to a particular camera
+	/*
+		The key concept here is to:
+			1. avoid overloading the USB bus on the RoboRio by having both cameras "active" at the same time
+			2. avoid consuming too much WiFi bandwidth by having both camera broadcasting images simultaneously
+
+		To accomplish this we dynamically set the source of the MjpegServer to one of the cameras
+	*/
 	public void setCamera(CAMERA_CHOICE cameraChoice)
 	{
 		switch(cameraChoice)
 		{
 			case DRIVER:
-				if (_currentCameraId == 1 && _camera2 != null)
+				if ((_currentCamera == CAMERA_CHOICE.UNKNOWN) 
+						|| (_currentCamera == CAMERA_CHOICE.CARRIAGE && _cameraRoboRioUsbPort1 != null))
 				{
-					_rawVideoServer.setSource(_camera2);
-					_currentCameraId = 2;
-					System.out.println ("current camera ==> " + _camera2.getName());
-				}	
+					_rawVideoServer.setSource(_cameraRoboRioUsbPort1);
+					_currentCamera = CAMERA_CHOICE.DRIVER;
+					System.out.println ("current camera ==> chg'd to : " + _cameraRoboRioUsbPort1.getName());
+				}
+				else
+				{
+					System.out.println ("current camera ==> cannot be changed!");
+				}
+
 				break;
 				
 			case CARRIAGE:
-				if (_currentCameraId == 2  && _camera1 != null)
+				if (_currentCamera == CAMERA_CHOICE.DRIVER && _cameraRoboRioUsbPort2 != null)
 				{
-					_rawVideoServer.setSource(_camera1);
-					_currentCameraId = 1;		
-					System.out.println ("current camera ==> " + _camera1.getName());
+					_rawVideoServer.setSource(_cameraRoboRioUsbPort2);
+					_currentCamera = CAMERA_CHOICE.CARRIAGE;		
+					System.out.println ("current camera ==> chg'd to: " + _cameraRoboRioUsbPort2.getName());
 				}
+				else
+				{
+					System.out.println ("current camera ==> cannot be changed!");
+				}
+
+				break;
+
+			case UNKNOWN:
+				System.out.println ("current camera ==> Illegal value passed to setCamera!");
 				break;
 		}
 	}

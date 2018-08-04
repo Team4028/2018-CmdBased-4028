@@ -6,10 +6,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
-/* This class encapsulates interactions with the NavX Sensor
-setup path to libraries using these instructions:
-http://www.pdocs.kauailabs.com/navx-mxp/software/roborio-libraries/java/
-http://www.pdocs.kauailabs.com/navx-mxp/examples/rotate-to-angle-2/ */
+// This class encapsulates interactions with the NavX Sensor
 public class NavXGyro 
 {
 	// define class level working variables
