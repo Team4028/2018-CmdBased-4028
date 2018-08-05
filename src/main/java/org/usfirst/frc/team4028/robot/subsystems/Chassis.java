@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
+//#region Define Imports
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.RobotMap;
 
@@ -20,6 +21,7 @@ import org.usfirst.frc.team4028.robot.commands.DriveWithControllers;
 import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
 import org.usfirst.frc.team4028.robot.util.GeneralUtilities;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
+//#endregion
 
 /**
  * This class defines the Chassis Subsystem, it is responsible for:

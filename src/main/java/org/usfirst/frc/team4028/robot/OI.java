@@ -18,6 +18,8 @@ import org.usfirst.frc.team4028.robot.commands.ToggleActiveCamera;
 import org.usfirst.frc.team4028.robot.commands.ToggleClimberServoPosition;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
+import org.usfirst.frc.team4028.robot.util.TriggerButton;
+import org.usfirst.frc.team4028.robot.util.TriggerButton.HAND;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -103,8 +105,8 @@ public class OI {
 	public JoystickButton DRIVER_RSTICK_BUTTON;
 	public JoystickButton DRIVER_START_BUTTON;
 	public JoystickButton DRIVER_BACK_BUTTON;
-	public Trigger DRIVER_LTRIGGER;
-	public Trigger DRIVER_RTRIGGER;
+	public TriggerButton DRIVER_LTRIGGER;
+	public TriggerButton DRIVER_RTRIGGER;
 	
 	public JoystickButton OPERATOR_UP;
 	public JoystickButton OPERATOR_DOWN;
@@ -158,8 +160,8 @@ public class OI {
 		DRIVER_START_BUTTON = new JoystickButton(DriverController, XBOX_START_BUTTON);
 		DRIVER_BACK_BUTTON = new JoystickButton(DriverController, XBOX_BACK_BUTTON);
 
-		DRIVER_LTRIGGER = new JoystickButton(DriverController, XBOX_LTRIGGER_PORT);
-		DRIVER_RTRIGGER = new JoystickButton(DriverController, XBOX_RTRIGGER_PORT);
+		DRIVER_LTRIGGER = new TriggerButton(DriverController, HAND.LEFT);
+		DRIVER_RTRIGGER = new TriggerButton(DriverController, HAND.RIGHT);
 		
 		// Driver Controller -> Command Mapping
 		DRIVER_A.whenPressed(new MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE));
@@ -168,14 +170,14 @@ public class OI {
 		DRIVER_Y.whenPressed(new ZeroInfeedArms());
 		DRIVER_LBUMPER.whenPressed(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.SpinCW));
 		DRIVER_RBUMPER.whenPressed(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.SpinCCW));
-		DRIVER_LTRIGGER.whenActive(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.Infeed));
-		DRIVER_RTRIGGER.whenActive(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.Outfeed)); 
+		DRIVER_LTRIGGER.whenPressed(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.Infeed));
+		DRIVER_RTRIGGER.whenPressed(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.Outfeed)); 
 		DRIVER_START_BUTTON.whenPressed(new ShiftGear());
 		
 		DRIVER_LBUMPER.whenReleased(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
 		DRIVER_RBUMPER.whenReleased(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
-		DRIVER_LTRIGGER.whenInactive(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
-		DRIVER_RTRIGGER.whenInactive(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels)); 
+		DRIVER_LTRIGGER.whenReleased(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
+		DRIVER_RTRIGGER.whenReleased(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels)); 
 				
 		// =========== Operator ======================================
 		OperatorController = new XboxController(RobotMap.OPERATOR_GAMEPAD_USB_PORT);

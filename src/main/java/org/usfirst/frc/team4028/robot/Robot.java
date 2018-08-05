@@ -30,7 +30,6 @@ import org.usfirst.frc.team4028.robot.util.GeneralUtilities;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
 import org.usfirst.frc.team4028.robot.util.MovingAverage;
 import org.usfirst.frc.team4028.robot.util.DataLogger;
-import org.usfirst.frc.team4028.robot.subsystems.ClimberServo;
 // #endregion
 
 /**
@@ -49,7 +48,6 @@ public class Robot extends TimedRobot
 	private Climber _climber = Climber.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
-	private ClimberServo _skyHook = ClimberServo.getInstance();
 
 	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
 	

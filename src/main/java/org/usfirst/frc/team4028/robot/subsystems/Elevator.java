@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
+//#region Define Imports
 import org.usfirst.frc.team4028.robot.RobotMap;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
 
@@ -12,8 +13,8 @@ import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Subsystem;
+//#endregion
 
 /**
  * This class defines the Elevator Subsystem, it is responsible for:

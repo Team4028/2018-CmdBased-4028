@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4028.robot.util;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.Button;
 
 /**
@@ -25,9 +24,9 @@ public class TriggerButton extends Button
     private static final int    RIGHT_THUMBSTICK_Y_AXIS_ID  = 5;
 
     /* Instance Values */
-    private final   Joystick    parent;
-    private final   HAND        hand;
-    private         double      deadZone;
+    private final   XboxController    parent;
+    private final   HAND              hand;
+    private         double            deadZone;
 
     private         double      sensitivity;
 
@@ -44,7 +43,7 @@ public class TriggerButton extends Button
      * @param joystick
      * @param hand
      */
-    TriggerButton(final Joystick joystick, final HAND hand) 
+    public TriggerButton(final XboxController joystick, final HAND hand) 
     {
         /* Initialize */
         this.parent         = joystick;

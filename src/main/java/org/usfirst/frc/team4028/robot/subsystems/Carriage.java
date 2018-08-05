@@ -40,7 +40,6 @@ public class Carriage extends Subsystem
 	private double _currentCarriageWheelsJoystickVBusCmd = 0;
 	
 	private CARRIAGE_WHEELS_OUT_VBUS_INDEX _currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
-	private double _currentCarriageWheelsFeedInVBusCmd = .45;
 
 	// for limit switch debouncing
 	private long _consecutiveScansCubeIsPresent = 0;
@@ -144,7 +143,6 @@ public class Carriage extends Subsystem
 		_tiltCylinder = new DoubleSolenoid(RobotMap.PCM_CAN_ADDR, RobotMap.CARRIAGE_FLAP_UP_PCM_PORT, RobotMap.CARRIAGE_FLAP_DOWN_PCM_PORT);
 		
 		this.tiltCarriageDown();
-		
 	}
 	
     // Put methods for controlling this subsystem hereb (Call these from Commands)

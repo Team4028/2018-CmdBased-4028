@@ -1,22 +1,25 @@
 package org.usfirst.frc.team4028.robot.commands;
 
-import org.usfirst.frc.team4028.robot.subsystems.ClimberServo;
+//#region Define Imports
+import org.usfirst.frc.team4028.robot.subsystems.Climber;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
+//#endregion
 
 /**
  * This command implements support for toggling the position of the Climber Servo
  */
 public class ToggleClimberServoPosition extends Command 
 {
-	private ClimberServo _climberServo = ClimberServo.getInstance();
-	private Elevator _elevator = Elevator.getInstance();
+    private Elevator _elevator = Elevator.getInstance();
+    private Climber _climber = Climber.getInstance();
 	
     public ToggleClimberServoPosition() {
         // Use requires() here to declare subsystem dependencies
-        requires(_climberServo);
+        requires(_climber);
+        requires(_elevator);
     }
 
     // Called just before this Command runs the first time
@@ -29,16 +32,16 @@ public class ToggleClimberServoPosition extends Command
     protected void execute() 
     {    	
     	
-    	if(_climberServo.getIsServoCurrentTargetClosed() && _elevator.isClimberServoEnabledHeight())
+    	if(_climber.getIsServoCurrentTargetClosed() && _elevator.isClimberServoEnabledHeight())
     	{
-    		_climberServo.openServo();
+    		_climber.openServo();
     	}
-    	else if(_climberServo.getIsServoCurrentTargetClosed() && !_elevator.isClimberServoEnabledHeight()) {
+    	else if(_climber.getIsServoCurrentTargetClosed() && !_elevator.isClimberServoEnabledHeight()) {
     		DriverStation.reportWarning("Here", true);
     	}
     	else
     	{
-    		_climberServo.closeServo();
+    		_climber.closeServo();
     	}
     }
 
@@ -46,7 +49,7 @@ public class ToggleClimberServoPosition extends Command
     protected boolean isFinished() 
     {
     	// either we get to target position or we timed out
-   	 	return _climberServo.getIsServoInPosition() || isTimedOut();
+   	 	return _climber.getIsServoInPosition() || isTimedOut();
     }
 
     // Called once after isFinished returns true
