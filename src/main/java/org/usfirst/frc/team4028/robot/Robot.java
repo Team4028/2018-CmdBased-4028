@@ -142,6 +142,7 @@ public class Robot extends TimedRobot
 		//	m_autonomousCommand.cancel();
 		//}
 		
+		
 		if (!_infeed.getHasArmsBeenZeroed()) {
 			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();
 			reZeroInfeedArmsCommand.start();

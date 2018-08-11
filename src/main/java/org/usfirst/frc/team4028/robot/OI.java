@@ -24,12 +24,13 @@ import org.usfirst.frc.team4028.robot.commands.CG_OutfeedCube;
 import org.usfirst.frc.team4028.robot.commands.CG_StopInfeeding;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
+import org.usfirst.frc.team4028.robot.util.BeakXboxController;
 //import org.usfirst.frc.team4028.robot.util.TriggerButton;
-import org.usfirst.frc.team4028.robot.util.XboxController;
-import org.usfirst.frc.team4028.robot.util.XboxController.HAND;
-import org.usfirst.frc.team4028.robot.util.XboxController.Thumbstick;
+import org.usfirst.frc.team4028.robot.util.BeakXboxController;
+import org.usfirst.frc.team4028.robot.util.BeakXboxController.HAND;
+import org.usfirst.frc.team4028.robot.util.BeakXboxController.Thumbstick;
 //import org.usfirst.frc.team4028.robot.util.TriggerButton.HAND;
-import org.usfirst.frc.team4028.robot.util.XboxController.Trigger;
+import org.usfirst.frc.team4028.robot.util.BeakXboxController.Trigger;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -69,10 +70,10 @@ public class OI {
 	// button.whenReleased(new ExampleCommand());
 	//#endregion
 
-	private XboxController DriverController;
-	private XboxController OperatorController;
+	private BeakXboxController DriverController;
+	private BeakXboxController OperatorController;
 	
-	public static final int XBOX_A_PORT = 1;
+	/*public static final int XBOX_A_PORT = 1;
 	public static final int XBOX_B_PORT = 2;
 	public static final int XBOX_X_PORT = 3;
 	public static final int XBOX_Y_PORT = 4;
@@ -96,9 +97,9 @@ public class OI {
 	public static final int XBOX_RYJOYSTICK_PORT = 5;
 
 	public static final double XBOX_AXIS_DEADBAND = 0.1;
-	public static final double XBOX_TRIGGER_DEADBAND = 0.02;
+	public static final double XBOX_TRIGGER_DEADBAND = 0.02;*/
 	
-	public JoystickButton DRIVER_UP;
+	/*public JoystickButton DRIVER_UP;
 	public JoystickButton DRIVER_DOWN;
 	public JoystickButton DRIVER_LEFT;
 	public JoystickButton DRIVER_RIGHT;
@@ -134,7 +135,7 @@ public class OI {
 	public JoystickButton OPERATOR_START_BUTTON;
 	public JoystickButton OPERATOR_BACK_BUTTON;
 	public Trigger OPERATOR_LTRIGGER;
-	public Trigger OPERATOR_RTRIGGER;
+	public Trigger OPERATOR_RTRIGGER;*/
 	
 	//=====================================================================================
 	// Define Singleton Pattern
@@ -149,7 +150,7 @@ public class OI {
 	private OI() 
 	{	
 		// =========== Driver ======================================
-		DriverController = new XboxController(RobotMap.DRIVER_GAMEPAD_USB_PORT);
+		DriverController = new BeakXboxController(RobotMap.DRIVER_GAMEPAD_USB_PORT);
 		//==========================================================
 		/*DRIVER_UP = new JoystickButton(DriverController, XBOX_UP_PORT);
 		DRIVER_DOWN = new JoystickButton(DriverController, XBOX_DOWN_PORT);
@@ -207,16 +208,16 @@ public class OI {
 		DriverController.rt.whenPressed(new CG_OutfeedCube());
 		DriverController.start.whenPressed(new Chassis_ShiftGear());
 		
-		DRIVER_LBUMPER.whenReleased(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
-		DRIVER_RBUMPER.whenReleased(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
-		DRIVER_LTRIGGER.whenReleased(new CG_StopInfeeding());
-		DRIVER_RTRIGGER.whenReleased(new CG_StopInfeeding()); 
+		//DRIVER_LBUMPER.whenReleased(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
+		//DRIVER_RBUMPER.whenReleased(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
+		//DRIVER_LTRIGGER.whenReleased(new CG_StopInfeeding());
+		//DRIVER_RTRIGGER.whenReleased(new CG_StopInfeeding()); 
 
 		DriverController.leftStick.whenPressed(new Chassis_DriveWithControllers(DriverController.leftStick.getY(), DriverController.rightStick.getX()));
 		DriverController.rightStick.whenPressed(new Chassis_DriveWithControllers(DriverController.leftStick.getY(), DriverController.rightStick.getX()));
 
 		// =========== Operator ======================================
-		OperatorController = new XboxController(RobotMap.OPERATOR_GAMEPAD_USB_PORT);
+		OperatorController = new BeakXboxController(RobotMap.OPERATOR_GAMEPAD_USB_PORT);
 		//==========================================================
 		/*OPERATOR_UP = new JoystickButton(OperatorController, XBOX_UP_PORT);
 		OPERATOR_DOWN = new JoystickButton(OperatorController, XBOX_DOWN_PORT);

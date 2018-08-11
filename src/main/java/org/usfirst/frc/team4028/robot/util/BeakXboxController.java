@@ -5,6 +5,7 @@ package org.usfirst.frc.team4028.robot.util;   // Change to whatever package you
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 
 /**
  * [class] XboxController
@@ -39,7 +40,7 @@ import edu.wpi.first.wpilibj.Joystick;
  *     This should work for the 2015 WPILib. The mappings of axis's and buttons may change in later years.
  *     I am not a good Java programmer.
  */
-public class XboxController extends Joystick {
+public class BeakXboxController extends Joystick {
     /* Default Values */
     private static final double DEFAULT_THUMBSTICK_DEADZONE = 0.1;  // Jiggle room for the thumbsticks
     private static final double DEFAULT_TRIGGER_DEADZONE    = 0.01; // Jiggle room for the triggers
@@ -89,7 +90,7 @@ public class XboxController extends Joystick {
      * you can specify which port you expect the controller to be on.
      * @param port
      */
-    public XboxController(final int port) {
+    public BeakXboxController(final int port) {
         super(port);  // Extends Joystick...
 
         /* Initialize */
@@ -116,7 +117,7 @@ public class XboxController extends Joystick {
      * as it is unlikely that anything else but the XboxController will be
      * connected.
      */
-    public XboxController() {
+    public BeakXboxController() {
         this(0);
     }
 
