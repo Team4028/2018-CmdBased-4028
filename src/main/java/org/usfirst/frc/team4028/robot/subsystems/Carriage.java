@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
-//#region Import Statements
+//#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.RobotMap;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
@@ -49,7 +49,6 @@ public class Carriage extends Subsystem
 		STOPPED,
 		FEED_IN,
 		FEED_OUT,
-		SPIN_CUBE
 	}
 
 	public enum CARRIAGE_WHEELS_OUT_VBUS_INDEX {
@@ -204,7 +203,7 @@ public class Carriage extends Subsystem
 		}
 	}
 	
-	public void carriage_FeedOut_VBusCmd_BumpDown() {
+	public void carriageWheels_FeedOut_VBusCmd_BumpDown() {
 		switch (_currentCarriageWheelsFeedOutVBusIndex)	{
 			case VBUS_100:
 				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_90;
@@ -356,8 +355,7 @@ public class Carriage extends Subsystem
 		return _currentCarriageWheelsFeedInVBusCmd;
 	}
 
-	private double get_currentCarriageWheelsFeedOutVBusCmd()
-	{
+	private double get_currentCarriageWheelsFeedOutVBusCmd(){
 		switch (_currentCarriageWheelsFeedOutVBusIndex)	
 		{
 			case VBUS_100:

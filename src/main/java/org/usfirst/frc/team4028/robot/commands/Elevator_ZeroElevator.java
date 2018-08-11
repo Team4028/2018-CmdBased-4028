@@ -1,39 +1,34 @@
 package org.usfirst.frc.team4028.robot.commands;
 
-
-import org.usfirst.frc.team4028.robot.OI;
-import org.usfirst.frc.team4028.robot.subsystems.Climber;
+//#region  == Define Imports ==
+import org.usfirst.frc.team4028.robot.subsystems.Elevator;
 
 import edu.wpi.first.wpilibj.command.Command;
+//#endregion
 
-/**
- * This command implements support for climbing
- */
-public class ClimbWithControllers extends Command {
-
-	private Climber _climber = Climber.getInstance();
-	private OI _oi = OI.getInstance();
+public class Elevator_ZeroElevator extends Command {
+	private Elevator _elevator = Elevator.getInstance();
 	
-    public ClimbWithControllers() {
+    public Elevator_ZeroElevator() {
         // Use requires() here to declare subsystem dependencies
-        requires(_climber);
+        requires(_elevator);
         setInterruptible(false);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	_elevator.initReZeroElevator();
+    	setTimeout(5);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	super.execute();
-    
-    	_climber.runMotor(_oi.getOperator_Climber_JoystickCmd());
+    	_elevator.zeroElevator();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return _elevator.getHasElevatorBeenZeroed() || isTimedOut();
     }
 
     // Called once after isFinished returns true

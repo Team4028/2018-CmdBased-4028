@@ -1,18 +1,20 @@
 package org.usfirst.frc.team4028.robot.commands;
 
+//#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 
 import edu.wpi.first.wpilibj.command.Command;
+//#endregion
 
 /**
  * This command implements support for Shifting Gears on the Drive Chassis
  */
-public class ShiftGear extends Command 
+public class Chassis_ShiftGear extends Command 
 {
 	
 	private Chassis _chassis = Chassis.getInstance();
 
-    public ShiftGear() {
+    public Chassis_ShiftGear() {
         // Use requires() here to declare subsystem dependencies
         requires(Chassis.getInstance());
         setInterruptible(true);

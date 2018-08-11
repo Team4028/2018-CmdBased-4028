@@ -18,8 +18,8 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Date;
 
-import org.usfirst.frc.team4028.robot.commands.ZeroElevator;
-import org.usfirst.frc.team4028.robot.commands.ZeroInfeedArms;
+import org.usfirst.frc.team4028.robot.commands.Elevator_ZeroElevator;
+import org.usfirst.frc.team4028.robot.commands.Infeed_ZeroInfeedArms;
 import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
@@ -102,11 +102,11 @@ public class Robot extends TimedRobot
 		//}
 		
 		if (!_infeed.getHasArmsBeenZeroed()) {
-			Command reZeroInfeedArmsCommand = new ZeroInfeedArms();
+			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();
 			reZeroInfeedArmsCommand.start();
 		}
 		if (!_elevator.getHasElevatorBeenZeroed()) {
-			Command reZeroElevatorCommand = new ZeroElevator();
+			Command reZeroElevatorCommand = new Elevator_ZeroElevator();
 			reZeroElevatorCommand.start();
 		}
 		_lastDashboardWriteTimeMSec = new Date().getTime(); // snapshot time to control spamming
@@ -143,11 +143,11 @@ public class Robot extends TimedRobot
 		//}
 		
 		if (!_infeed.getHasArmsBeenZeroed()) {
-			Command reZeroInfeedArmsCommand = new ZeroInfeedArms();
+			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();
 			reZeroInfeedArmsCommand.start();
 		}
 		if (!_elevator.getHasElevatorBeenZeroed()) {
-			Command reZeroElevatorCommand = new ZeroElevator();
+			Command reZeroElevatorCommand = new Elevator_ZeroElevator();
 			reZeroElevatorCommand.start();
 		}
 		

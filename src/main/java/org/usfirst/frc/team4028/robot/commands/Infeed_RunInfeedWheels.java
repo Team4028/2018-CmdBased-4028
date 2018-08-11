@@ -1,12 +1,12 @@
 package org.usfirst.frc.team4028.robot.commands;
 
-//#region Define Imports
+//#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.subsystems.Infeed;
 
 import edu.wpi.first.wpilibj.command.Command;
 //#endregion
 
-public class RunInfeedWheels extends Command {
+public class Infeed_RunInfeedWheels extends Command {
   public enum INFEED_WHEELS_FUNCTION{
     Infeed, Outfeed, SpinCW, SpinCCW, StopWheels,
   }
@@ -15,7 +15,7 @@ public class RunInfeedWheels extends Command {
 
   private boolean _areInfeedWheelsStopped = true;
 
-  public RunInfeedWheels(INFEED_WHEELS_FUNCTION function) {
+  public Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION function) {
     requires(_infeed);
     _infeedWheelsFunctions = function;
   }

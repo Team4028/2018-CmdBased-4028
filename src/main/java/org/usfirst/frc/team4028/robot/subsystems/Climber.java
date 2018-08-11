@@ -1,8 +1,8 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
-//#region Define Imports
+//#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.RobotMap;
-import org.usfirst.frc.team4028.robot.commands.ClimbWithControllers;
+import org.usfirst.frc.team4028.robot.commands.Climber_ClimbWithControllers;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -125,7 +125,7 @@ public class Climber extends Subsystem
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
-    	setDefaultCommand(new ClimbWithControllers());
+    	setDefaultCommand(new Climber_ClimbWithControllers());
     }
 	
 	//=====================================================================================

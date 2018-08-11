@@ -7,20 +7,20 @@
 
 package org.usfirst.frc.team4028.robot.commands;
 
-//#region Define Imports
+//#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 
 import edu.wpi.first.wpilibj.command.Command;
 //#endregion
 
-public class RunCarriageWheels extends Command {
+public class Carriage_RunCarriageWheels extends Command {
   public enum CARRIAGE_WHEELS_FUNCTION{
-    Infeed, Outfeed,
+    Infeed, Outfeed, StopWheels,
   }
   private Carriage _carriage = Carriage.getInstance();
   private CARRIAGE_WHEELS_FUNCTION _carriageWheelsFunction;
 
-  public RunCarriageWheels(CARRIAGE_WHEELS_FUNCTION function) {
+  public Carriage_RunCarriageWheels(CARRIAGE_WHEELS_FUNCTION function) {
     requires(_carriage);
     _carriageWheelsFunction = function;
   }
@@ -38,6 +38,9 @@ public class RunCarriageWheels extends Command {
     }
     else if(_carriageWheelsFunction == CARRIAGE_WHEELS_FUNCTION.Outfeed){
       _carriage.feedOut();
+    }
+    else if(_carriageWheelsFunction == CARRIAGE_WHEELS_FUNCTION.StopWheels){
+      _carriage.stop();
     }
   }
 

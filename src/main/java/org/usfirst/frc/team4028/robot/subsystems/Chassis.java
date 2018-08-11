@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
-//#region Define Imports
+//#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.RobotMap;
 
@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.usfirst.frc.team4028.robot.commands.DriveWithControllers;
 import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
 import org.usfirst.frc.team4028.robot.util.GeneralUtilities;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
@@ -131,10 +130,7 @@ public class Chassis extends Subsystem
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
-    public void initDefaultCommand() 
-    {
-		setDefaultCommand(new DriveWithControllers());
-    }
+    public void initDefaultCommand() {}
 	
 	//=====================================================================================
 	// Property Accessors

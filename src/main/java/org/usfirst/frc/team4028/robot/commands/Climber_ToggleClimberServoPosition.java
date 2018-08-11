@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4028.robot.commands;
 
-//#region Define Imports
+//#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.subsystems.Climber;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator;
 
@@ -11,12 +11,12 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  * This command implements support for toggling the position of the Climber Servo
  */
-public class ToggleClimberServoPosition extends Command 
+public class Climber_ToggleClimberServoPosition extends Command 
 {
     private Elevator _elevator = Elevator.getInstance();
     private Climber _climber = Climber.getInstance();
 	
-    public ToggleClimberServoPosition() {
+    public Climber_ToggleClimberServoPosition() {
         // Use requires() here to declare subsystem dependencies
         requires(_climber);
         requires(_elevator);

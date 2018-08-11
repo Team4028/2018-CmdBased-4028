@@ -8,23 +8,31 @@
 package org.usfirst.frc.team4028.robot;
 
 //#region Define Imports
-import org.usfirst.frc.team4028.robot.commands.MoveElevatorToPresetPosition;
-import org.usfirst.frc.team4028.robot.commands.MoveInfeedArmsToPresetPosition;
-import org.usfirst.frc.team4028.robot.commands.RunInfeedWheels;
-import org.usfirst.frc.team4028.robot.commands.ZeroInfeedArms;
-import org.usfirst.frc.team4028.robot.commands.RunInfeedWheels.INFEED_WHEELS_FUNCTION;
-import org.usfirst.frc.team4028.robot.commands.ShiftGear;
+import org.usfirst.frc.team4028.robot.commands.Elevator_MoveElevatorToPresetPosition;
+import org.usfirst.frc.team4028.robot.commands.Infeed_MoveInfeedArmsToPresetPosition;
+import org.usfirst.frc.team4028.robot.commands.Infeed_RunInfeedWheels;
+import org.usfirst.frc.team4028.robot.commands.Infeed_ZeroInfeedArms;
+import org.usfirst.frc.team4028.robot.commands.Infeed_RunInfeedWheels.INFEED_WHEELS_FUNCTION;
+import org.usfirst.frc.team4028.robot.commands.Carriage_ToggleCarriageSolenoids.CARRIAGE_SOLENOID_FUNCTIONS;
+import org.usfirst.frc.team4028.robot.commands.Chassis_ShiftGear;
+import org.usfirst.frc.team4028.robot.commands.Chassis_DriveWithControllers;
 import org.usfirst.frc.team4028.robot.commands.ToggleActiveCamera;
-import org.usfirst.frc.team4028.robot.commands.ToggleClimberServoPosition;
+import org.usfirst.frc.team4028.robot.commands.Carriage_ToggleCarriageSolenoids;
+import org.usfirst.frc.team4028.robot.commands.Climber_ToggleClimberServoPosition;
+import org.usfirst.frc.team4028.robot.commands.CG_InfeedCube;
+import org.usfirst.frc.team4028.robot.commands.CG_OutfeedCube;
+import org.usfirst.frc.team4028.robot.commands.CG_StopInfeeding;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
-import org.usfirst.frc.team4028.robot.util.TriggerButton;
-import org.usfirst.frc.team4028.robot.util.TriggerButton.HAND;
+//import org.usfirst.frc.team4028.robot.util.TriggerButton;
+import org.usfirst.frc.team4028.robot.util.XboxController;
+import org.usfirst.frc.team4028.robot.util.XboxController.HAND;
+import org.usfirst.frc.team4028.robot.util.XboxController.Thumbstick;
+//import org.usfirst.frc.team4028.robot.util.TriggerButton.HAND;
+import org.usfirst.frc.team4028.robot.util.XboxController.Trigger;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.buttons.Trigger;
 //#endregion
 
 /**
@@ -105,8 +113,10 @@ public class OI {
 	public JoystickButton DRIVER_RSTICK_BUTTON;
 	public JoystickButton DRIVER_START_BUTTON;
 	public JoystickButton DRIVER_BACK_BUTTON;
-	public TriggerButton DRIVER_LTRIGGER;
-	public TriggerButton DRIVER_RTRIGGER;
+	public Trigger DRIVER_LTRIGGER;
+	public Trigger DRIVER_RTRIGGER;
+	public Thumbstick DRIVER_LTHUMBSTICK;
+	public Thumbstick DRIVER_RTHUMBSTICK;
 	
 	public JoystickButton OPERATOR_UP;
 	public JoystickButton OPERATOR_DOWN;
@@ -123,6 +133,8 @@ public class OI {
 	public JoystickButton OPERATOR_RSTICK_BUTTON;
 	public JoystickButton OPERATOR_START_BUTTON;
 	public JoystickButton OPERATOR_BACK_BUTTON;
+	public Trigger OPERATOR_LTRIGGER;
+	public Trigger OPERATOR_RTRIGGER;
 	
 	//=====================================================================================
 	// Define Singleton Pattern
@@ -139,7 +151,7 @@ public class OI {
 		// =========== Driver ======================================
 		DriverController = new XboxController(RobotMap.DRIVER_GAMEPAD_USB_PORT);
 		//==========================================================
-		DRIVER_UP = new JoystickButton(DriverController, XBOX_UP_PORT);
+		/*DRIVER_UP = new JoystickButton(DriverController, XBOX_UP_PORT);
 		DRIVER_DOWN = new JoystickButton(DriverController, XBOX_DOWN_PORT);
 		DRIVER_LEFT = new JoystickButton(DriverController, XBOX_LEFT_PORT);
 		DRIVER_RIGHT = new JoystickButton(DriverController, XBOX_RIGHT_PORT);
@@ -160,29 +172,53 @@ public class OI {
 		DRIVER_START_BUTTON = new JoystickButton(DriverController, XBOX_START_BUTTON);
 		DRIVER_BACK_BUTTON = new JoystickButton(DriverController, XBOX_BACK_BUTTON);
 
-		DRIVER_LTRIGGER = new TriggerButton(DriverController, HAND.LEFT);
-		DRIVER_RTRIGGER = new TriggerButton(DriverController, HAND.RIGHT);
+		DRIVER_LTRIGGER = new Trigger(DriverController, HAND.LEFT);
+		DRIVER_RTRIGGER = new Trigger(DriverController, HAND.RIGHT);
+
+		DRIVER_LTHUMBSTICK = new Thumbstick(DriverController, HAND.LEFT);
+		DRIVER_RTHUMBSTICK = new Thumbstick(DriverController, HAND.RIGHT);
 		
 		// Driver Controller -> Command Mapping
-		DRIVER_A.whenPressed(new MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE));
-		DRIVER_B.whenPressed(new MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE));
-		DRIVER_X.whenPressed(new MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.STORE));
-		DRIVER_Y.whenPressed(new ZeroInfeedArms());
-		DRIVER_LBUMPER.whenPressed(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.SpinCW));
-		DRIVER_RBUMPER.whenPressed(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.SpinCCW));
-		DRIVER_LTRIGGER.whenPressed(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.Infeed));
-		DRIVER_RTRIGGER.whenPressed(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.Outfeed)); 
-		DRIVER_START_BUTTON.whenPressed(new ShiftGear());
+		DRIVER_A.whenPressed(new Infeed_MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE));
+		DRIVER_B.whenPressed(new Infeed_MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE));
+		DRIVER_X.whenPressed(new Infeed_MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.STORE));
+		DRIVER_Y.whenPressed(new Infeed_ZeroInfeedArms());
+		DRIVER_LBUMPER.whenPressed(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.SpinCW));
+		DRIVER_RBUMPER.whenPressed(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.SpinCCW));
+		DRIVER_LTRIGGER.whenPressed(new CG_InfeedCube());
+		DRIVER_RTRIGGER.whenPressed(new CG_OutfeedCube());
+		DRIVER_START_BUTTON.whenPressed(new Chassis_ShiftGear());
 		
-		DRIVER_LBUMPER.whenReleased(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
-		DRIVER_RBUMPER.whenReleased(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
-		DRIVER_LTRIGGER.whenReleased(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
-		DRIVER_RTRIGGER.whenReleased(new RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels)); 
-				
+		DRIVER_LBUMPER.whenReleased(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
+		DRIVER_RBUMPER.whenReleased(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
+		DRIVER_LTRIGGER.whenReleased(new CG_StopInfeeding());
+		DRIVER_RTRIGGER.whenReleased(new CG_StopInfeeding()); 
+
+		DRIVER_LTHUMBSTICK.whenPressed(new Chassis_DriveWithControllers(DRIVER_LTHUMBSTICK.getY(), DRIVER_RTHUMBSTICK.getX()));
+		DRIVER_RTHUMBSTICK.whenPressed(new Chassis_DriveWithControllers(DRIVER_LTHUMBSTICK.getY(), DRIVER_RTHUMBSTICK.getX()));
+		*/
+		DriverController.a.whenPressed(new Infeed_MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE));
+		DriverController.b.whenPressed(new Infeed_MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE));
+		DriverController.x.whenPressed(new Infeed_MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.STORE));
+		DriverController.y.whenPressed(new Infeed_ZeroInfeedArms());
+		DriverController.lb.whenPressed(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.SpinCW));
+		DriverController.rb.whenPressed(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.SpinCCW));
+		DriverController.lt.whenPressed(new CG_InfeedCube());
+		DriverController.rt.whenPressed(new CG_OutfeedCube());
+		DriverController.start.whenPressed(new Chassis_ShiftGear());
+		
+		DRIVER_LBUMPER.whenReleased(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
+		DRIVER_RBUMPER.whenReleased(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
+		DRIVER_LTRIGGER.whenReleased(new CG_StopInfeeding());
+		DRIVER_RTRIGGER.whenReleased(new CG_StopInfeeding()); 
+
+		DriverController.leftStick.whenPressed(new Chassis_DriveWithControllers(DriverController.leftStick.getY(), DriverController.rightStick.getX()));
+		DriverController.rightStick.whenPressed(new Chassis_DriveWithControllers(DriverController.leftStick.getY(), DriverController.rightStick.getX()));
+
 		// =========== Operator ======================================
 		OperatorController = new XboxController(RobotMap.OPERATOR_GAMEPAD_USB_PORT);
 		//==========================================================
-		OPERATOR_UP = new JoystickButton(OperatorController, XBOX_UP_PORT);
+		/*OPERATOR_UP = new JoystickButton(OperatorController, XBOX_UP_PORT);
 		OPERATOR_DOWN = new JoystickButton(OperatorController, XBOX_DOWN_PORT);
 		OPERATOR_LEFT = new JoystickButton(OperatorController, XBOX_LEFT_PORT);
 		OPERATOR_RIGHT = new JoystickButton(OperatorController, XBOX_RIGHT_PORT);
@@ -202,38 +238,22 @@ public class OI {
 		
 		OPERATOR_START_BUTTON = new JoystickButton(OperatorController, XBOX_START_BUTTON);
 		OPERATOR_BACK_BUTTON = new JoystickButton(OperatorController, XBOX_BACK_BUTTON);
+
+		OPERATOR_LTRIGGER = new Trigger(OperatorController, HAND.LEFT);
+		OPERATOR_RTRIGGER = new Trigger(OperatorController, HAND.RIGHT);
 		
 		// Operator Controller -> Command Mapping
-		OPERATOR_A.whenPressed(new MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.INFEED_HEIGHT));
-		//OPERATOR_B.whenPressed(new MoveElevatorToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE));
-		//OPERATOR_X.whenPressed(new MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SCALE_HEIGHT));
-		OPERATOR_Y.whenPressed(new MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SCALE_HEIGHT));
-		OPERATOR_BACK_BUTTON.whenPressed(new MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.CLIMB_HEIGHT));
-		OPERATOR_RBUMPER.whenPressed(new MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SWITCH_HEIGHT));
-		OPERATOR_LBUMPER.whenPressed(new ToggleClimberServoPosition());
-		OPERATOR_START_BUTTON.whenPressed(new ToggleActiveCamera());	
+		OPERATOR_A.whenPressed(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.INFEED_HEIGHT));
+		OPERATOR_Y.whenPressed(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SCALE_HEIGHT));
+		OPERATOR_BACK_BUTTON.whenPressed(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.CLIMB_HEIGHT));
+		OPERATOR_RBUMPER.whenPressed(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SWITCH_HEIGHT));
+		OPERATOR_LBUMPER.whenPressed(new Climber_ToggleClimberServoPosition());
+		OPERATOR_LTRIGGER.whenPressed(new Carriage_ToggleCarriageSolenoids(CARRIAGE_SOLENOID_FUNCTIONS.Squeeze));
+		OPERATOR_RTRIGGER.whenPressed(new Carriage_ToggleCarriageSolenoids(CARRIAGE_SOLENOID_FUNCTIONS.Wide));
+		OPERATOR_START_BUTTON.whenPressed(new ToggleActiveCamera());
+		*/
 	}
-	
-	public double getDriver_Throttle_JoystickCmd() {
-		if(Math.abs(DriverController.getY(Hand.kLeft)) >= XBOX_AXIS_DEADBAND){
-			// flip the sign, pushing the joystick up is a # < 0
-			return DriverController.getY(Hand.kLeft) * -1.0;
-		} 
-		else {
-			return 0.0;
-		}
-	}
-	
-	public double getDriver_Turn_JoystickCmd() {
-		if(Math.abs(DriverController.getX(Hand.kRight)) >= XBOX_AXIS_DEADBAND){
-			// flip the sign, pushing the joystick up is a # < 0
-			return DriverController.getX(Hand.kRight); //* -1.0;
-		} 
-		else {
-			return 0.0;
-		}
-	}
-	
+		
 	public double getOperator_Climber_JoystickCmd() {
 		if(Math.abs(OperatorController.getY(Hand.kRight)) >= 0.5){
 			// flip the sign, pushing the joystick up is a # < 0
