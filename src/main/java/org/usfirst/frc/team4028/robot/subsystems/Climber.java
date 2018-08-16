@@ -2,7 +2,6 @@ package org.usfirst.frc.team4028.robot.subsystems;
 
 //#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.RobotMap;
-import org.usfirst.frc.team4028.robot.commands.Climber_ClimbWithControllers;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;

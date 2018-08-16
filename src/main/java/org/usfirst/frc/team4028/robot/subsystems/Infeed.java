@@ -1,9 +1,7 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
 //#region  == Define Imports ==
-import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.RobotMap;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -92,12 +90,7 @@ public class Infeed extends Subsystem
 	private static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = false;
-	
-	// handles issue that arms on practice robot do not hit home limit switches
-	//	at the same place
-	private static final int LEFT_INFEED_ARM_ZERO_OFFSET = 0;
-	private static final int RIGHT_INFEED_ARM_ZERO_OFFSET = 0;
-	
+		
 	//=====================================================================================
 	// Define Singleton Pattern
 	//=====================================================================================

@@ -3,6 +3,7 @@ package org.usfirst.frc.team4028.robot.commands;
 //#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator;
+import org.usfirst.frc.team4028.robot.util.BeakXboxController.Thumbstick;
 
 import edu.wpi.first.wpilibj.command.Command;
 //#endregion
@@ -16,14 +17,14 @@ public class Chassis_DriveWithControllers extends Command
 	private Chassis _chassis = Chassis.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
     
-    private double _throttleCommand;
-    private double _turnCommand;
+    private Thumbstick _leftThumbstick;
+    private Thumbstick _righThumbstick;
 	
-    public Chassis_DriveWithControllers(double throttleCommand, double turnCommand) {
+    public Chassis_DriveWithControllers(Thumbstick leftThumbstick, Thumbstick rightThumbstick) {
         requires(_chassis);
         setInterruptible(true);
-        _throttleCommand = throttleCommand;
-        _turnCommand = turnCommand;
+        _leftThumbstick = leftThumbstick;
+        _righThumbstick = rightThumbstick;
     }
 
     // Called just before this Command runs the first time
@@ -34,9 +35,9 @@ public class Chassis_DriveWithControllers extends Command
     protected void execute() {
     	// optionally throttle speed if elevator is up to prevent tipping
 		if (_elevator.isElevatorAtUnsafeHeight()) {
-			_chassis.arcadeDrive(0.5 * _throttleCommand, 0.8 * _turnCommand);
+			_chassis.arcadeDrive(0.5 * _leftThumbstick.getY(), 0.8 * _righThumbstick.getX());
 		} else {
-			_chassis.arcadeDrive(_throttleCommand, _turnCommand);
+			_chassis.arcadeDrive(_leftThumbstick.getY(), _righThumbstick.getX());
 		}
     }
 
