@@ -31,7 +31,7 @@ public class Elevator extends Subsystem
 	private int _targetElevatorPositionNU;
 	private int _autonCustomPositionNU = 0;
 	
-	private int _elevatorAtScaleOffsetNU;
+	private int _elevatorPositionOffsetNU;
 		
 	private double _actualPositionNU = 0;
 	private double _actualVelocityNU_100mS = 0;
@@ -286,15 +286,15 @@ public class Elevator extends Subsystem
 				break;
 
 			case SWITCH_HEIGHT:
-				_targetElevatorPositionNU = SWITCH_HEIGHT_POSITION_IN_NU;
+				_targetElevatorPositionNU = SWITCH_HEIGHT_POSITION_IN_NU + _elevatorPositionOffsetNU;
 				break;
 									
 			case SCALE_HEIGHT:
-				_targetElevatorPositionNU = SCALE_HEIGHT_POSITION_IN_NU;
+				_targetElevatorPositionNU = SCALE_HEIGHT_POSITION_IN_NU + _elevatorPositionOffsetNU;
 				break;
 			
 			case CLIMB_HEIGHT:
-				_targetElevatorPositionNU = CLIMB_HEIGHT_POSITION_IN_NU;
+				_targetElevatorPositionNU = CLIMB_HEIGHT_POSITION_IN_NU + _elevatorPositionOffsetNU;
 				break;
 				
 			case AUTON_CUSTOM:
@@ -330,6 +330,34 @@ public class Elevator extends Subsystem
 			}
 		}
 	}
+
+	public void elevatorPositionBumpUp() {
+		if(_elevatorPositionOffsetNU < MAX_BUMP_UP_AMOUNT) {
+			if(_isClimbBumpValueEnabled) {
+				//_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + SMALL_BUMP_AMOUNT_CLIMB_IN_NU;
+				if (getElevatorActualPositionNU() < 20000) {
+					_elevatorPositionOffsetNU = (CLIMB_CLICK_ON_BAR_HEIGHT_IN_NU - CLIMB_HEIGHT_POSITION_IN_NU);
+				}
+			} else {
+				_elevatorPositionOffsetNU = _elevatorPositionOffsetNU + LARGE_BUMP_AMOUNT_IN_NU;
+			}
+		} else {
+			System.out.println("Elevator Scale Position Bump Tooooooo Large");
+		}		
+	}
+	
+	public void elevatorPositionBumpDown() {
+		if(_elevatorPositionOffsetNU > MAX_BUMP_DOWN_AMOUNT) {
+			if(_isClimbBumpValueEnabled) {
+				_elevatorPositionOffsetNU = _elevatorPositionOffsetNU - SMALL_BUMP_AMOUNT_CLIMB_IN_NU;
+			} else {
+				_elevatorPositionOffsetNU = _elevatorPositionOffsetNU - LARGE_BUMP_AMOUNT_IN_NU;
+			}
+		} else {
+			System.out.println("Elevator Scale Position Bump Tooooooo Large");
+		}
+	}
+
 	// this property indicates if the elevator is w/i the position deadband of the target position
 	private boolean IsAtTargetPosition(int targetPosition) {
 		int currentError = Math.abs(_elevatorMotor.getSelectedSensorPosition(0) - targetPosition);
@@ -342,5 +370,9 @@ public class Elevator extends Subsystem
 	
 	public boolean IsAtTargetPosition() {
 		return IsAtTargetPosition(_targetElevatorPositionNU);
+	}
+
+	public double getElevatorActualPositionNU() {
+		return _elevatorMotor.getSelectedSensorPosition(0);
 	}
 }

@@ -379,6 +379,17 @@ public class Infeed extends Subsystem
 	public double getCurrentRightInfeedPosition() {
 		return _rightSwitchbladeArmMotor.getSelectedSensorPosition(0);
 	}
+
+	public boolean getIsSafeToRunInfeedWheels(){
+		if((_targetLeftInfeedArmPosition == STORE_POSITION_ANGLE
+			|| _targetLeftInfeedArmPosition == HOME_POSITION_ANGLE)
+			&& (_targetRightInfeedArmPosition == STORE_POSITION_ANGLE
+			|| _targetRightInfeedArmPosition == HOME_POSITION_ANGLE)){
+			return false;
+		} else {
+			return true;
+		}
+	}
     
 	//=====================================================================================
 	public void updateLogData(LogDataBE logData) {

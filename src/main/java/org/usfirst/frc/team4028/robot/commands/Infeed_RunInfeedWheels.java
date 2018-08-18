@@ -28,21 +28,23 @@ public class Infeed_RunInfeedWheels extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(_infeedWheelsFunctions == INFEED_WHEELS_FUNCTION.Infeed){
-      _infeed.feedIn();
-    }
-    else if(_infeedWheelsFunctions == INFEED_WHEELS_FUNCTION.Outfeed){
-      _infeed.feedOut();
-    }
-    else if(_infeedWheelsFunctions == INFEED_WHEELS_FUNCTION.SpinCW){
-      _infeed.infeedWheels_SpinCube_CW();
-    }
-    else if(_infeedWheelsFunctions == INFEED_WHEELS_FUNCTION.SpinCCW){
-      _infeed.infeedWheels_SpinCube_CCW();
-    }
-    else if (_infeedWheelsFunctions == INFEED_WHEELS_FUNCTION.StopWheels){
-      _infeed.stopInfeedWheels();
-      _areInfeedWheelsStopped = true;
+    if(_infeed.getIsSafeToRunInfeedWheels()){
+      if(_infeedWheelsFunctions == INFEED_WHEELS_FUNCTION.Infeed){
+        _infeed.feedIn();
+      }
+      else if(_infeedWheelsFunctions == INFEED_WHEELS_FUNCTION.Outfeed){
+        _infeed.feedOut();
+      }
+      else if(_infeedWheelsFunctions == INFEED_WHEELS_FUNCTION.SpinCW){
+        _infeed.infeedWheels_SpinCube_CW();
+      }
+      else if(_infeedWheelsFunctions == INFEED_WHEELS_FUNCTION.SpinCCW){
+        _infeed.infeedWheels_SpinCube_CCW();
+      }
+      else if (_infeedWheelsFunctions == INFEED_WHEELS_FUNCTION.StopWheels){
+        _infeed.stopInfeedWheels();
+        _areInfeedWheelsStopped = true;
+      }
     }
   }
 

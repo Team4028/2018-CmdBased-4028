@@ -18,13 +18,13 @@ public class Chassis_DriveWithControllers extends Command
 	private Elevator _elevator = Elevator.getInstance();
     
     private Thumbstick _leftThumbstick;
-    private Thumbstick _righThumbstick;
+    private Thumbstick _rightThumbstick;
 	
-    public Chassis_DriveWithControllers(Thumbstick leftThumbstick, Thumbstick rightThumbstick) {
+    public Chassis_DriveWithControllers(Thumbstick leftThumbstick, Thumbstick righThumbstick) {
         requires(_chassis);
         setInterruptible(true);
         _leftThumbstick = leftThumbstick;
-        _righThumbstick = rightThumbstick;
+        _rightThumbstick = righThumbstick;
     }
 
     // Called just before this Command runs the first time
@@ -33,12 +33,13 @@ public class Chassis_DriveWithControllers extends Command
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+       // System.out.println("Throttle:" + _leftThumbstick.getY() + "  Turn:" + _rightThumbstick.getX());
     	// optionally throttle speed if elevator is up to prevent tipping
 		if (_elevator.isElevatorAtUnsafeHeight()) {
-			_chassis.arcadeDrive(0.5 * _leftThumbstick.getY(), 0.8 * _righThumbstick.getX());
+			_chassis.arcadeDrive(0.5 * _leftThumbstick.getY(), 0.8 * _rightThumbstick.getX());
 		} else {
-			_chassis.arcadeDrive(_leftThumbstick.getY(), _righThumbstick.getX());
-		}
+			_chassis.arcadeDrive(_leftThumbstick.getY(), _rightThumbstick.getX());
+        }
     }
 
     // Make this return true when this Command no longer needs to run execute()

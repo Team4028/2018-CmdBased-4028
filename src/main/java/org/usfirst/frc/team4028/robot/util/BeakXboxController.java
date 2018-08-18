@@ -42,7 +42,8 @@ import edu.wpi.first.wpilibj.XboxController;
  */
 public class BeakXboxController extends Joystick {
     /* Default Values */
-    private static final double DEFAULT_THUMBSTICK_DEADZONE = 0.1;  // Jiggle room for the thumbsticks
+    private static final double DEFAULT_THUMBSTICK_DEADZONE = 0.05;  // Jiggle room for the thumbsticks
+    private static final double DEFAULT_THUMBSTICK_SENSITIVITY = 0.1;
     private static final double DEFAULT_TRIGGER_DEADZONE    = 0.01; // Jiggle room for the triggers
     private static final double DEFAULT_TRIGGER_SENSITIVITY = 0.6;  // If the trigger is beyond this limit, say it has been pressed
     
@@ -190,6 +191,7 @@ public class BeakXboxController extends Joystick {
         private final   int         pressedID;
         private         double      xDeadZone;
         private         double      yDeadZone;
+        private         double      sensitivity;
 
         /**
          * Constructor
@@ -202,7 +204,8 @@ public class BeakXboxController extends Joystick {
             this.hand       = hand;
             this.xDeadZone  = DEFAULT_THUMBSTICK_DEADZONE;
             this.yDeadZone  = DEFAULT_THUMBSTICK_DEADZONE;
-        
+            this.sensitivity    = DEFAULT_THUMBSTICK_SENSITIVITY;
+                
             if (hand == HAND.LEFT) {
                 this.xAxisID    = LEFT_THUMBSTICK_X_AXIS_ID;
                 this.yAxisID    = LEFT_THUMBSTICK_Y_AXIS_ID;
@@ -278,7 +281,7 @@ public class BeakXboxController extends Joystick {
         /* Extended Methods */
         @Override
         public boolean get() {
-            return parent.getRawButton(pressedID);
+            return Math.abs(getX()) > sensitivity || Math.abs(getY()) > sensitivity;
         }
 
         /* Get Methods */

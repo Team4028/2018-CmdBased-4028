@@ -18,20 +18,17 @@ public class Elevator_MoveElevatorToPresetPosition extends Command {
     }
 
     // Called just before this Command runs the first time
-    protected void initialize() 
-    {
+    protected void initialize() {
     	setTimeout(5);  // set 4 second timeout
     }
 
     // Called repeatedly when this Command is scheduled to run
-    protected void execute() 
-    {
+    protected void execute() {
     	_elevator.MoveToPresetPosition(_presetPosition);    	
     }
 
     // Make this return true when this Command no longer needs to run execute()
-    protected boolean isFinished() 
-    {
+    protected boolean isFinished() {
     	 return _elevator.IsAtTargetPosition() || isTimedOut();
     }
 

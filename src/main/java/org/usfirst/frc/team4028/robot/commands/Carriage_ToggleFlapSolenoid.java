@@ -2,21 +2,20 @@ package org.usfirst.frc.team4028.robot.commands;
 
 //#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.subsystems.Carriage;
+import org.usfirst.frc.team4028.robot.subsystems.Elevator;
+import org.usfirst.frc.team4028.robot.util.BeakXboxController.Thumbstick;
 
 import edu.wpi.first.wpilibj.command.Command;
 //#endregion
 
-public class Carriage_BumpCarriageVBus extends Command {
-  public enum CARRIAGE_BUMP_FUNCTION {
-    BumpUp, BumpDown,
-  }
+public class Carriage_ToggleFlapSolenoid extends Command {
   Carriage _carriage = Carriage.getInstance();
+  Elevator _elevator = Elevator.getInstance();
+  Thumbstick _thumbstick;
 
-  CARRIAGE_BUMP_FUNCTION _carriageBumpFunction;
-
-  public Carriage_BumpCarriageVBus(CARRIAGE_BUMP_FUNCTION function) {
-    //requires(_carriage);
-    _carriageBumpFunction = function;
+  public Carriage_ToggleFlapSolenoid(Thumbstick thumbstick) {
+    requires(_carriage);
+    _thumbstick = thumbstick;
   }
 
   // Called just before this Command runs the first time
@@ -27,11 +26,13 @@ public class Carriage_BumpCarriageVBus extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(_carriageBumpFunction == CARRIAGE_BUMP_FUNCTION.BumpUp){
-      _carriage.carriageWheels_FeedOut_VBusCmd_BumpUp();
-    }
-    else if(_carriageBumpFunction == CARRIAGE_BUMP_FUNCTION.BumpDown){
-      _carriage.carriageWheels_FeedOut_VBusCmd_BumpDown();
+    if(_elevator.isFlapUpEnabledHeight()){
+      if(_thumbstick.getY() > 0){
+        _carriage.tiltCarriageUp();
+      }
+      else if(_thumbstick.getY() < 0){
+        _carriage.tiltCarriageDown();
+      }
     }
   }
 

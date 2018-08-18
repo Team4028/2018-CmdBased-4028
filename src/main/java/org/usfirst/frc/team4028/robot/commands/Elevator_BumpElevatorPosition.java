@@ -1,22 +1,21 @@
 package org.usfirst.frc.team4028.robot.commands;
 
-//#region  == Define Imports ==
-import org.usfirst.frc.team4028.robot.subsystems.Carriage;
+import org.usfirst.frc.team4028.robot.subsystems.Elevator;
 
 import edu.wpi.first.wpilibj.command.Command;
-//#endregion
 
-public class Carriage_BumpCarriageVBus extends Command {
-  public enum CARRIAGE_BUMP_FUNCTION {
+public class Elevator_BumpElevatorPosition extends Command {
+  public enum ELEVATOR_BUMP_FUNCTION{
     BumpUp, BumpDown,
   }
-  Carriage _carriage = Carriage.getInstance();
+  Elevator _elevator = Elevator.getInstance();
+  ELEVATOR_BUMP_FUNCTION _elevatorBumpFunction;
 
-  CARRIAGE_BUMP_FUNCTION _carriageBumpFunction;
-
-  public Carriage_BumpCarriageVBus(CARRIAGE_BUMP_FUNCTION function) {
-    //requires(_carriage);
-    _carriageBumpFunction = function;
+  public Elevator_BumpElevatorPosition(ELEVATOR_BUMP_FUNCTION function) {
+    //requires(_elevator);
+    _elevatorBumpFunction = function;
+    System.out.println("Heere");
+    setTimeout(1);
   }
 
   // Called just before this Command runs the first time
@@ -27,18 +26,19 @@ public class Carriage_BumpCarriageVBus extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(_carriageBumpFunction == CARRIAGE_BUMP_FUNCTION.BumpUp){
-      _carriage.carriageWheels_FeedOut_VBusCmd_BumpUp();
+    System.out.println("Executing");
+    if(_elevatorBumpFunction == ELEVATOR_BUMP_FUNCTION.BumpUp){
+      _elevator.elevatorPositionBumpUp();
     }
-    else if(_carriageBumpFunction == CARRIAGE_BUMP_FUNCTION.BumpDown){
-      _carriage.carriageWheels_FeedOut_VBusCmd_BumpDown();
+    else if(_elevatorBumpFunction == ELEVATOR_BUMP_FUNCTION.BumpDown){
+      _elevator.elevatorPositionBumpUp();
     }
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return true;
+    return isTimedOut();
   }
 
   // Called once after isFinished returns true

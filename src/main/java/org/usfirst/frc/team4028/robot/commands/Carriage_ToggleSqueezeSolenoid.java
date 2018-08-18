@@ -6,17 +6,16 @@ import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 import edu.wpi.first.wpilibj.command.Command;
 //#endregion
 
-public class Carriage_BumpCarriageVBus extends Command {
-  public enum CARRIAGE_BUMP_FUNCTION {
-    BumpUp, BumpDown,
-  }
+public class Carriage_ToggleSqueezeSolenoid extends Command {
   Carriage _carriage = Carriage.getInstance();
+  CARRIAGE_SQUEEZE_FUNCTIONS _carriageSolenoidFunction;
+  public enum CARRIAGE_SQUEEZE_FUNCTIONS{
+    Squeeze, Wide,
+  }
 
-  CARRIAGE_BUMP_FUNCTION _carriageBumpFunction;
-
-  public Carriage_BumpCarriageVBus(CARRIAGE_BUMP_FUNCTION function) {
-    //requires(_carriage);
-    _carriageBumpFunction = function;
+  public Carriage_ToggleSqueezeSolenoid(CARRIAGE_SQUEEZE_FUNCTIONS function) {
+    requires(_carriage);
+    _carriageSolenoidFunction = function;
   }
 
   // Called just before this Command runs the first time
@@ -27,11 +26,11 @@ public class Carriage_BumpCarriageVBus extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(_carriageBumpFunction == CARRIAGE_BUMP_FUNCTION.BumpUp){
-      _carriage.carriageWheels_FeedOut_VBusCmd_BumpUp();
+    if(_carriageSolenoidFunction == CARRIAGE_SQUEEZE_FUNCTIONS.Squeeze){
+      _carriage.moveCarriageToSqueezeWidth();
     }
-    else if(_carriageBumpFunction == CARRIAGE_BUMP_FUNCTION.BumpDown){
-      _carriage.carriageWheels_FeedOut_VBusCmd_BumpDown();
+    else if(_carriageSolenoidFunction == CARRIAGE_SQUEEZE_FUNCTIONS.Wide){
+      _carriage.moveCarriageToWideWidth();
     }
   }
 

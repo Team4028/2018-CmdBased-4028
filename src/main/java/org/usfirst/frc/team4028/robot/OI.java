@@ -13,15 +13,20 @@ import org.usfirst.frc.team4028.robot.commands.Infeed_MoveInfeedArmsToPresetPosi
 import org.usfirst.frc.team4028.robot.commands.Infeed_RunInfeedWheels;
 import org.usfirst.frc.team4028.robot.commands.Infeed_ZeroInfeedArms;
 import org.usfirst.frc.team4028.robot.commands.Infeed_RunInfeedWheels.INFEED_WHEELS_FUNCTION;
-import org.usfirst.frc.team4028.robot.commands.Carriage_ToggleCarriageSolenoids.CARRIAGE_SOLENOID_FUNCTIONS;
+import org.usfirst.frc.team4028.robot.commands.Carriage_ToggleSqueezeSolenoid.CARRIAGE_SQUEEZE_FUNCTIONS;
+import org.usfirst.frc.team4028.robot.commands.Elevator_BumpElevatorPosition.ELEVATOR_BUMP_FUNCTION;
 import org.usfirst.frc.team4028.robot.commands.Chassis_ShiftGear;
+import org.usfirst.frc.team4028.robot.commands.Elevator_BumpElevatorPosition;
 import org.usfirst.frc.team4028.robot.commands.Chassis_DriveWithControllers;
 import org.usfirst.frc.team4028.robot.commands.ToggleActiveCamera;
-import org.usfirst.frc.team4028.robot.commands.Carriage_ToggleCarriageSolenoids;
-import org.usfirst.frc.team4028.robot.commands.Climber_ToggleClimberServoPosition;
+import org.usfirst.frc.team4028.robot.commands.Carriage_BumpCarriageVBus.CARRIAGE_BUMP_FUNCTION;
+import org.usfirst.frc.team4028.robot.commands.Carriage_ToggleFlapSolenoid;
+import org.usfirst.frc.team4028.robot.commands.Carriage_ToggleSqueezeSolenoid;
+import org.usfirst.frc.team4028.robot.commands.CG_ClimbPosition;
 import org.usfirst.frc.team4028.robot.commands.CG_InfeedCube;
 import org.usfirst.frc.team4028.robot.commands.CG_OutfeedCube;
 import org.usfirst.frc.team4028.robot.commands.CG_StopInfeeding;
+import org.usfirst.frc.team4028.robot.commands.Carriage_BumpCarriageVBus;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.robot.util.BeakXboxController;
@@ -103,10 +108,16 @@ public class OI {
 		DriverController.lb.whenReleased(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
 		DriverController.rb.whenReleased(new Infeed_RunInfeedWheels(INFEED_WHEELS_FUNCTION.StopWheels));
 		DriverController.lt.whenReleased(new CG_StopInfeeding());
-		DriverController.rt.whenReleased(new CG_StopInfeeding()); 
+		DriverController.rt.whenReleased(new CG_StopInfeeding());
+		
+		DriverController.dPad.up.whenPressed(new Carriage_BumpCarriageVBus(CARRIAGE_BUMP_FUNCTION.BumpUp));
+		DriverController.dPad.down.whenPressed(new Carriage_BumpCarriageVBus(CARRIAGE_BUMP_FUNCTION.BumpDown));
 
 		DriverController.leftStick.whileActive(new Chassis_DriveWithControllers(DriverController.leftStick, DriverController.rightStick));
 		DriverController.rightStick.whileActive(new Chassis_DriveWithControllers(DriverController.leftStick, DriverController.rightStick));
+ 
+		DriverController.leftStick.whenReleased(new Chassis_DriveWithControllers(DriverController.leftStick, DriverController.rightStick));
+		DriverController.rightStick.whenReleased(new Chassis_DriveWithControllers(DriverController.leftStick, DriverController.rightStick));
 
 		// =========== Operator ======================================
 		OperatorController = new BeakXboxController(RobotMap.OPERATOR_GAMEPAD_USB_PORT);
@@ -115,12 +126,16 @@ public class OI {
 		// Operator Controller -> Command Mapping
 		OperatorController.a.whenPressed(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.INFEED_HEIGHT));
 		OperatorController.y.whenPressed(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SCALE_HEIGHT));
+		OperatorController.b.whenPressed(new Elevator_BumpElevatorPosition(ELEVATOR_BUMP_FUNCTION.BumpUp));
+		OperatorController.x.whenPressed(new Elevator_BumpElevatorPosition(ELEVATOR_BUMP_FUNCTION.BumpDown));
 		OperatorController.back.whenPressed(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.CLIMB_HEIGHT));
 		OperatorController.rb.whenPressed(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SWITCH_HEIGHT));
-		OperatorController.lb.whenPressed(new Climber_ToggleClimberServoPosition());
-		OperatorController.lt.whenPressed(new Carriage_ToggleCarriageSolenoids(CARRIAGE_SOLENOID_FUNCTIONS.Squeeze));
-		OperatorController.rt.whenPressed(new Carriage_ToggleCarriageSolenoids(CARRIAGE_SOLENOID_FUNCTIONS.Wide));
+		OperatorController.lb.whenPressed(new CG_ClimbPosition());
+		OperatorController.lt.whenPressed(new Carriage_ToggleSqueezeSolenoid(CARRIAGE_SQUEEZE_FUNCTIONS.Squeeze));
+		OperatorController.rt.whenPressed(new Carriage_ToggleSqueezeSolenoid(CARRIAGE_SQUEEZE_FUNCTIONS.Wide));
 		OperatorController.start.whenPressed(new ToggleActiveCamera());
+
+		OperatorController.leftStick.whenActive(new Carriage_ToggleFlapSolenoid(OperatorController.leftStick));
 	}
 		
 	public double getOperator_Climber_JoystickCmd() {
