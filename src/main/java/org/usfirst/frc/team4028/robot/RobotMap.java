@@ -60,4 +60,8 @@ public class RobotMap
 	public static final int SHIFTER_RETRACT_PCM_PORT = 7;
 	public static final int CARRIAGE_FLAP_UP_PCM_PORT = 4;
 	public static final int CARRIAGE_FLAP_DOWN_PCM_PORT = 5;
+
+	// Vision Data Server (Phone)
+	public static final String VISION_SOCKET_SERVER_IPV4_ADDR = "10.40.28.78";
+	public static final int VISION_SOCKET_SERVER_PORT = 5800;
 }
