@@ -19,7 +19,7 @@ public class Elevator_MoveElevatorToPresetPosition extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	setTimeout(5);  // set 4 second timeout
+        _elevator.resetElevatorBumpValue();
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -29,7 +29,7 @@ public class Elevator_MoveElevatorToPresetPosition extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-    	 return _elevator.IsAtTargetPosition() || isTimedOut();
+    	return false;
     }
 
     // Called once after isFinished returns true

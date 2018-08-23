@@ -27,7 +27,7 @@ public class Elevator extends Subsystem
 	// =================================================================================================================
 	// define class level working variables
 	private TalonSRX _elevatorMotor;
-	private long _elevatorHomeStartTime;
+	
 	private int _targetElevatorPositionNU;
 	private int _autonCustomPositionNU = 0;
 	
@@ -58,10 +58,6 @@ public class Elevator extends Subsystem
 	}
 		
 	// =================================================================================================================
-	// hardcoded preset jogging velocities
-	private static final double ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD = -0.20;   
-	private static final long ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC = 5000;	// 5 sec
-	
 	private static final double ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES = 0.5;	// +/- 0.25
 	private static final int ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU = InchesToNativeUnits(ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES);
 	
@@ -85,14 +81,12 @@ public class Elevator extends Subsystem
 	
 	private static final double MAX_BUMP_UP_AMOUNT = InchesToNativeUnits(8.9); 
 	private static final double MAX_BUMP_DOWN_AMOUNT = InchesToNativeUnits(-20.9);
-	
-	private static final boolean IS_VERBOSE_LOGGING_ENABLED = false;
-	
-	private static final int HOLDING_PID_SLOT_INDEX = 2;
-	private static final int MOVING_UP_PID_SLOT_INDEX = 1;
-	private static final int MOVING_DOWN_PID_SLOT_INDEX = 0;
-	
+		
   	// define PID Constants	
+	private static final int MOVING_DOWN_PID_SLOT_INDEX = 0;
+	private static final int MOVING_UP_PID_SLOT_INDEX = 1;
+	private static final int HOLDING_PID_SLOT_INDEX = 2;
+
 	public static final int TELEOP_UP_ACCELERATION = 4500;	// native units per 100 mSec per sec
 	public static final int AUTON_UP_ACCELERATION = 10000; // native units per 100 mSec per sec
 	public static final int TELEOP_DOWN_ACCELERATION = 2500; // native units per 100 mSec per sec
@@ -198,10 +192,6 @@ public class Elevator extends Subsystem
 		
 		// set allowable closed loop gain
 		_elevatorMotor.configAllowableClosedloopError(0, ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU, 0);
-		
-		// set initial elevator state
-		//ReportStateChg("ElevatorAxis (State) [Startup] ==> [NEED_TO_HOME]");
-		//_elevatorState = ELEVATOR_STATE.NEED_TO_HOME;
 	}
 	
     // Put methods for controlling this subsystem
@@ -235,32 +225,17 @@ public class Elevator extends Subsystem
 	public void updateDashboard() {
 	}
 	
-	// ===============================================================================================================
-	// General Purpose Utility Methods
-	// ===============================================================================================================
-	private static int InchesToNativeUnits(double positionInInches) {
-		int nativeUnits = (int)(positionInInches * NATIVE_UNITS_PER_INCH_CONVERSION);
-		return nativeUnits;
-	}
-	
-	private static double NativeUnitsToInches(double nativeUnitsMeasure) {
-		double positionInInches = nativeUnitsMeasure / NATIVE_UNITS_PER_INCH_CONVERSION;
-		return positionInInches;
-	}
-	
 	// =================================================================================================================
 	// Public methods to move the elevator
 	// =================================================================================================================
 	// Support Operators Gamepad Buttons mapped to discrete positions
 	// Note: gets spammed by CubeHandler!
 	
-	public void initReZeroElevator()
-	{
+	public void initReZeroElevator() {
 		_hasElevatorBeenZeroed = false;
 	}
 	
-	public void zeroElevator()
-	{		
+	public void zeroElevator() {		
 		// ==== left side ====
 		if (_elevatorMotor.getSensorCollection().isRevLimitSwitchClosed() == false) {
 			_hasElevatorBeenZeroed = true;
@@ -268,41 +243,39 @@ public class Elevator extends Subsystem
 		else if (_hasElevatorBeenZeroed == false) {
 		}
 	}
-	
-	public boolean getHasElevatorBeenZeroed()
-	{
-		return _hasElevatorBeenZeroed;
-	}
-	
+		
 	public void MoveToPresetPosition(ELEVATOR_TARGET_POSITION presetPosition) {
 		// ignore move requests while in homing process
-		switch(presetPosition) {
-			case HOME:
-				_targetElevatorPositionNU = HOME_POSITION_IN_NU;
-				break;
-				
-			case INFEED_HEIGHT:
-				_targetElevatorPositionNU = INFEED_POSITION_IN_NU;
-				break;
+		if(getHasElevatorBeenZeroed()) {
+			switch(presetPosition) {
+				case HOME:
+					_targetElevatorPositionNU = HOME_POSITION_IN_NU;
+					break;
+					
+				case INFEED_HEIGHT:
+					_targetElevatorPositionNU = INFEED_POSITION_IN_NU;
+					break;
 
-			case SWITCH_HEIGHT:
-				_targetElevatorPositionNU = SWITCH_HEIGHT_POSITION_IN_NU + _elevatorPositionOffsetNU;
-				break;
-									
-			case SCALE_HEIGHT:
-				_targetElevatorPositionNU = SCALE_HEIGHT_POSITION_IN_NU + _elevatorPositionOffsetNU;
-				break;
-			
-			case CLIMB_HEIGHT:
-				_targetElevatorPositionNU = CLIMB_HEIGHT_POSITION_IN_NU + _elevatorPositionOffsetNU;
-				break;
+				case SWITCH_HEIGHT:
+					_targetElevatorPositionNU = SWITCH_HEIGHT_POSITION_IN_NU + _elevatorPositionOffsetNU;
+					break;
+										
+				case SCALE_HEIGHT:
+					_targetElevatorPositionNU = SCALE_HEIGHT_POSITION_IN_NU + _elevatorPositionOffsetNU;
+					break;
 				
-			case AUTON_CUSTOM:
-				_targetElevatorPositionNU = _autonCustomPositionNU;
-				break;
+				case CLIMB_HEIGHT:
+					_targetElevatorPositionNU = CLIMB_HEIGHT_POSITION_IN_NU + _elevatorPositionOffsetNU;
+					break;
+					
+				case AUTON_CUSTOM:
+					_targetElevatorPositionNU = _autonCustomPositionNU;
+					break;
+			}
 		}
 		
-		// set appropriate gain slot to use (only flip if outside deadband
+		
+		// set appropriate gain slot to use (only flip if outside deadband)
 		int currentError = Math.abs(_elevatorMotor.getSelectedSensorPosition(0) - _targetElevatorPositionNU);
         if (currentError > ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) {
 			if(_targetElevatorPositionNU > _actualPositionNU) {
@@ -311,7 +284,8 @@ public class Elevator extends Subsystem
 				SetPidSlotToUse("MoveDown", MOVING_DOWN_PID_SLOT_INDEX);
 			}
 		}
-        _elevatorMotor.set(ControlMode.MotionMagic, _targetElevatorPositionNU);
+		_elevatorMotor.set(ControlMode.MotionMagic, _targetElevatorPositionNU);
+		System.out.println(_elevatorPositionOffsetNU);
 	}
 		
 	private void SetPidSlotToUse(String ref, int pidSlot) {
@@ -334,7 +308,6 @@ public class Elevator extends Subsystem
 	public void elevatorPositionBumpUp() {
 		if(_elevatorPositionOffsetNU < MAX_BUMP_UP_AMOUNT) {
 			if(_isClimbBumpValueEnabled) {
-				//_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + SMALL_BUMP_AMOUNT_CLIMB_IN_NU;
 				if (getElevatorActualPositionNU() < 20000) {
 					_elevatorPositionOffsetNU = (CLIMB_CLICK_ON_BAR_HEIGHT_IN_NU - CLIMB_HEIGHT_POSITION_IN_NU);
 				}
@@ -358,7 +331,13 @@ public class Elevator extends Subsystem
 		}
 	}
 
-	// this property indicates if the elevator is w/i the position deadband of the target position
+	public void resetElevatorBumpValue() {
+		_elevatorPositionOffsetNU = 0;
+	}
+
+	// ===============================================================================================================
+	// Expose Properties of Elevator
+	// ===============================================================================================================
 	private boolean IsAtTargetPosition(int targetPosition) {
 		int currentError = Math.abs(_elevatorMotor.getSelectedSensorPosition(0) - targetPosition);
         if (currentError <= ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) {
@@ -372,7 +351,29 @@ public class Elevator extends Subsystem
 		return IsAtTargetPosition(_targetElevatorPositionNU);
 	}
 
+	public boolean getHasElevatorBeenZeroed() {
+		return _hasElevatorBeenZeroed;
+	}
+
 	public double getElevatorActualPositionNU() {
 		return _elevatorMotor.getSelectedSensorPosition(0);
 	}
+
+	public double getElevatorActualPositionIn() {
+		return NativeUnitsToInches(_elevatorMotor.getSelectedSensorPosition(0));
+	}
+
+	// ===============================================================================================================
+	// General Purpose Utility Methods
+	// ===============================================================================================================
+	private static int InchesToNativeUnits(double positionInInches) {
+		int nativeUnits = (int)(positionInInches * NATIVE_UNITS_PER_INCH_CONVERSION);
+		return nativeUnits;
+	}
+	
+	private static double NativeUnitsToInches(double nativeUnitsMeasure) {
+		double positionInInches = nativeUnitsMeasure / NATIVE_UNITS_PER_INCH_CONVERSION;
+		return positionInInches;
+	}
+	
 }

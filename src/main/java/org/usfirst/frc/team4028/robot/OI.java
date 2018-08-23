@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package org.usfirst.frc.team4028.robot;
 
 //#region Define Imports
@@ -30,15 +23,8 @@ import org.usfirst.frc.team4028.robot.commands.Carriage_BumpCarriageVBus;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.robot.util.BeakXboxController;
-//import org.usfirst.frc.team4028.robot.util.TriggerButton;
-import org.usfirst.frc.team4028.robot.util.BeakXboxController;
-import org.usfirst.frc.team4028.robot.util.BeakXboxController.HAND;
-import org.usfirst.frc.team4028.robot.util.BeakXboxController.Thumbstick;
-//import org.usfirst.frc.team4028.robot.util.TriggerButton.HAND;
-import org.usfirst.frc.team4028.robot.util.BeakXboxController.Trigger;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
 //#endregion
 
 /**

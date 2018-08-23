@@ -19,7 +19,6 @@ import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.commands.Elevator_ZeroElevator;
 import org.usfirst.frc.team4028.robot.commands.Infeed_ZeroInfeedArms;
-import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.robot.subsystems.Climber;
@@ -39,7 +38,6 @@ public class Robot extends TimedRobot
 	private static final String ROBOT_NAME = "2018 PowerUp (ECLIPSE)-CMD BASED";
 	
 	// create instance of singelton Subsystems
-	private OI _oi = OI.getInstance();
 	private Dashboard _dashboard = Dashboard.getInstance();
 	
 	private Carriage _carriage = Carriage.getInstance();
@@ -47,8 +45,6 @@ public class Robot extends TimedRobot
 	private Climber _climber = Climber.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
-
-	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
 	
 	// class level working variables
 	private DataLogger _dataLogger = null;

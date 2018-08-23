@@ -37,7 +37,6 @@ public class Carriage extends Subsystem
 	private DoubleSolenoid _tiltCylinder;
 
 	private double _currentCarriageWheelsFeedInVBusCmd = .45;
-	private double _currentCarriageWheelsJoystickVBusCmd = 0;
 	
 	private CARRIAGE_WHEELS_OUT_VBUS_INDEX _currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
 

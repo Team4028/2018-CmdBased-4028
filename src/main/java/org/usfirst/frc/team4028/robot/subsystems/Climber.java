@@ -134,7 +134,7 @@ public class Climber extends Subsystem
 		return _climberMotor.getOutputCurrent();
 	}
 
-	private boolean get_isClimberServoOpen()	{
+	public boolean get_isClimberServoOpen()	{
 		return false; //_climberMotor.getOutputCurrent();
 	}
 
