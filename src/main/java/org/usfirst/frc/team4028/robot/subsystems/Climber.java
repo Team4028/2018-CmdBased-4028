@@ -1,7 +1,7 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
+//#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.RobotMap;
-import org.usfirst.frc.team4028.robot.commands.ClimbWithControllers;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -10,8 +10,10 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//#endregion
 
 /**
  * This class defines the Climber Subsystem, it is responsible for:
@@ -21,9 +23,17 @@ public class Climber extends Subsystem
 {
 	// define class level working variables
 	private TalonSRX _climberMotor; 
+	private Servo _climberServo;
+
+	private double _targetServoPosition = 0;
 
 	public static final double CLIMBER_MOTOR_HIGH_VBUS = 1.0;
 	public static final double CLIMBER_MOTOR_LOW_VBUS = 0.40;
+	
+	private static final double SERVO_OPEN_POSITION = 1;
+	private static final double SERVO_CLOSED_POSITION = 0;
+	
+	private static final double SERVO_IN_POSITION_DEADBAND = 0.2;
 	
 	//=====================================================================================
 	// Define Singleton Pattern
@@ -38,7 +48,7 @@ public class Climber extends Subsystem
 	private Climber() 
 	{
 		//====================================================================================
-		//	config master & slave talon objects
+		//	Config master & slave talon objects
 		//====================================================================================
 		_climberMotor = new TalonSRX(RobotMap.CLIMBER_CAN_ADDRESS);
 		
@@ -71,7 +81,16 @@ public class Climber extends Subsystem
 		// DisableSoftLimits
 		_climberMotor.configReverseSoftLimitEnable(false, 0);
 		_climberMotor.configForwardSoftLimitEnable(false, 0);
-				
+
+		//====================================================================================
+		//	Config Climber Servo
+		//====================================================================================
+		// Setup Carriage Servo Motors
+		_climberServo = new Servo(RobotMap.CLIMBER_SERVO_PWM_ADDRESS);
+		
+		// set default position
+		_targetServoPosition = SERVO_CLOSED_POSITION;
+		_climberServo.set(_targetServoPosition);
 	}
 	
 	public void runMotor(double vbusCmd)
@@ -86,6 +105,18 @@ public class Climber extends Subsystem
 			_climberMotor.set(ControlMode.PercentOutput, 0.0, 0);
 		}
 	}
+
+	public void openServo()
+	{
+		_targetServoPosition = SERVO_OPEN_POSITION;
+		_climberServo.set(_targetServoPosition);
+	}
+	
+	public void closeServo()
+	{
+		_targetServoPosition = SERVO_CLOSED_POSITION;
+		_climberServo.set(_targetServoPosition);
+	}
 	
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
@@ -93,7 +124,7 @@ public class Climber extends Subsystem
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
-    	setDefaultCommand(new ClimbWithControllers());
+    	//setDefaultCommand(new Climber_ClimbWithControllers());
     }
 	
 	//=====================================================================================
@@ -103,8 +134,20 @@ public class Climber extends Subsystem
 		return _climberMotor.getOutputCurrent();
 	}
 
-	private boolean get_isClimberServoOpen()	{
+	public boolean get_isClimberServoOpen()	{
 		return false; //_climberMotor.getOutputCurrent();
+	}
+
+	public boolean getIsServoInPosition()
+	{
+		double actualServoPosition = _climberServo.get();
+		
+		return (Math.abs(actualServoPosition - _targetServoPosition) < SERVO_IN_POSITION_DEADBAND);
+	}
+	
+	public boolean getIsServoCurrentTargetClosed()
+	{		
+		return (_targetServoPosition == SERVO_CLOSED_POSITION);
 	}
 
 	//=====================================================================================

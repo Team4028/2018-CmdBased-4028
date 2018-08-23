@@ -1,32 +1,37 @@
 package org.usfirst.frc.team4028.robot.commands;
 
-import org.usfirst.frc.team4028.robot.subsystems.Elevator;
+//#region  == Define Imports ==
+import org.usfirst.frc.team4028.robot.subsystems.Infeed;
 
 import edu.wpi.first.wpilibj.command.Command;
+//#endregion
 
-public class ZeroElevator extends Command {
-	private Elevator _elevator = Elevator.getInstance();
+/**
+ * This command implements support for ReZeroing the Infeed Arms
+ */
+public class Infeed_ZeroInfeedArms extends Command 
+{
+	private Infeed _infeed = Infeed.getInstance();
 	
-    public ZeroElevator() {
+    public Infeed_ZeroInfeedArms() {
         // Use requires() here to declare subsystem dependencies
-        requires(_elevator);
+        requires(_infeed);
         setInterruptible(false);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	_elevator.initReZeroElevator();
-    	setTimeout(5);
+    	_infeed.initReZeroArms();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	_elevator.zeroElevator();
+    	_infeed.zeroArms();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return _elevator.getHasElevatorBeenZeroed() || isTimedOut();
+        return _infeed.getHasArmsBeenZeroed();
     }
 
     // Called once after isFinished returns true

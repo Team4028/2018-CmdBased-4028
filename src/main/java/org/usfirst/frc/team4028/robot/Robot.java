@@ -11,16 +11,14 @@ package org.usfirst.frc.team4028.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Date;
 
-import org.usfirst.frc.team4028.robot.commands.ZeroElevator;
-import org.usfirst.frc.team4028.robot.commands.ZeroInfeedArms;
-import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
+import org.usfirst.frc.team4028.robot.commands.Elevator_ZeroElevator;
+import org.usfirst.frc.team4028.robot.commands.Infeed_ZeroInfeedArms;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.robot.subsystems.Climber;
@@ -30,7 +28,6 @@ import org.usfirst.frc.team4028.robot.util.GeneralUtilities;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
 import org.usfirst.frc.team4028.robot.util.MovingAverage;
 import org.usfirst.frc.team4028.robot.util.DataLogger;
-import org.usfirst.frc.team4028.robot.subsystems.ClimberServo;
 // #endregion
 
 /**
@@ -41,7 +38,6 @@ public class Robot extends TimedRobot
 	private static final String ROBOT_NAME = "2018 PowerUp (ECLIPSE)-CMD BASED";
 	
 	// create instance of singelton Subsystems
-	private OI _oi = OI.getInstance();
 	private Dashboard _dashboard = Dashboard.getInstance();
 	
 	private Carriage _carriage = Carriage.getInstance();
@@ -49,9 +45,6 @@ public class Robot extends TimedRobot
 	private Climber _climber = Climber.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
-	private ClimberServo _skyHook = ClimberServo.getInstance();
-
-	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
 	
 	// class level working variables
 	private DataLogger _dataLogger = null;
@@ -104,11 +97,11 @@ public class Robot extends TimedRobot
 		//}
 		
 		if (!_infeed.getHasArmsBeenZeroed()) {
-			Command reZeroInfeedArmsCommand = new ZeroInfeedArms();
+			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();
 			reZeroInfeedArmsCommand.start();
 		}
 		if (!_elevator.getHasElevatorBeenZeroed()) {
-			Command reZeroElevatorCommand = new ZeroElevator();
+			Command reZeroElevatorCommand = new Elevator_ZeroElevator();
 			reZeroElevatorCommand.start();
 		}
 		_lastDashboardWriteTimeMSec = new Date().getTime(); // snapshot time to control spamming
@@ -144,12 +137,13 @@ public class Robot extends TimedRobot
 		//	m_autonomousCommand.cancel();
 		//}
 		
+		
 		if (!_infeed.getHasArmsBeenZeroed()) {
-			Command reZeroInfeedArmsCommand = new ZeroInfeedArms();
+			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();
 			reZeroInfeedArmsCommand.start();
 		}
 		if (!_elevator.getHasElevatorBeenZeroed()) {
-			Command reZeroElevatorCommand = new ZeroElevator();
+			Command reZeroElevatorCommand = new Elevator_ZeroElevator();
 			reZeroElevatorCommand.start();
 		}
 		

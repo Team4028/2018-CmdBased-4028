@@ -1,35 +1,35 @@
 package org.usfirst.frc.team4028.robot.commands;
 
-import org.usfirst.frc.team4028.robot.subsystems.Chassis;
+//#region  == Define Imports ==
+import org.usfirst.frc.team4028.robot.subsystems.Elevator;
+import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITION;
 
 import edu.wpi.first.wpilibj.command.Command;
+//#endregion
 
-/**
- * This command implements support for Shifting Gears on the Drive Chassis
- */
-public class ShiftGear extends Command 
-{
-	
-	private Chassis _chassis = Chassis.getInstance();
+public class Elevator_MoveElevatorToPresetPosition extends Command {
+	private Elevator _elevator = Elevator.getInstance();
+	ELEVATOR_TARGET_POSITION _presetPosition;
 
-    public ShiftGear() {
-        // Use requires() here to declare subsystem dependencies
-        requires(Chassis.getInstance());
+    public Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION presetPosition) {
+        requires(_elevator);
         setInterruptible(true);
+        _presetPosition = presetPosition;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+        _elevator.resetElevatorBumpValue();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	_chassis.toggleShifter();
+    	_elevator.MoveToPresetPosition(_presetPosition);    	
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return true;
+    	return false;
     }
 
     // Called once after isFinished returns true

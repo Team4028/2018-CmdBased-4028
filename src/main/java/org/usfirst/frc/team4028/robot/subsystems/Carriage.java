@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
-//#region Import Statements
+//#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.RobotMap;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
@@ -35,9 +35,10 @@ public class Carriage extends Subsystem
 	private DigitalInput _carriageLimitSwitch;
 	private DoubleSolenoid _squeezeCylinder;
 	private DoubleSolenoid _tiltCylinder;
+
+	private double _currentCarriageWheelsFeedInVBusCmd = .45;
 	
 	private CARRIAGE_WHEELS_OUT_VBUS_INDEX _currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
-	private double _currentCarriageWheelsFeedInVBusCmd = .45;
 
 	// for limit switch debouncing
 	private long _consecutiveScansCubeIsPresent = 0;
@@ -47,7 +48,6 @@ public class Carriage extends Subsystem
 		STOPPED,
 		FEED_IN,
 		FEED_OUT,
-		SPIN_CUBE
 	}
 
 	public enum CARRIAGE_WHEELS_OUT_VBUS_INDEX {
@@ -141,7 +141,6 @@ public class Carriage extends Subsystem
 		_tiltCylinder = new DoubleSolenoid(RobotMap.PCM_CAN_ADDR, RobotMap.CARRIAGE_FLAP_UP_PCM_PORT, RobotMap.CARRIAGE_FLAP_DOWN_PCM_PORT);
 		
 		this.tiltCarriageDown();
-		
 	}
 	
     // Put methods for controlling this subsystem hereb (Call these from Commands)
@@ -203,7 +202,7 @@ public class Carriage extends Subsystem
 		}
 	}
 	
-	public void carriage_FeedOut_VBusCmd_BumpDown() {
+	public void carriageWheels_FeedOut_VBusCmd_BumpDown() {
 		switch (_currentCarriageWheelsFeedOutVBusIndex)	{
 			case VBUS_100:
 				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_90;
@@ -355,8 +354,7 @@ public class Carriage extends Subsystem
 		return _currentCarriageWheelsFeedInVBusCmd;
 	}
 
-	private double get_currentCarriageWheelsFeedOutVBusCmd()
-	{
+	private double get_currentCarriageWheelsFeedOutVBusCmd(){
 		switch (_currentCarriageWheelsFeedOutVBusIndex)	
 		{
 			case VBUS_100:
