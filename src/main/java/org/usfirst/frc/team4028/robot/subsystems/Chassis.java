@@ -36,6 +36,9 @@ public class Chassis extends Subsystem
 	private NavXGyro _navX = NavXGyro.getInstance();
 	
 	private static final double ENCODER_COUNTS_PER_WHEEL_REV = 30725.425;		// account for gear boxes
+
+	public double _leftMtrDriveSetDistanceCmd;
+	public double _rightMtrDriveSetDistanceCmd;
 	
 	//=====================================================================================
 	// Define Singleton Pattern
@@ -111,7 +114,7 @@ public class Chassis extends Subsystem
         talon.configVelocityMeasurementWindow(32, 0);
         
         talon.configOpenloopRamp(0.4, 10);
-        talon.configClosedloopRamp(0.0, 0);
+		talon.configClosedloopRamp(0.0, 0);
 	}
 	
 	private void configDriveMotors(TalonSRX talon) {
@@ -130,8 +133,38 @@ public class Chassis extends Subsystem
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
-    public void initDefaultCommand() {}
+	public void initDefaultCommand() {}
 	
+	public void setMotionMagicCmdInches(double Distance)
+	{
+		_leftMtrDriveSetDistanceCmd = _leftMaster.getSelectedSensorPosition(0)+ InchestoNU(Distance);
+		_rightMtrDriveSetDistanceCmd = _rightMaster.getSelectedSensorPosition(0)+InchestoNU(Distance);
+		setHighGear(false);
+		_leftMaster.config_kP(0, 0.15, 10);
+		_leftMaster.config_kI(0, 0, 10);
+		_leftMaster.config_kD(0, 1.5, 10);
+		_leftMaster.config_kF(0, 0.095, 10);
+		_rightMaster.config_kP(0, 0.15, 10);
+		_rightMaster.config_kI(0, 0, 10);
+		_rightMaster.config_kD(0, 1.5, 10);
+		_rightMaster.config_kF(0, 0.095, 10);
+		_leftMaster.configMotionCruiseVelocity(5000, 10);
+		_leftMaster.configMotionAcceleration(5500, 10);
+		_rightMaster.configMotionCruiseVelocity(5000, 10);
+		_rightMaster.configMotionAcceleration(5500, 10);
+
+	}
+
+	public void moveToTargetPosDriveSetDistance ()
+	{
+		setLeftRightCommand(ControlMode.MotionMagic, _leftMtrDriveSetDistanceCmd, _rightMtrDriveSetDistanceCmd);
+	}
+	
+	public void stop()
+	{
+		setLeftRightCommand(ControlMode.PercentOutput, 0, 0);
+
+	}
 	//=====================================================================================
 	// Property Accessors
 	//=====================================================================================
@@ -154,6 +187,15 @@ public class Chassis extends Subsystem
 	private synchronized boolean get_isHighGear() {
 		return _shifter.get() == Constants.SHIFTER_HIGH_GEAR_POS;
 	}
+
+	public double get_leftPos()
+	{
+		return _leftMaster.getSelectedSensorPosition(0);
+	}
+	public double get_rightPos()
+	{
+		return _rightMaster.getSelectedSensorPosition(0);
+	}
 	
 	//=====================================================================================
 	// Private Helper methods below
@@ -171,6 +213,9 @@ public class Chassis extends Subsystem
         return rot * (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI);
     } 
 
+	private static double InchestoNU (double inches){
+		return inches * ENCODER_COUNTS_PER_WHEEL_REV/(Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI);
+	}
 	//=====================================================================================
 	// Support Methods
 	//=====================================================================================

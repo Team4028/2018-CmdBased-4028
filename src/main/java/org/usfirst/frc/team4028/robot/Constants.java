@@ -18,6 +18,9 @@ public class Constants
 	
 	public static final Value CARRIAGE_FLAP_UP = DoubleSolenoid.Value.kForward;
 	public static final Value CARRIAGE_FLAP_DOWN = DoubleSolenoid.Value.kReverse;
+
+	//Deadbands for Chassis
+	public static final double CHASSIS_DRIVE_SET_DISTANCE_DEADBAND = 1.0;
 	
 	// Logging
 	// this is where the USB stick is mounted on the RoboRIO filesystem.  
