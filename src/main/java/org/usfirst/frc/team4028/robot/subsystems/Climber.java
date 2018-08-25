@@ -26,6 +26,7 @@ public class Climber extends Subsystem
 	private Servo _climberServo;
 
 	private double _targetServoPosition = 0;
+	private boolean _isClimberServoOpen = false;
 
 	public static final double CLIMBER_MOTOR_HIGH_VBUS = 1.0;
 	public static final double CLIMBER_MOTOR_LOW_VBUS = 0.40;
@@ -87,10 +88,11 @@ public class Climber extends Subsystem
 		//====================================================================================
 		// Setup Carriage Servo Motors
 		_climberServo = new Servo(RobotMap.CLIMBER_SERVO_PWM_ADDRESS);
-		
+
 		// set default position
 		_targetServoPosition = SERVO_CLOSED_POSITION;
 		_climberServo.set(_targetServoPosition);
+		_isClimberServoOpen = false;
 	}
 	
 	public void runMotor(double vbusCmd)
@@ -110,12 +112,14 @@ public class Climber extends Subsystem
 	{
 		_targetServoPosition = SERVO_OPEN_POSITION;
 		_climberServo.set(_targetServoPosition);
+		_isClimberServoOpen = true;
 	}
 	
 	public void closeServo()
 	{
 		_targetServoPosition = SERVO_CLOSED_POSITION;
 		_climberServo.set(_targetServoPosition);
+		_isClimberServoOpen = false;
 	}
 	
     // Put methods for controlling this subsystem
@@ -135,7 +139,7 @@ public class Climber extends Subsystem
 	}
 
 	public boolean get_isClimberServoOpen()	{
-		return false; //_climberMotor.getOutputCurrent();
+		return _isClimberServoOpen;
 	}
 
 	public boolean getIsServoInPosition()
@@ -161,6 +165,6 @@ public class Climber extends Subsystem
 	public void updateDashboard() 
 	{
 		SmartDashboard.putNumber("Climber:Current:", get_climberMotorCurrent());
-		//SmartDashboard.putBoolean("Is Climber Servo Open?:", _isClimberServoOpen);
+		SmartDashboard.putBoolean("Is Climber Servo Open?:", get_isClimberServoOpen());
 	}
 }

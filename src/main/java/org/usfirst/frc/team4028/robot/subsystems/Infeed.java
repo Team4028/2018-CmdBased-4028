@@ -2,6 +2,7 @@ package org.usfirst.frc.team4028.robot.subsystems;
 
 //#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.RobotMap;
+import org.usfirst.frc.team4028.robot.util.GeneralUtilities;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -13,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 //#endregion
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class defines the Infeed Subsystem, it is responsible for:
@@ -230,17 +232,12 @@ public class Infeed extends Subsystem
 			_rightSwitchbladeArmMotor.set(ControlMode.PercentOutput, -1 * INFEED_HOMING_VBUS_COMMAND); // run motor "backwards"
 		}						
 		
-		if (getHasArmsBeenZeroed()) { // only when both arms have been homed
+		if (get_hasArmsBeenZeroed()) { // only when both arms have been homed
 			//ReportStateChg("Infeed Arm (State) [" + _infeedArmState.toString() + "] ==> [AT_HOME]");
 			//_infeedArmState = INFEED_ARM_STATE.AT_HOME;
 		}
 	}
-	
-	public boolean getHasArmsBeenZeroed()
-	{
-		return _hasLeftArmBeenHomed && _hasRightArmBeenHomed;
-	}
-	
+		
 	public void MoveToPresetPosition(INFEED_ARM_TARGET_POSITION presetPosition)
 	{
 		switch(presetPosition) {
@@ -350,9 +347,9 @@ public class Infeed extends Subsystem
     //=====================================================================================
 	//Method for determining if Arms are In Position
 	//=====================================================================================	
-	public boolean areArmsInPosition() {
-		double currentErrorL = Math.abs(nativeUnitsToDegrees(getCurrentLeftInfeedPosition()) - _targetLeftInfeedArmPosition);
-		double currentErrorR = Math.abs(nativeUnitsToDegrees(getCurrentRightInfeedPosition()) - _targetRightInfeedArmPosition);
+	public boolean get_areArmsInPosition() {
+		double currentErrorL = Math.abs(nativeUnitsToDegrees(get_currentLeftInfeedPosition()) - _targetLeftInfeedArmPosition);
+		double currentErrorR = Math.abs(nativeUnitsToDegrees(get_currentRightInfeedPosition()) - _targetRightInfeedArmPosition);
 		
 		if(currentErrorL < INFEED_ALLOWED_ERROR_ANGLE && currentErrorR < INFEED_ALLOWED_ERROR_ANGLE
 				&& _targetLeftInfeedArmPosition != HOME_POSITION_ANGLE
@@ -372,15 +369,20 @@ public class Infeed extends Subsystem
 	//=====================================================================================
 	//Methods for Exposing Properties of Infeed Motors
 	//=====================================================================================
-	public double getCurrentLeftInfeedPosition() {
+	public boolean get_hasArmsBeenZeroed()
+	{
+		return get_hasLeftArmBeenHomed() && get_hasRightArmBeenHomed();
+	}
+
+	public double get_currentLeftInfeedPosition() {
 		return _leftSwitchbladeArmMotor.getSelectedSensorPosition(0);
 	}
 	
-	public double getCurrentRightInfeedPosition() {
+	public double get_currentRightInfeedPosition() {
 		return _rightSwitchbladeArmMotor.getSelectedSensorPosition(0);
 	}
 
-	public boolean getIsSafeToRunInfeedWheels(){
+	public boolean get_isSafeToRunInfeedWheels(){
 		if((_targetLeftInfeedArmPosition == STORE_POSITION_ANGLE
 			|| _targetLeftInfeedArmPosition == HOME_POSITION_ANGLE)
 			&& (_targetRightInfeedArmPosition == STORE_POSITION_ANGLE
@@ -390,9 +392,51 @@ public class Infeed extends Subsystem
 			return true;
 		}
 	}
-    
+	
+	private double get_currentInFeedWheelsVBusCmd()
+	{
+		return _currentInFeedWheelsVBusCmd;
+	}
+
+	private boolean get_hasLeftArmBeenHomed()
+	{
+		return _hasLeftArmBeenHomed;
+	}
+
+	private boolean get_hasRightArmBeenHomed()
+	{
+		return _hasRightArmBeenHomed;
+	}
+
+	public boolean get_areArmsInSafePosition() {
+		if (get_currentLeftInfeedPosition() <= (degreesToNativeUnits(WIDE_INFEED_POSITION_ANGLE) + 100) 
+				&& get_currentLeftInfeedPosition() <= (degreesToNativeUnits(WIDE_INFEED_POSITION_ANGLE) + 100)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	//=====================================================================================
 	public void updateLogData(LogDataBE logData) {
+		SmartDashboard.putString("InfeedWheels:State", "N/A for 2019");
+		SmartDashboard.putNumber("InfeedWheels:%VBus", get_currentInFeedWheelsVBusCmd());
+		
+		SmartDashboard.putNumber("InfeedArms:Target Wide Angle:", degreesToNativeUnits(WIDE_INFEED_POSITION_ANGLE));
+		SmartDashboard.putNumber("InfeedArms:Target Squeeze Angle", -1.0); //_currentInFeedArmSqueezeTargetAngle);
+		
+		SmartDashboard.putBoolean("InfeedArms:Left Homed?", get_hasLeftArmBeenHomed());
+		SmartDashboard.putBoolean("InfeedArms:Right Homed?", get_hasRightArmBeenHomed());
+		SmartDashboard.putBoolean("InfeedArms:Are Safe?", get_areArmsInSafePosition());		
+		SmartDashboard.putBoolean("InfeedArms:InPosition?", get_areArmsInPosition());
+		SmartDashboard.putString("InfeedArms:State", "N/A for 2019");
+		
+		SmartDashboard.putNumber("InfeedArms:Left Current PositionNU", get_currentLeftInfeedPosition());
+		SmartDashboard.putNumber("InfeedArms:Right Current PositionNU:", get_currentRightInfeedPosition());
+		
+		SmartDashboard.putNumber("InfeedArms:Left Current Angle", GeneralUtilities.roundDouble(nativeUnitsToDegrees(get_currentLeftInfeedPosition()), 1));
+		SmartDashboard.putNumber("InfeedArms:Right Current Angle:", GeneralUtilities.roundDouble(nativeUnitsToDegrees(get_currentRightInfeedPosition()), 1));
+
 	}
     
 	public void updateDashboard() 

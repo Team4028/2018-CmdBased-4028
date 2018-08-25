@@ -32,7 +32,7 @@ public class Infeed_MoveInfeedArmsToPresetPosition extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-    	 return _infeed.areArmsInPosition() || isTimedOut();
+    	 return _infeed.get_areArmsInPosition() || isTimedOut();
     }
 
     // Called once after isFinished returns true

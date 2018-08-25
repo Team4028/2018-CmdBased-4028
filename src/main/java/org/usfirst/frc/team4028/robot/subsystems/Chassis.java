@@ -151,10 +151,15 @@ public class Chassis extends Subsystem
         return rpmToInchesPerSecond(get_rightSpeed());
 	}
 	
+
 	private synchronized boolean get_isHighGear() {
 		return _shifter.get() == Constants.SHIFTER_HIGH_GEAR_POS;
 	}
 	
+	public double get_Heading() {
+		return _navX.getYaw();
+	}
+
 	//=====================================================================================
 	// Private Helper methods below
 	//=====================================================================================
@@ -196,14 +201,13 @@ public class Chassis extends Subsystem
 	public void updateDashboard() 
 	{
 		SmartDashboard.putBoolean("IsHighGear", get_isHighGear());
-		SmartDashboard.putNumber("Chassis: Left Velocity", -1); //GeneralUtilities.roundDouble(getLeftVelocityInchesPerSec(), 2));
-		SmartDashboard.putNumber("Chassis: Right Velocity", -1); //GeneralUtilities.roundDouble(getLeftVelocityInchesPerSec(), 2));
+		SmartDashboard.putNumber("Chassis: Left Velocity", GeneralUtilities.roundDouble(get_leftVelocityInchesPerSec(), 2));
+		SmartDashboard.putNumber("Chassis: Right Velocity", GeneralUtilities.roundDouble(get_rightVelocityInchesPerSec(), 2));
 		
-		SmartDashboard.putNumber("Chassis: Left Wheel Target Velocity", -1); //GeneralUtilities.roundDouble(_leftTargetVelocity, 2));
-		SmartDashboard.putNumber("Chasiss: Right Wheel Target Velocity", -1); //GeneralUtilities.roundDouble(_leftTargetVelocity, 2));
+		SmartDashboard.putNumber("Chassis: Left Wheel Target Velocity", -1.0); //GeneralUtilities.roundDouble(_leftTargetVelocity, 2));
+		SmartDashboard.putNumber("Chasiss: Right Wheel Target Velocity",  -1.0); // GeneralUtilities.roundDouble(_leftTargetVelocity, 2));
 		
-		SmartDashboard.putNumber("Chassis: Angle", -1); //GeneralUtilities.roundDouble(getHeading(), 2));
+		SmartDashboard.putNumber("Chassis: Angle", GeneralUtilities.roundDouble(get_Heading(), 2));
 		SmartDashboard.putString("Chassis: Robot Pose", "N/A"); //RobotState.getInstance().getLatestFieldToVehicle().getValue().toString());
-
 	}
 }

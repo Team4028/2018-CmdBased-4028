@@ -28,7 +28,7 @@ public class Infeed_RunInfeedWheels extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(_infeed.getIsSafeToRunInfeedWheels()){
+    if(_infeed.get_isSafeToRunInfeedWheels()){
       if(_infeedWheelsFunctions == INFEED_WHEELS_FUNCTION.Infeed){
         _infeed.feedIn();
       }
