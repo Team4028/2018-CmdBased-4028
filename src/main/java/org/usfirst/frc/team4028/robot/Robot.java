@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Date;
 
+import org.usfirst.frc.team4028.robot.auton.AutonBase;
+import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.commands.Elevator_ZeroElevator;
 import org.usfirst.frc.team4028.robot.commands.Infeed_ZeroInfeedArms;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage;
@@ -45,6 +47,9 @@ public class Robot extends TimedRobot
 	private Climber _climber = Climber.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
+
+	private AutonBase _autonBase;
+	private AutonExecuter _autonExecuter = null;
 	
 	// class level working variables
 	private DataLogger _dataLogger = null;
@@ -82,6 +87,15 @@ public class Robot extends TimedRobot
 	 */
 	@Override
 	public void autonomousInit() {
+		_chassis.stop();
+		if (_autonExecuter != null) {
+			_autonExecuter.stop();
+		}
+		_autonExecuter = null;
+
+		_autonExecuter = new AutonExecuter();
+		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
+		_autonExecuter.start();
 		//m_autonomousCommand = m_chooser.getSelected();
 
 		/*
@@ -136,7 +150,10 @@ public class Robot extends TimedRobot
 		//if (m_autonomousCommand != null) {
 		//	m_autonomousCommand.cancel();
 		//}
-		
+		if (!(_autonExecuter == null))
+		{
+			_autonExecuter = null;
+		}
 		
 		if (!_infeed.get_hasArmsBeenZeroed()) {
 			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();
@@ -146,7 +163,7 @@ public class Robot extends TimedRobot
 			Command reZeroElevatorCommand = new Elevator_ZeroElevator();
 			reZeroElevatorCommand.start();
 		}
-		
+		_chassis.stop();
 		_lastDashboardWriteTimeMSec = new Date().getTime(); // snapshot time to control spamming
 		_dataLogger = GeneralUtilities.setupLogging("Teleop"); // init data logging
 		_lastDashboardWriteTimeMSec = new Date().getTime(); // snapshot time to control spamming

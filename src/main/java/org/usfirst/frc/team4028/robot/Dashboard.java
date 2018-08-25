@@ -6,9 +6,11 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.auton.baseclasses.AutonBase;
+import org.usfirst.frc.team4028.robot.commands.Auton_CG_BaseLine;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // #endregion
@@ -104,7 +106,8 @@ public class Dashboard {
 	}
 	
 	/** Returns the autonBase object associated with the auton selected on the dashboard */
-	public AutonBase getSelectedAuton() {
+	public CommandGroup getSelectedAuton() {
+		return new Auton_CG_BaseLine();
 		/*_isStartingLeft = (_autonStartingSideChooser.getSelected() == STARTING_SIDE.LEFT);
 		
 		switch(_autonModeChooser.getSelected()) {
@@ -182,7 +185,7 @@ public class Dashboard {
 			default:
 				return new DoNothing(); 
 		}*/
-		return null;
+		//return null;
 	}
 	
 	public void outputToDashboard()
