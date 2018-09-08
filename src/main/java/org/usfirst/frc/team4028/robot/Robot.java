@@ -9,6 +9,7 @@ package org.usfirst.frc.team4028.robot;
 
 // #region Import Statements
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,8 +18,9 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Date;
 
-import org.usfirst.frc.team4028.robot.auton.AutonBase;
+
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths;
 import org.usfirst.frc.team4028.robot.commands.Elevator_ZeroElevator;
 import org.usfirst.frc.team4028.robot.commands.Infeed_ZeroInfeedArms;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage;
@@ -48,7 +50,7 @@ public class Robot extends TimedRobot
 	private Elevator _elevator = Elevator.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
 
-	private AutonBase _autonBase;
+
 	private AutonExecuter _autonExecuter = null;
 	
 	// class level working variables
@@ -64,6 +66,7 @@ public class Robot extends TimedRobot
 	@Override
 	public void robotInit() 
 	{
+		Paths.buildPaths();
 		_buildMsg = GeneralUtilities.WriteBuildInfoToDashboard(ROBOT_NAME);
 	}
 
@@ -88,14 +91,8 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousInit() {
 		_chassis.stop();
-		if (_autonExecuter != null) {
-			_autonExecuter.stop();
-		}
-		_autonExecuter = null;
-
-		_autonExecuter = new AutonExecuter();
-		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
-		_autonExecuter.start();
+		_dashboard.getSelectedAuton().start();
+		Scheduler.getInstance().run();
 		//m_autonomousCommand = m_chooser.getSelected();
 
 		/*
@@ -130,6 +127,7 @@ public class Robot extends TimedRobot
 	public void autonomousPeriodic() 
 	{
 		Scheduler.getInstance().run();
+		_chassis.updateChassis(Timer.getFPGATimestamp());
 		
 		// ============= Refresh Dashboard =============
 		_dashboard.outputToDashboard();

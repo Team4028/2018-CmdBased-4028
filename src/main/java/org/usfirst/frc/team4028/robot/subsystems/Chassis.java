@@ -3,6 +3,13 @@ package org.usfirst.frc.team4028.robot.subsystems;
 //#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.RobotMap;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.RobotState;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.Path;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.PathFollower;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.RigidTransform;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.Rotation;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.Twist;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.Kinematics;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -39,7 +46,33 @@ public class Chassis extends Subsystem
 
 	public double _leftMtrDriveSetDistanceCmd;
 	public double _rightMtrDriveSetDistanceCmd;
+	private double _targetAngle, _angleError;
+	private boolean _isTurnRight;
+	private static final double ENCODER_ROTATIONS_PER_DEGREE = 46.15/3600;
+	private RobotState _robotState = RobotState.getInstance();
+
+	public enum ChassisState
+	{
+		UNKNOWN,
+		PERCENT_VBUS,
+		AUTO_TURN, 
+		FOLLOW_PATH,
+		DRIVE_SET_DISTANCE
+	}
 	
+	private static final double[] MOTION_MAGIC_TURN_PIDF_GAINS = {0.25, 0.0, 30.0, 0.095};
+	private static final double[] MOTION_MAGIC_STRAIGHT_PIDF_GAINS = {0.15, 0.0, 20.0, 0.095};
+	private static final double[] LOW_GEAR_VELOCITY_PIDF_GAINS = {0.15, 0.0, 1.5, 0.085}; 
+	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS = {0.09, 0.0, 1.3, 0.044}; 
+    
+    private static final int[] MOTION_MAGIC_TURN_VEL_ACC = {80 * 150, 170 * 150};
+	private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 170 * 150};
+	
+	ChassisState _chassisState;
+	Path _currentPath;
+	PathFollower _pathFollower;
+	double _leftEncoderPrevDistance, _rightEncoderPrevDistance = 0;
+	double _centerTargetVelocity, _leftTargetVelocity, _rightTargetVelocity;
 	//=====================================================================================
 	// Define Singleton Pattern
 	//=====================================================================================
@@ -74,7 +107,42 @@ public class Chassis extends Subsystem
         configDriveMotors(_rightSlave);
 
 		_shifter = new DoubleSolenoid(RobotMap.PCM_CAN_ADDR, RobotMap.SHIFTER_EXTEND_PCM_PORT, RobotMap.SHIFTER_RETRACT_PCM_PORT);
+	
 	}
+	public void updateChassis(double timestamp){
+		switch(_chassisState) {
+			case UNKNOWN:
+			return;
+			case PERCENT_VBUS:
+				return;
+				
+			case AUTO_TURN:
+				GeneralUtilities.setPIDFGains(_leftMaster, MOTION_MAGIC_TURN_PIDF_GAINS);
+				GeneralUtilities.setPIDFGains(_rightMaster, MOTION_MAGIC_TURN_PIDF_GAINS);
+				moveToTargetAngle();
+				return;
+				
+			case DRIVE_SET_DISTANCE:
+				moveToTargetPosDriveSetDistance();
+				GeneralUtilities.setPIDFGains(_leftMaster, MOTION_MAGIC_STRAIGHT_PIDF_GAINS);
+				GeneralUtilities.setPIDFGains(_rightMaster, MOTION_MAGIC_STRAIGHT_PIDF_GAINS);
+				return;
+				
+			case FOLLOW_PATH:
+				if (get_isHighGear()) {
+					GeneralUtilities.setPIDFGains(_leftMaster, HIGH_GEAR_VELOCITY_PIDF_GAINS);
+					GeneralUtilities.setPIDFGains(_rightMaster, HIGH_GEAR_VELOCITY_PIDF_GAINS);
+				} else {
+					GeneralUtilities.setPIDFGains(_leftMaster, LOW_GEAR_VELOCITY_PIDF_GAINS);
+					GeneralUtilities.setPIDFGains(_rightMaster, LOW_GEAR_VELOCITY_PIDF_GAINS);
+				}
+				
+				if (_pathFollower != null) 
+					updatePathFollower(timestamp);
+				return;
+		}
+	}
+
 	
 	/* ===== Chassis State: PERCENT VBUS ===== */
 	/** Arcade drive with throttle and turn inputs. Includes anti-tipping. */
@@ -165,6 +233,101 @@ public class Chassis extends Subsystem
 		setLeftRightCommand(ControlMode.PercentOutput, 0, 0);
 
 	}
+
+	//==================================================================================
+	//AUTOTURN
+	//==================================================================================
+
+	public synchronized void setTargetAngleAndTurnDirection(double targetAngle, boolean isTurnRight) {
+		_targetAngle = targetAngle;
+		_isTurnRight = isTurnRight;
+		setHighGear(false);
+		_chassisState = ChassisState.AUTO_TURN;
+	}
+
+	private void moveToTargetAngle() {
+		// TODO: This code needs to be simplified. Should convert angles to vectors and use dot product to get angle difference.
+		if((_navX.getYaw() >= 0 && _targetAngle >= 0 && _isTurnRight && _navX.getYaw() > _targetAngle) ||
+			(_navX.getYaw() >= 0 && _targetAngle < 0 && _isTurnRight) ||
+			(_navX.getYaw() < 0 && _targetAngle < 0 && _isTurnRight && Math.abs(_navX.getYaw()) < Math.abs(_targetAngle))) {
+			_angleError = 360 - _navX.getYaw() + _targetAngle;
+		}
+		else if((_navX.getYaw() >= 0 && _targetAngle >= 0 && _isTurnRight && _navX.getYaw() < _targetAngle)||
+				(_navX.getYaw() >= 0 && _targetAngle >= 0 && !_isTurnRight && _navX.getYaw() > _targetAngle)||
+				(_navX.getYaw() >= 0 && _targetAngle < 0 && !_isTurnRight) ||
+				(_navX.getYaw() < 0 && _targetAngle >= 0 && _isTurnRight) ||
+				(_navX.getYaw() < 0 && _targetAngle < 0 && _isTurnRight && Math.abs(_navX.getYaw()) > Math.abs(_targetAngle)) ||
+				(_navX.getYaw() < 0 && _targetAngle < 0 && !_isTurnRight && Math.abs(_navX.getYaw()) < Math.abs(_targetAngle))) {
+			_angleError = _targetAngle - _navX.getYaw();
+		}		
+		else if((_navX.getYaw() >= 0 && _targetAngle >= 0 && !_isTurnRight && _navX.getYaw() < _targetAngle)||
+				(_navX.getYaw() < 0 && _targetAngle < 0 && !_isTurnRight && Math.abs(_navX.getYaw()) > Math.abs(_targetAngle))||
+				(_navX.getYaw() < 0 && _targetAngle >= 0 && !_isTurnRight)) {
+			_angleError = _targetAngle - _navX.getYaw() - 360;
+		}			
+		
+		double encoderError = ENCODER_ROTATIONS_PER_DEGREE * _angleError *ENCODER_COUNTS_PER_WHEEL_REV;		
+		double leftDriveTargetPos = get_leftPos() + encoderError;
+		double rightDriveTargetPos = get_rightPos() - encoderError;
+		
+		setLeftRightCommand(ControlMode.MotionMagic, leftDriveTargetPos, rightDriveTargetPos);
+	}
+	//====================================================================================
+	// PATH FOLLOWING
+	//===================================================================================
+
+	public synchronized void setWantDrivePath(Path path, boolean reversed) {
+        if (_currentPath != path || _chassisState != ChassisState.FOLLOW_PATH) {
+			_leftEncoderPrevDistance = get_leftPos()/ENCODER_COUNTS_PER_WHEEL_REV * Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI;
+	        _rightEncoderPrevDistance = get_leftPos()/ENCODER_COUNTS_PER_WHEEL_REV * Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI;
+            RobotState.getInstance().resetDistanceDriven();
+            _pathFollower = new PathFollower(path, reversed, path.maxAccel, path.maxDecel, path.inertiaSteeringGain);
+            _chassisState = ChassisState.FOLLOW_PATH;
+            _currentPath = path;
+        } else {
+        	setLeftRightCommand(ControlMode.Velocity, 0.0, 0.0);
+        }
+    }
+
+	public void updatePathFollower(double timestamp) {
+		estimateRobotState(timestamp);
+		RigidTransform _robotPose = RobotState.getInstance().getLatestFieldToVehicle().getValue();
+		Twist command = _pathFollower.update(timestamp, _robotPose, RobotState.getInstance().getDistanceDriven(), RobotState.getInstance().getPredictedVelocity().dx);
+		if (!_pathFollower.isFinished()) {
+			Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);
+			final double maxDesired = Math.max(Math.abs(setpoint.left), Math.abs(setpoint.right));
+            final double scale = maxDesired > Constants.DRIVE_VELOCITY_MAX_SETPOINT ? Constants.DRIVE_VELOCITY_MAX_SETPOINT / maxDesired : 1.0;
+            setLeftRightCommand(ControlMode.Velocity, inchesPerSecToNU(setpoint.left * scale), inchesPerSecToNU(setpoint.right * scale));
+            _centerTargetVelocity = command.dx;
+			_leftTargetVelocity = setpoint.left;
+			_rightTargetVelocity = setpoint.right;
+		} else {
+			setLeftRightCommand(ControlMode.Velocity, 0.0, 0.0);
+		}
+	}
+	public synchronized boolean isDoneWithPath() {
+        if (_chassisState == ChassisState.FOLLOW_PATH && _pathFollower != null)
+            return _pathFollower.isFinished();
+        else
+            System.out.println("Robot is not in path following mode");
+            return true;
+    }
+
+    /** Path following e-stop */
+    public synchronized void forceDoneWithPath() {
+        if (_chassisState == ChassisState.FOLLOW_PATH && _pathFollower != null)
+            _pathFollower.forceFinish();
+        else
+            System.out.println("Robot is not in path following mode");
+    }
+
+
+
+
+
+
+
+
 	//=====================================================================================
 	// Property Accessors
 	//=====================================================================================
@@ -220,6 +383,43 @@ public class Chassis extends Subsystem
 
 	private static double InchestoNU (double inches){
 		return inches * ENCODER_COUNTS_PER_WHEEL_REV/(Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI);
+	}
+	private static double NUtoInches (double NU)
+	{
+		return NU *Constants.DRIVE_WHEEL_DIAMETER_IN*Math.PI / ENCODER_COUNTS_PER_WHEEL_REV;
+	}
+
+	private static double inchesPerSecToNU(double inches_per_second) 
+	{
+        return inches_per_second * ENCODER_COUNTS_PER_WHEEL_REV / (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI * 10);
+	}
+	public double getLeftSpeedRPM() {
+		return _leftMaster.getSelectedSensorVelocity(0) * (600 / ENCODER_COUNTS_PER_WHEEL_REV);
+	}
+	
+	public double getRightSpeedRPM() {
+		return -_rightMaster.getSelectedSensorVelocity(0) * (600 / ENCODER_COUNTS_PER_WHEEL_REV);
+	}
+	public double getLeftVelocityInchesPerSec() {
+        return rpmToInchesPerSecond(getLeftSpeedRPM());
+    }
+
+    public double getRightVelocityInchesPerSec() {
+        return rpmToInchesPerSecond(getRightSpeedRPM());
+    }
+	
+	private void estimateRobotState( double timestamp)
+	{
+		final double left_distance = NUtoInches(get_leftPos());
+		final double right_distance = NUtoInches(get_rightPos());
+		final Rotation gyro_angle = Rotation.fromDegrees(get_Heading());
+		final Twist odometry_velocity = _robotState.generateOdometryFromSensors(
+				left_distance - _leftEncoderPrevDistance, right_distance - _rightEncoderPrevDistance, gyro_angle);
+		final Twist predicted_velocity = Kinematics.forwardKinematics(getLeftVelocityInchesPerSec(),
+				getRightVelocityInchesPerSec());
+		_robotState.addObservations(timestamp, odometry_velocity, predicted_velocity);
+		_leftEncoderPrevDistance = left_distance;
+		_rightEncoderPrevDistance = right_distance;
 	}
 	//=====================================================================================
 	// Support Methods
