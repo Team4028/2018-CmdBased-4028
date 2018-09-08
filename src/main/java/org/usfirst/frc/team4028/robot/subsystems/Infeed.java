@@ -418,7 +418,18 @@ public class Infeed extends Subsystem
 	}
 
 	//=====================================================================================
-	public void updateLogData(LogDataBE logData) {
+	public void updateLogData(LogDataBE logData) 
+	{
+		logData.AddData("Infeed: Left Target Arm Position", String.valueOf(nativeUnitsToDegrees(_targetLeftInfeedArmPosition)));
+		logData.AddData("Infeed: Right Target Arm Position", String.valueOf(nativeUnitsToDegrees(_targetRightInfeedArmPosition)));
+		logData.AddData("Infeed: L Position", String.valueOf(nativeUnitsToDegrees(get_currentLeftInfeedPosition())));
+		logData.AddData("Infeed: R Position:", String.valueOf(nativeUnitsToDegrees(get_currentRightInfeedPosition())));
+		logData.AddData("Infeed: L/R Arms Homed?", String.valueOf(get_hasLeftArmBeenHomed()) + " / " + String.valueOf(get_hasRightArmBeenHomed()));
+		logData.AddData("State: Infeed", "N/A for 2019");
+	}
+    
+	public void updateDashboard() 
+	{
 		SmartDashboard.putString("InfeedWheels:State", "N/A for 2019");
 		SmartDashboard.putNumber("InfeedWheels:%VBus", get_currentInFeedWheelsVBusCmd());
 		
@@ -436,11 +447,6 @@ public class Infeed extends Subsystem
 		
 		SmartDashboard.putNumber("InfeedArms:Left Current Angle", GeneralUtilities.roundDouble(nativeUnitsToDegrees(get_currentLeftInfeedPosition()), 1));
 		SmartDashboard.putNumber("InfeedArms:Right Current Angle:", GeneralUtilities.roundDouble(nativeUnitsToDegrees(get_currentRightInfeedPosition()), 1));
-
-	}
-    
-	public void updateDashboard() 
-	{
 	}
 	
 	//=====================================================================================

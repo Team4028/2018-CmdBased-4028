@@ -387,7 +387,15 @@ public class Elevator extends Subsystem
 		return positionInInches;
 	}
 	
-	public void updateLogData(LogDataBE logData) {
+	public void updateLogData(LogDataBE logData) 
+	{
+		logData.AddData("Elevator: Target Position [in]", String.valueOf(NativeUnitsToInches(_targetElevatorPositionNU)));
+		logData.AddData("Elevator: Postion [in]", String.valueOf(NativeUnitsToInches(_actualPositionNU)));	
+		logData.AddData("Elevator: Velocity [in/sec]", String.valueOf(10 * NativeUnitsToInches(_actualVelocityNU_100mS)));	
+		logData.AddData("Elevator: AccelNu [in/sec^2]", String.valueOf(10 * 1000 * NativeUnitsToInches(_actualAccelerationNU_100mS_mS)));
+		logData.AddData("Elevator: At Target Position?", String.valueOf(get_isAtTargetPosition()));
+		logData.AddData("Elevator: Scale Height Bump Amount:", String.valueOf(get_elevatorScaleHeightBumpInches()));	
+		logData.AddData("State: Elevator", "N/A in 2019");
 	}
 	
 	public void updateDashboard() {

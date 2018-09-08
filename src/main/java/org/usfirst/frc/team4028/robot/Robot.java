@@ -235,7 +235,8 @@ public class Robot extends TimedRobot
 	    	_elevator.updateLogData(logData);
 	    	_infeed.updateLogData(logData);
 	    	_carriage.updateLogData(logData);
-	    	
+			_climber.updateLogData(logData);
+			
 	    	_dataLogger.WriteDataLine(logData);
     	}
 	}
