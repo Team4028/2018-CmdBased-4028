@@ -11,16 +11,16 @@ package org.usfirst.frc.team4028.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Date;
 
-import org.usfirst.frc.team4028.robot.commands.ZeroElevator;
-import org.usfirst.frc.team4028.robot.commands.ZeroInfeedArms;
-import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
+import org.usfirst.frc.team4028.robot.auton.AutonBase;
+import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
+import org.usfirst.frc.team4028.robot.commands.Elevator_ZeroElevator;
+import org.usfirst.frc.team4028.robot.commands.Infeed_ZeroInfeedArms;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.robot.subsystems.Climber;
@@ -30,7 +30,6 @@ import org.usfirst.frc.team4028.robot.util.GeneralUtilities;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
 import org.usfirst.frc.team4028.robot.util.MovingAverage;
 import org.usfirst.frc.team4028.robot.util.DataLogger;
-import org.usfirst.frc.team4028.robot.subsystems.ClimberServo;
 // #endregion
 
 /**
@@ -41,7 +40,6 @@ public class Robot extends TimedRobot
 	private static final String ROBOT_NAME = "2018 PowerUp (ECLIPSE)-CMD BASED";
 	
 	// create instance of singelton Subsystems
-	private OI _oi = OI.getInstance();
 	private Dashboard _dashboard = Dashboard.getInstance();
 	
 	private Carriage _carriage = Carriage.getInstance();
@@ -49,9 +47,9 @@ public class Robot extends TimedRobot
 	private Climber _climber = Climber.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
-	private ClimberServo _skyHook = ClimberServo.getInstance();
 
-	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
+	private AutonBase _autonBase;
+	private AutonExecuter _autonExecuter = null;
 	
 	// class level working variables
 	private DataLogger _dataLogger = null;
@@ -89,6 +87,15 @@ public class Robot extends TimedRobot
 	 */
 	@Override
 	public void autonomousInit() {
+		_chassis.stop();
+		if (_autonExecuter != null) {
+			_autonExecuter.stop();
+		}
+		_autonExecuter = null;
+
+		_autonExecuter = new AutonExecuter();
+		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
+		_autonExecuter.start();
 		//m_autonomousCommand = m_chooser.getSelected();
 
 		/*
@@ -103,12 +110,12 @@ public class Robot extends TimedRobot
 		//	m_autonomousCommand.start();
 		//}
 		
-		if (!_infeed.getHasArmsBeenZeroed()) {
-			Command reZeroInfeedArmsCommand = new ZeroInfeedArms();
+		if (!_infeed.get_hasArmsBeenZeroed()) {
+			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();
 			reZeroInfeedArmsCommand.start();
 		}
-		if (!_elevator.getHasElevatorBeenZeroed()) {
-			Command reZeroElevatorCommand = new ZeroElevator();
+		if (!_elevator.get_hasElevatorBeenZeroed()) {
+			Command reZeroElevatorCommand = new Elevator_ZeroElevator();
 			reZeroElevatorCommand.start();
 		}
 		_lastDashboardWriteTimeMSec = new Date().getTime(); // snapshot time to control spamming
@@ -143,16 +150,20 @@ public class Robot extends TimedRobot
 		//if (m_autonomousCommand != null) {
 		//	m_autonomousCommand.cancel();
 		//}
+		if (!(_autonExecuter == null))
+		{
+			_autonExecuter = null;
+		}
 		
-		if (!_infeed.getHasArmsBeenZeroed()) {
-			Command reZeroInfeedArmsCommand = new ZeroInfeedArms();
+		if (!_infeed.get_hasArmsBeenZeroed()) {
+			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();
 			reZeroInfeedArmsCommand.start();
 		}
-		if (!_elevator.getHasElevatorBeenZeroed()) {
-			Command reZeroElevatorCommand = new ZeroElevator();
+		if (!_elevator.get_hasElevatorBeenZeroed()) {
+			Command reZeroElevatorCommand = new Elevator_ZeroElevator();
 			reZeroElevatorCommand.start();
 		}
-		
+		_chassis.stop();
 		_lastDashboardWriteTimeMSec = new Date().getTime(); // snapshot time to control spamming
 		_dataLogger = GeneralUtilities.setupLogging("Teleop"); // init data logging
 		_lastDashboardWriteTimeMSec = new Date().getTime(); // snapshot time to control spamming
@@ -224,7 +235,8 @@ public class Robot extends TimedRobot
 	    	_elevator.updateLogData(logData);
 	    	_infeed.updateLogData(logData);
 	    	_carriage.updateLogData(logData);
-	    	
+			_climber.updateLogData(logData);
+			
 	    	_dataLogger.WriteDataLine(logData);
     	}
 	}

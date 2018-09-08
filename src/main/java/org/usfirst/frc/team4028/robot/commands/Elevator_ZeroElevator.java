@@ -1,35 +1,34 @@
 package org.usfirst.frc.team4028.robot.commands;
 
-import org.usfirst.frc.team4028.robot.subsystems.Chassis;
+//#region  == Define Imports ==
+import org.usfirst.frc.team4028.robot.subsystems.Elevator;
 
 import edu.wpi.first.wpilibj.command.Command;
+//#endregion
 
-/**
- * This command implements support for Shifting Gears on the Drive Chassis
- */
-public class ShiftGear extends Command 
-{
+public class Elevator_ZeroElevator extends Command {
+	private Elevator _elevator = Elevator.getInstance();
 	
-	private Chassis _chassis = Chassis.getInstance();
-
-    public ShiftGear() {
+    public Elevator_ZeroElevator() {
         // Use requires() here to declare subsystem dependencies
-        requires(Chassis.getInstance());
-        setInterruptible(true);
+        requires(_elevator);
+        setInterruptible(false);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	_elevator.initReZeroElevator();
+    	setTimeout(5);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	_chassis.toggleShifter();
+    	_elevator.zeroElevator();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return true;
+        return _elevator.get_hasElevatorBeenZeroed() || isTimedOut();
     }
 
     // Called once after isFinished returns true

@@ -1,39 +1,37 @@
 package org.usfirst.frc.team4028.robot.commands;
 
-
-import org.usfirst.frc.team4028.robot.OI;
-import org.usfirst.frc.team4028.robot.subsystems.Climber;
+//#region  == Define Imports ==
+import org.usfirst.frc.team4028.robot.subsystems.Infeed;
 
 import edu.wpi.first.wpilibj.command.Command;
+//#endregion
 
 /**
- * This command implements support for climbing
+ * This command implements support for ReZeroing the Infeed Arms
  */
-public class ClimbWithControllers extends Command {
-
-	private Climber _climber = Climber.getInstance();
-	private OI _oi = OI.getInstance();
+public class Infeed_ZeroInfeedArms extends Command 
+{
+	private Infeed _infeed = Infeed.getInstance();
 	
-    public ClimbWithControllers() {
+    public Infeed_ZeroInfeedArms() {
         // Use requires() here to declare subsystem dependencies
-        requires(_climber);
+        requires(_infeed);
         setInterruptible(false);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	_infeed.initReZeroArms();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	super.execute();
-    
-    	_climber.runMotor(_oi.getOperator_Climber_JoystickCmd());
+    	_infeed.zeroArms();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return _infeed.get_hasArmsBeenZeroed();
     }
 
     // Called once after isFinished returns true
