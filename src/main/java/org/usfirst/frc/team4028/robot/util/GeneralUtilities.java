@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4028.robot.util;
 
-//region import statements
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -15,17 +14,15 @@ import java.util.TimeZone;
 
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.Robot;
-import org.usfirst.frc.team4028.robot.util.DataLogger;
+
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
-//#endregion
 
-public class GeneralUtilities 
-{
+public class GeneralUtilities {		
     /** Writes general info about the build to the Operator's Console */
 	public static String WriteBuildInfoToDashboard(String robotName) {
 		String buildMsg = "?";
-		
 		try {
     		//get the path of the currently executing jar file
 			String currentJarFilePath = Robot.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();		
@@ -94,11 +91,32 @@ public class GeneralUtilities
     	
     	return dataLogger;
 	}
-
-	// This method rounds a double to the specified # of decimal places
+	
+    // This method rounds a double to the specified # of decimal places
 	public static double roundDouble(Double originalValue, int decimalPlaces) {
 		BigDecimal bd = new BigDecimal(originalValue).setScale(decimalPlaces, RoundingMode.HALF_EVEN);
 		
 		return bd.doubleValue();
 	}
+    
+    public static boolean epsilonEquals(double a, double b, double epsilon) {
+        return (a - epsilon <= b) && (a + epsilon >= b);
+    }
+    
+    public static void setPIDFGains(TalonSRX talon, double[] gains) {
+    	talon.config_kP(0, gains[0], 0);
+		talon.config_kI(0, gains[1], 0);
+		talon.config_kD(0, gains[2], 0);
+		talon.config_kF(0, gains[3], 0);
+    }
+    
+    public static void setMotionMagicConstants(TalonSRX talon, int[] constants) {
+    	talon.configMotionCruiseVelocity(constants[0], 0);
+    	talon.configMotionAcceleration(constants[1], 0);
+    }
+    
+    /** This method makes sure a value is between a max & min value */
+ 	public static int ClampValue(int original, int min, int max) {
+ 		return Math.min(max, Math.max(min, original));
+ 	}
 }
