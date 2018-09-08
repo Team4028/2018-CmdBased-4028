@@ -33,7 +33,7 @@ public class SwitchableCameraServer
       
     private UsbCamera _cameraRoboRioUsbPort1;
 	private UsbCamera _cameraRoboRioUsbPort2;
-	private CAMERA_CHOICE _currentCamera;
+	private CAMERA_CHOICE _currentCamera = CAMERA_CHOICE.UNKNOWN;
 	
 	private MjpegServer _rawVideoServer;
 		
@@ -50,9 +50,10 @@ public class SwitchableCameraServer
 	// private constructor
 	private SwitchableCameraServer() 
 	{
-		int width = 320; // 160; // 320; //640;
-		int height = 240; //90; //180; //480;
-		int frames_per_sec = 15; //10; //20; //15;
+		// set values to limit bandwidth usage
+	 	final int width = 320; // 160; // 320; //640;
+		final int height = 240; //90; //180; //480;
+		final int frames_per_sec = 15; //10; //20; //15;
 		
 		_rawVideoServer = new MjpegServer("raw_video_server", CAMERA_TCP_PORT);    
 		
@@ -91,7 +92,7 @@ public class SwitchableCameraServer
 		}
 	}
 	
-	// swap between the 2 installed camera
+	// swap between the 2 installed cameras
 	public void toggle()
 	{
 		if (_currentCamera == CAMERA_CHOICE.DRIVER)

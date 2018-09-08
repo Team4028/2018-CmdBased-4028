@@ -110,11 +110,11 @@ public class Robot extends TimedRobot
 		//	m_autonomousCommand.start();
 		//}
 		
-		if (!_infeed.getHasArmsBeenZeroed()) {
+		if (!_infeed.get_hasArmsBeenZeroed()) {
 			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();
 			reZeroInfeedArmsCommand.start();
 		}
-		if (!_elevator.getHasElevatorBeenZeroed()) {
+		if (!_elevator.get_hasElevatorBeenZeroed()) {
 			Command reZeroElevatorCommand = new Elevator_ZeroElevator();
 			reZeroElevatorCommand.start();
 		}
@@ -155,11 +155,11 @@ public class Robot extends TimedRobot
 			_autonExecuter = null;
 		}
 		
-		if (!_infeed.getHasArmsBeenZeroed()) {
+		if (!_infeed.get_hasArmsBeenZeroed()) {
 			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();
 			reZeroInfeedArmsCommand.start();
 		}
-		if (!_elevator.getHasElevatorBeenZeroed()) {
+		if (!_elevator.get_hasElevatorBeenZeroed()) {
 			Command reZeroElevatorCommand = new Elevator_ZeroElevator();
 			reZeroElevatorCommand.start();
 		}
@@ -235,7 +235,8 @@ public class Robot extends TimedRobot
 	    	_elevator.updateLogData(logData);
 	    	_infeed.updateLogData(logData);
 	    	_carriage.updateLogData(logData);
-	    	
+			_climber.updateLogData(logData);
+			
 	    	_dataLogger.WriteDataLine(logData);
     	}
 	}

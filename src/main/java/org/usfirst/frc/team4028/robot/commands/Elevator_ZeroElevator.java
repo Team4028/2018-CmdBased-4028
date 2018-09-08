@@ -28,7 +28,7 @@ public class Elevator_ZeroElevator extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return _elevator.getHasElevatorBeenZeroed() || isTimedOut();
+        return _elevator.get_hasElevatorBeenZeroed() || isTimedOut();
     }
 
     // Called once after isFinished returns true

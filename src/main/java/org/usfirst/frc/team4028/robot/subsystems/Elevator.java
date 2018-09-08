@@ -2,6 +2,7 @@ package org.usfirst.frc.team4028.robot.subsystems;
 
 //#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.RobotMap;
+import org.usfirst.frc.team4028.robot.util.GeneralUtilities;
 import org.usfirst.frc.team4028.robot.util.LogDataBE;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -15,6 +16,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 //#endregion
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class defines the Elevator Subsystem, it is responsible for:
@@ -218,13 +220,7 @@ public class Elevator extends Subsystem
 	{
 		return _elevatorMotor.getSelectedSensorPosition(0);	// tomb ADD AFTER 1ST MATCH
 	}
-	
-	public void updateLogData(LogDataBE logData) {
-	}
-	
-	public void updateDashboard() {
-	}
-	
+		
 	// =================================================================================================================
 	// Public methods to move the elevator
 	// =================================================================================================================
@@ -246,7 +242,7 @@ public class Elevator extends Subsystem
 		
 	public void MoveToPresetPosition(ELEVATOR_TARGET_POSITION presetPosition) {
 		// ignore move requests while in homing process
-		if(getHasElevatorBeenZeroed()) {
+		if(get_hasElevatorBeenZeroed()) {
 			switch(presetPosition) {
 				case HOME:
 					_targetElevatorPositionNU = HOME_POSITION_IN_NU;
@@ -308,7 +304,7 @@ public class Elevator extends Subsystem
 	public void elevatorPositionBumpUp() {
 		if(_elevatorPositionOffsetNU < MAX_BUMP_UP_AMOUNT) {
 			if(_isClimbBumpValueEnabled) {
-				if (getElevatorActualPositionNU() < 20000) {
+				if (get_elevatorActualPositionNU() < 20000) {
 					_elevatorPositionOffsetNU = (CLIMB_CLICK_ON_BAR_HEIGHT_IN_NU - CLIMB_HEIGHT_POSITION_IN_NU);
 				}
 			} else {
@@ -338,7 +334,7 @@ public class Elevator extends Subsystem
 	// ===============================================================================================================
 	// Expose Properties of Elevator
 	// ===============================================================================================================
-	private boolean IsAtTargetPosition(int targetPosition) {
+	private boolean get_isAtTargetPosition(int targetPosition) {
 		int currentError = Math.abs(_elevatorMotor.getSelectedSensorPosition(0) - targetPosition);
         if (currentError <= ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) {
             return true;
@@ -347,21 +343,36 @@ public class Elevator extends Subsystem
 	    }
     }
 	
-	public boolean IsAtTargetPosition() {
-		return IsAtTargetPosition(_targetElevatorPositionNU);
+	public boolean get_isAtTargetPosition() {
+		return get_isAtTargetPosition(_targetElevatorPositionNU);
 	}
 
-	public boolean getHasElevatorBeenZeroed() {
+	public boolean get_hasElevatorBeenZeroed() {
 		return _hasElevatorBeenZeroed;
 	}
 
-	public double getElevatorActualPositionNU() {
+	public double get_elevatorActualPositionNU() {
 		return _elevatorMotor.getSelectedSensorPosition(0);
 	}
 
-	public double getElevatorActualPositionIn() {
+	public double get_elevatorActualPositionIn() {
 		return NativeUnitsToInches(_elevatorMotor.getSelectedSensorPosition(0));
 	}
+
+	private double get_actualPositionNU()
+	{
+		return _actualPositionNU;
+	}
+
+	public double get_elevatorScaleHeightBumpInches() {
+		return GeneralUtilities.roundDouble(NativeUnitsToInches(_elevatorPositionOffsetNU), 2);
+	}
+	
+	private boolean get_isClimbBumpValueEnabled()
+	{
+		return _isClimbBumpValueEnabled;
+	}
+
 
 	// ===============================================================================================================
 	// General Purpose Utility Methods
@@ -376,4 +387,45 @@ public class Elevator extends Subsystem
 		return positionInInches;
 	}
 	
+	public void updateLogData(LogDataBE logData) 
+	{
+		logData.AddData("Elevator: Target Position [in]", String.valueOf(NativeUnitsToInches(_targetElevatorPositionNU)));
+		logData.AddData("Elevator: Postion [in]", String.valueOf(NativeUnitsToInches(_actualPositionNU)));	
+		logData.AddData("Elevator: Velocity [in/sec]", String.valueOf(10 * NativeUnitsToInches(_actualVelocityNU_100mS)));	
+		logData.AddData("Elevator: AccelNu [in/sec^2]", String.valueOf(10 * 1000 * NativeUnitsToInches(_actualAccelerationNU_100mS_mS)));
+		logData.AddData("Elevator: At Target Position?", String.valueOf(get_isAtTargetPosition()));
+		logData.AddData("Elevator: Scale Height Bump Amount:", String.valueOf(get_elevatorScaleHeightBumpInches()));	
+		logData.AddData("State: Elevator", "N/A in 2019");
+	}
+	
+	public void updateDashboard() {
+		double actualPosition = 0;
+		double actualVelocity = 0;
+		double actualAcceleration = 0;
+		
+		boolean isDisplayNativeUnits = true;
+		if(!isDisplayNativeUnits) {
+			actualPosition =  NativeUnitsToInches(_actualPositionNU);
+			actualVelocity = 10 * _actualVelocityNU_100mS / NATIVE_UNITS_PER_INCH_CONVERSION;
+			actualAcceleration = 1000 * 10 * (_actualAccelerationNU_100mS_mS / NATIVE_UNITS_PER_INCH_CONVERSION);
+		} else {
+			actualPosition = _actualPositionNU;
+			actualVelocity = _actualVelocityNU_100mS;
+			actualAcceleration = _actualAccelerationNU_100mS_mS;			
+		}
+				
+		SmartDashboard.putNumber("Elevator:Current", _elevatorMotor.getOutputCurrent());
+		SmartDashboard.putNumber("Elevator:VoltageActual", _elevatorMotor.getMotorOutputVoltage());
+		
+		SmartDashboard.putNumber("Elevator:Position", actualPosition);
+		SmartDashboard.putNumber("Elevator:Position(in)", GeneralUtilities.roundDouble((NativeUnitsToInches(get_actualPositionNU())),2));
+		SmartDashboard.putNumber("Elevator:Velocity", GeneralUtilities.roundDouble(actualVelocity, 2));
+		SmartDashboard.putNumber("Elevator:Acceleration", GeneralUtilities.roundDouble(actualAcceleration, 2));
+
+		SmartDashboard.putNumber("Elevator:TargetPosition",_targetElevatorPositionNU);
+		SmartDashboard.putBoolean("Elevator:IsInPosition", get_isAtTargetPosition());
+		SmartDashboard.putString("Elevator:State", "N/A in 2019");
+		SmartDashboard.putNumber("Elevator:Scale Bump", get_elevatorScaleHeightBumpInches());
+		SmartDashboard.putBoolean("Elevator: SmallBump?", get_isClimbBumpValueEnabled());
+	}
 }
