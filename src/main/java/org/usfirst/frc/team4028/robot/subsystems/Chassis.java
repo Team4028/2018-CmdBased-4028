@@ -319,7 +319,13 @@ public class Chassis extends Subsystem
             _pathFollower.forceFinish();
         else
             System.out.println("Robot is not in path following mode");
-    }
+	}
+	public synchronized double getRemainingPathDistance() {
+		if (_pathFollower != null) {
+			return _pathFollower.remainingPathLength();
+		} 
+		return 0;
+	}
 
 
 
