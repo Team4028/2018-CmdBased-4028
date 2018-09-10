@@ -19,7 +19,6 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 
-import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths;
 import org.usfirst.frc.team4028.robot.commands.Elevator_ZeroElevator;
 import org.usfirst.frc.team4028.robot.commands.Infeed_ZeroInfeedArms;
@@ -51,7 +50,7 @@ public class Robot extends TimedRobot
 	private Infeed _infeed = Infeed.getInstance();
 
 
-	private AutonExecuter _autonExecuter = null;
+
 	
 	// class level working variables
 	private DataLogger _dataLogger = null;
@@ -93,19 +92,7 @@ public class Robot extends TimedRobot
 		_chassis.stop();
 		_dashboard.getSelectedAuton().start();
 		Scheduler.getInstance().run();
-		//m_autonomousCommand = m_chooser.getSelected();
 
-		/*
-		 * String autoSelected = SmartDashboard.getString("Auto Selector",
-		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-		 * = new MyAutoCommand(); break; case "Default Auto": default:
-		 * autonomousCommand = new ExampleCommand(); break; }
-		 */
-
-		// schedule the autonomous command (example)
-		//if (m_autonomousCommand != null) {
-		//	m_autonomousCommand.start();
-		//}
 		
 		if (!_infeed.get_hasArmsBeenZeroed()) {
 			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();
@@ -145,13 +132,8 @@ public class Robot extends TimedRobot
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
-		//if (m_autonomousCommand != null) {
-		//	m_autonomousCommand.cancel();
-		//}
-		if (!(_autonExecuter == null))
-		{
-			_autonExecuter = null;
-		}
+
+
 		
 		if (!_infeed.get_hasArmsBeenZeroed()) {
 			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();

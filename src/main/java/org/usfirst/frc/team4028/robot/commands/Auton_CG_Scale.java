@@ -56,9 +56,9 @@ public class Auton_CG_Scale extends CommandGroup
 
 
         addParallel(new Auton_RunMotionProfileAction(toScale));
-        addSequential(new WaitCommand(elevatorWaitTime));
+            addSequential(new WaitCommand(elevatorWaitTime));
         addParallel(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SCALE_HEIGHT));
-        addSequential(new Carriage_ToggleFlapSolenoid(actuateFlapJack));
+            addSequential(new Carriage_ToggleFlapSolenoid(actuateFlapJack));
         addSequential(new Auton_WaitUntilRemaingDistance(remainingPathDistance));
         addSequential(new CG_OutfeedCube());
         addSequential(new Chassis_DriveSetDistanceAction(-10));
