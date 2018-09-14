@@ -21,6 +21,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -142,6 +143,8 @@ public class Chassis extends Subsystem
 				return;
 		}
 	}
+
+
 
 	
 	/* ===== Chassis State: PERCENT VBUS ===== */
@@ -275,6 +278,13 @@ public class Chassis extends Subsystem
 	//====================================================================================
 	// PATH FOLLOWING
 	//===================================================================================
+
+	public double _autonStartTime;
+
+
+	public void recordAutonStartTime(){
+		_autonStartTime = Timer.getFPGATimestamp();
+	}
 
 	public synchronized void setWantDrivePath(Path path, boolean reversed) {
         if (_currentPath != path || _chassisState != ChassisState.FOLLOW_PATH) {

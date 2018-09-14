@@ -7,6 +7,7 @@
 
 package org.usfirst.frc.team4028.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 // #region Import Statements
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -93,7 +94,20 @@ public class Robot extends TimedRobot
 		_dashboard.getSelectedAuton().start();
 		Scheduler.getInstance().run();
 
+		_chassis.recordAutonStartTime();
+
+		int retries = 100;
 		
+		while(!_dashboard.isGameDataReceived() && retries > 0) {
+			retries--;
+			try { 
+				Thread.sleep(5);
+			} catch (InterruptedException ie) {}
+		}
+		
+		if (retries == 0) {
+			DriverStation.reportError("Failed To Receive Game Data", false);
+		}
 		if (!_infeed.get_hasArmsBeenZeroed()) {
 			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();
 			reZeroInfeedArmsCommand.start();
