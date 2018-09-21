@@ -69,7 +69,7 @@ public class Chassis extends Subsystem
     private static final int[] MOTION_MAGIC_TURN_VEL_ACC = {80 * 150, 170 * 150};
 	private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 170 * 150};
 	
-	ChassisState _chassisState;
+	ChassisState _chassisState = ChassisState.UNKNOWN;
 	Path _currentPath;
 	PathFollower _pathFollower;
 	double _leftEncoderPrevDistance, _rightEncoderPrevDistance = 0;
@@ -278,6 +278,20 @@ public class Chassis extends Subsystem
 	//====================================================================================
 	// PATH FOLLOWING
 	//===================================================================================
+
+	public void zeroEncoders(){
+		_leftMaster.getSensorCollection().setQuadraturePosition(0, 10);
+		_rightMaster.getSensorCollection().setQuadraturePosition(0, 10);
+	}
+
+	public void zeroGyro(){
+		_navX.zeroYaw();
+	}
+
+	public void zeroSensors(){
+		zeroEncoders();
+		zeroGyro();
+	}
 
 	public double _autonStartTime;
 

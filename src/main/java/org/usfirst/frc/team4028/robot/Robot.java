@@ -49,6 +49,7 @@ public class Robot extends TimedRobot
 	private Climber _climber = Climber.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
+	private static OI _oi;
 
 
 
@@ -68,6 +69,7 @@ public class Robot extends TimedRobot
 	{
 		Paths.buildPaths();
 		_buildMsg = GeneralUtilities.WriteBuildInfoToDashboard(ROBOT_NAME);
+		_oi = OI.getInstance();
 	}
 
 	/**
@@ -95,6 +97,7 @@ public class Robot extends TimedRobot
 		Scheduler.getInstance().run();
 
 		_chassis.recordAutonStartTime();
+		_chassis.zeroSensors();
 
 		int retries = 100;
 		
@@ -129,6 +132,7 @@ public class Robot extends TimedRobot
 	{
 		Scheduler.getInstance().run();
 		_chassis.updateChassis(Timer.getFPGATimestamp());
+		System.out.println(_chassis.isDoneWithPath());
 		
 		// ============= Refresh Dashboard =============
 		_dashboard.outputToDashboard();

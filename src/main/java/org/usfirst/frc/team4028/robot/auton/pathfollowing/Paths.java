@@ -166,9 +166,9 @@ public class Paths {
 		
 		rSwitchPath = buildPathFromWaypoints(0.0030, Arrays.asList(
 						new Waypoint(20,166,0,0),
-						new Waypoint(50,166,25,60),
-						new Waypoint(90,217,30,60),
-						new Waypoint(128,217,0,60)));
+						new Waypoint(50,166,25,80),
+						new Waypoint(90,217,30,80),
+						new Waypoint(128,217,0,80)));
 		centerPaths.put(Center.R_SWITCH, rSwitchPath);
 		
 		// Second Cube

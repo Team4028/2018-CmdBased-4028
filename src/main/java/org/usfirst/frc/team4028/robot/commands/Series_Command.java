@@ -10,56 +10,19 @@ import java.util.List;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
 //#endregion
+import edu.wpi.first.wpilibj.command.CommandGroup;
 
 /**
  * This command implements support for toggling the position of the Climber Servo
  */
 
-public class Series_Command extends Command
+public class Series_Command extends CommandGroup
 {
-    private Command _curCommand;
-    private final ArrayList<Command> _remainingCommands;
-    
     public Series_Command(List<Command> commands) {
-		_remainingCommands = new ArrayList<>(commands.size());
 		for (Command command : commands) {
-			_remainingCommands.add(command);
-			_curCommand = null; }
+            addSequential(command);
+         }
 		}
-
-    protected void initialize() {    
-               
-
-    }
-
-    
-    protected void execute() {
-        if (_curCommand == null) {
-            if (_remainingCommands.isEmpty()) {
-                return;
-            }
-            _curCommand = _remainingCommands.remove(0);
-            _curCommand.start();
-        }
-        //_curCommand.execute();
-        if (_curCommand.isCompleted())
-         {
-            _curCommand.cancel();
-            _curCommand = null;
-        }
-    }   
-
-    protected boolean isFinished() {
-        return _remainingCommands.isEmpty() && _curCommand == null;
-
-    }
-
-    protected void end() {
-    }
-
-    protected void interrupted() {
-    }
-
 
 }
 

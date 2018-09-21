@@ -7,6 +7,7 @@ import java.util.Date;
 
 
 import org.usfirst.frc.team4028.robot.commands.Auton_CG_BaseLine;
+import org.usfirst.frc.team4028.robot.commands.Auton_CG_Switch;
 import org.usfirst.frc.team4028.robot.commands.Auton_DoNothing;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -116,9 +117,9 @@ public class Dashboard {
 				return new Auton_DoNothing();
 			case AUTO_RUN:
 				return new Auton_CG_BaseLine();
-			/*case SWITCH:
-				return new Switch(_isSwitchLeft);
-			case DOUBLE_SWITCH:
+			case SWITCH:
+				return new Auton_CG_Switch(_isSwitchLeft);
+			/*case DOUBLE_SWITCH:
 				return new DoubleSwitch(_isSwitchLeft);
 			case SCALE:
 				return new Scale(_isScaleLeft, _isStartingLeft);

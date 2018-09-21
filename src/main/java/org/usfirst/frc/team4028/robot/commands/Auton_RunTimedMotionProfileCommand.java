@@ -39,10 +39,12 @@ public class Auton_RunTimedMotionProfileCommand extends Command
     }
     @Override
     protected boolean isFinished() {
-        return (_chassis.isDoneWithPath() || this.timeSinceInitialized() >= _maxTime);
+        System.out.println("Does the bloody Motion Profile Comand know how freaking lucky it is?");
+        return (_chassis.isDoneWithPath() || Timer.getFPGATimestamp()-_startTime>=_maxTime);
     }
     @Override
     protected void end() {
+        System.out.println("WE made it");
         _chassis.stop();
     }
 
