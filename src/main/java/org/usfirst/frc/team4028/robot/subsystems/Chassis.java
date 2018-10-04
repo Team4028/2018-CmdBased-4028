@@ -333,7 +333,7 @@ public class Chassis extends Subsystem
         if (_chassisState == ChassisState.FOLLOW_PATH && _pathFollower != null)
             return _pathFollower.isFinished();
         else
-            System.out.println("Robot is not in path following mode");
+           // System.out.println("Robot is not in path following mode");
             return true;
     }
 
@@ -341,8 +341,9 @@ public class Chassis extends Subsystem
     public synchronized void forceDoneWithPath() {
         if (_chassisState == ChassisState.FOLLOW_PATH && _pathFollower != null)
             _pathFollower.forceFinish();
-        else
-            System.out.println("Robot is not in path following mode");
+		else{}
+		
+           // System.out.println("Robot is not in path following mode");
 	}
 	public synchronized double getRemainingPathDistance() {
 		if (_pathFollower != null) {

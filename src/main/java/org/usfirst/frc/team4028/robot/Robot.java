@@ -132,7 +132,7 @@ public class Robot extends TimedRobot
 	{
 		Scheduler.getInstance().run();
 		_chassis.updateChassis(Timer.getFPGATimestamp());
-		System.out.println(_chassis.isDoneWithPath());
+		// System.out.println(_chassis.isDoneWithPath());
 		
 		// ============= Refresh Dashboard =============
 		_dashboard.outputToDashboard();

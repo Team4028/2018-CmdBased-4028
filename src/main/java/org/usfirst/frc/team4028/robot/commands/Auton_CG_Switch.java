@@ -10,6 +10,7 @@ import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITI
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.PrintCommand;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 
 
@@ -48,6 +49,11 @@ public class Auton_CG_Switch extends CommandGroup {
         */
 
         addSequential(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SWITCH_HEIGHT));
+        addSequential(new PrintCommand("It Thought Wrong"));
+        addSequential(new PrintCommand("It Thought Wrong"));
+        addSequential(new PrintCommand("It Thought Wrong"));
+        addSequential(new PrintCommand("It Thought Wrong"));
+        addSequential(new PrintCommand("It Thought Wrong"));
         
         
 	}
