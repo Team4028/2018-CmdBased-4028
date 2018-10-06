@@ -36,7 +36,8 @@ public class Elevator_MoveElevatorToPresetPosition extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        if (Elevator.getInstance().get_isAtTargetPosition() && System.currentTimeMillis() - _startTime > 100 ){
+        if (Elevator.getInstance().get_isAtTargetPosition())
+        {
             System.out.println("AAHHHHHHHHHHHHHHHHH");
             System.out.println("AAHHHHHHHHHHHHHHHHH");
             System.out.println("AAHHHHHHHHHHHHHHHHH");
@@ -45,8 +46,8 @@ public class Elevator_MoveElevatorToPresetPosition extends Command {
             System.out.println("AAHHHHHHHHHHHHHHHHH");
             System.out.println("AAHHHHHHHHHHHHHHHHH");
             _endTime = System.currentTimeMillis();
-            System.out.println(_endTime - _startTime); 
-            return Elevator.getInstance().get_isAtTargetPosition();
+            System.out.println("Second Call Start Minus Eend:  " + (_endTime - _startTime)); 
+            return true;
         }
         else{
             return false;

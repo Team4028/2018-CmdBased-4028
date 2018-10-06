@@ -1,24 +1,37 @@
-package org.usfirst.team4028.robot.auton.pathfollowing.util;
+package org.usfirst.frc.team4028.robot.auton.pathfollowing.util;
+/*
+
 
 import java.util.Enumeration;
 import java.util.Vector;
+
+import static java.util.Objects.requireNonNull;
+
+import java.util.Enumeration;
+import java.util.Vector;
+
+import org.omg.PortableServer.ImplicitActivationPolicyOperations;
+
+import edu.wpi.first.wpilibj.command.Command;
+
 import static java.util.Objects.requireNonNull;
 
 
 
-public class CommandGroup extends Command {
+public class NormalCG extends Command {
 
   private final Vector<Entry> m_commands = new Vector<>();
 
   final Vector<Entry> m_children = new Vector<>();
 
   private int m_currentCommandIndex = -1;
+  
 
 
-  public CommandGroup() {
+  public NormalCG() {
   }
 
-  public CommandGroup(String name) {
+  public NormalCG(String name) {
     super(name);
   }
 
@@ -296,3 +309,5 @@ public class CommandGroup extends Command {
     }
   }
 }
+
+*/

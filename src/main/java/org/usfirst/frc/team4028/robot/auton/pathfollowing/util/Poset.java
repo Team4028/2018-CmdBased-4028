@@ -1,37 +1,35 @@
 package org.usfirst.frc.team4028.robot.auton.pathfollowing.util;
 
-import java.util.Array;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.arrays.fill;
+import java.util.*;
+
 
 public class Poset {
     int numVertices = 0;
-    List<node> nodesList = new ArrayList<nodes>();
-    List<edge> edgesList = new ArrayList<edges>();
+    static List<node> nodesList = new ArrayList<node>();
+    static List<edge> edgesList = new ArrayList<edge>();
 
     public Poset(int vertNum){
         numVertices = vertNum;
-        for (int i = 0; i< vertNum, i++){
+        for (int i = 0; i< vertNum; i++){
             nodesList.add(new node(i));
         }
     }
 
     public void addVertex(){
         numVertices++;
-        nodesList.add(new Node(numVertices-1));
+        nodesList.add(new node(numVertices-1));
     }
 
     public void removeVertex(node N){
         numVertices--;
         for (node c: N.getChildren()){
-            for (node p: N.getParents){
-                removeEdge(N, c);
-                removeEdge(p, N);
+            for (node p: N.getParents()){
+                removeEdge(new edge(N, c));
+                removeEdge(new edge(p, N));
                 addEdge(p, c);
             }
         }
-        for (ind = N.getIdentifier+1; ind<numVertices; ind++){
+        for (int ind = N.getIdentifier()+1; ind<numVertices; ind++){
             getNode(ind).changeIdentifier(getNode(ind).getIdentifier() -1);
         }
         nodesList.remove(N.getIdentifier());
@@ -41,7 +39,7 @@ public class Poset {
     }
 
     public void removeEdge(edge e){
-        edgesList.remove(e.getIndexInEdgesList);
+        edgesList.remove(e.getPosInEdgesList());
     }
 
     public void addEdge(node nf, node n2){
@@ -53,14 +51,14 @@ public class Poset {
         try {
             return nodesList.get(nodeNum);
         } catch(Exception e){
-            System.out.println("Error: Called Node Does Not Exist")
+            System.out.println("Error: Called Node Does Not Exist");
             return null;
         }
     }
 
     public boolean queryEdgeExistence(node maybeFrom, node maybeTo){
         for (edge e: edgesList){
-            if (e.getIdentifiers() == new int[] {maybeFrom.getIdentifier, maybeTo.getFromIdentifier}){
+            if (e.getIdentifiers() == new int[] {maybeFrom.getIdentifier(), maybeTo.getIdentifier()}){
                 return true;
             }
         }
@@ -69,53 +67,54 @@ public class Poset {
 
     public int[][] getSkewSymmetricLinearForm(){
         int[][] skewSymmetricLinearForm = new int[numVertices][numVertices];
-        for (i=0; i<numVertices; i++){
-            for (j=0; j<numVertices, j++){
-                if (queryEdgeExistence(nodesList[i], nodesList[j])){
+        for (int i=0; i<numVertices; i++){
+            for (int j=0; j<numVertices; j++){
+                if (queryEdgeExistence(nodesList.get(i), nodesList.get(j))){
                     skewSymmetricLinearForm[i][j] = 1;
-                } else if (queryEdgeExistence(nodesList[j], nodesList[i])) {
+                } else if (queryEdgeExistence(nodesList.get(j), nodesList.get(i))) {
                     skewSymmetricLinearForm[i][j]=-1;
                 } else {
                     skewSymmetricLinearForm[i][j] = 0;
                 }
             }
         }
+        return skewSymmetricLinearForm;
     }
 
 
 
     public static class node {
-        int identifer;
+        int identifier;
         public node(int identifyingNum){
-            identier = identifyingNum;
+            identifier = identifyingNum;
         }
 
         public void changeIdentifier(int newIdentifier){
-            identifer = newIdentifier;
+            identifier = newIdentifier;
         }
 
         public List<node> getParents(){
             List<node> parents = new ArrayList<node>();
 
             for (edge e : edgesList){
-                if (e.getToIdentifier() == identier){
+                if (e.getToIdentifier() == identifier){
                     parents.add(e.getFromNode());
                 }
             }
 
-            return parents
+            return parents;
         }
 
         public List<node> getChildren(){
             List<node> children = new ArrayList<node>();
 
             for (edge e : edgesList){
-                if (e.getFromIdentifier() == identifer ){
-                    parents.add(e.getToNode());
+                if (e.getFromIdentifier() == identifier ){
+                    children.add(e.getToNode());
                 }
             }
 
-            return parents;
+            return children;
         }
 
         public int getIdentifier(){
@@ -134,12 +133,12 @@ public class Poset {
             fromNode = from;
             toNode = to;
             fromNodeIdentifier = fromNode.getIdentifier();
-            toNodeIdentifier - toNode.getIdentifier();
+            toNodeIdentifier = toNode.getIdentifier();
         }
 
         public void update(){
             fromNodeIdentifier = fromNode.getIdentifier();
-            toNodeIdentifier - toNode.getIdentifier();
+            toNodeIdentifier = toNode.getIdentifier();
         }
 
         public int getFromIdentifier(){
@@ -156,26 +155,27 @@ public class Poset {
         } 
 
 
-        public int getFromNode(){
+        public node getFromNode() {
             return fromNode;
         }
 
-        public int getToNode(){
+        public node getToNode(){
             return toNode;
         }
 
-        public int[] getNodes(){
+        public node[] getNodes(){
             node[] ans = new node[] {fromNode, toNode};
             return ans;
         }
 
         public int getPosInEdgesList(){
-            guess = 0;
-            happy = false;
+            int guess = 0;
+            boolean happy = false;
             while (! happy){
-                happy = (edgesList.get(guess).getIdentifiers == new int[] {fromNodeIdentifier, toNodeIdentifier});
+                happy = (edgesList.get(guess).getIdentifiers() == new int[] {fromNodeIdentifier, toNodeIdentifier});
+                guess++;
             }
-            return guess -1
+            return guess-1;
         }
     }
 

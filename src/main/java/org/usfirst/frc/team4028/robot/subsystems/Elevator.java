@@ -281,7 +281,6 @@ public class Elevator extends Subsystem
 			}
 		}
 		_elevatorMotor.set(ControlMode.MotionMagic, _targetElevatorPositionNU);
-		System.out.println(_elevatorPositionOffsetNU);
 	}
 		
 	private void SetPidSlotToUse(String ref, int pidSlot) {
@@ -336,6 +335,9 @@ public class Elevator extends Subsystem
 	// ===============================================================================================================
 	private boolean get_isAtTargetPosition(int targetPosition) {
 		int currentError = Math.abs(_elevatorMotor.getSelectedSensorPosition(0) - targetPosition);
+		//System.out.println("Current Error:  " + Integer.toString(currentError));
+		//System.out.println("Current Sensor Pos in NU:   " + _elevatorMotor.getSelectedSensorPosition(0));
+		//System.out.println("Current Target Position in NU:   "+ targetPosition);
         if (currentError <= ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) {
             return true;
         } else {

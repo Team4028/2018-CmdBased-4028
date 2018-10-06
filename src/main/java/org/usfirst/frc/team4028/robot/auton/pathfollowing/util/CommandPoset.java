@@ -1,94 +1,94 @@
 package org.usfirst.frc.team4028.robot.auton.pathfollowing.util;
 
-import java.util.Array;
-import java.util.ArrayList;
-import java.util.Arrays.fill;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
+
+/*
 import edu.wpi.first.wpilibj.command.Command;
-import java.util.Enum;
-import org.usfirst.frc.team4028.robot.auton.pathfollowing.util;
 
 public class CommandPoset extends Command {
 
-    Enum addedType {SEQUENTIAL, PARALLEL}
+    enum addedType 
+    {
+        SEQUENTIAL, 
+        PARALLEL
+    }
     private int numCommands; //This is the total number of commands in the commandGroup
     private Command[] commandsVector; //This contains all of the commands in the commandGroup, each command being identifiable by its index here
     private int[] statesVector; //-1 for yet to run, 0 for running, 1 for finished
     private int[] prevStatesVector = null;
-    private List<int> yetToRunIndices;
-    private List<int> runningIndices;
-    private List<int> haveRanIndices;
+    private List<Integer> yetToRunIndices;
+    private List<Integer> runningIndices;
+    private List<Integer> haveRanIndices;
     private int[][] dependencyMatrix; //This is a skew-symmetric Matrix w/ [i][j] being 1 if i requires j finishes, -1 if j requires i finishes, and 0 if they do not require each other
     private double[] timeoutVector; //This is a vector of Timeouts, each being -1 in the abscence of a timeout
     private List<Adder> addedVector = new ArrayList<Adder>();
 
-    public CommandGroup() {
+    public CommandPoset() {
     }
   
-    public CommandGroup(String name) {
+    public CommandPoset(String name) {
       super(name);
     }
 
   
     public final synchronized void addSequential(Command cmd){
-        validate("Can not add new command to command group");
-        addedVector.add(new Adder(cmd, -1, addedType.SERIES));
+        // Command.validate("Can not add new command to command group");
+        addedVector.add(new Adder(cmd, -1, addedType.SEQUENTIAL));
     }
 
     public final synchronized void addSequential(Command cmd, double timeout){
-        validate("Can not add new command to command group");
-        addedVector.add(new Adder(cmd, timeout, addedType.SERIES));
+        // validate("Can not add new command to command group");
+        addedVector.add(new Adder(cmd, timeout, addedType.SEQUENTIAL));
     }
 
     public final synchronized void addParallel(Command cmd){
-        validate("Can not add new command to command group");
+        // validate("Can not add new command to command group");
         addedVector.add(new Adder(cmd, -1, addedType.PARALLEL));
     }
 
     public final synchronized void addParallel(Command cmd, double timeout){
-        validate("Can not add new command to command group");
+        // validate("Can not add new command to command group");
         addedVector.add(new Adder(cmd, timeout, addedType.PARALLEL));
     }
 
-    public void addEdgesFromSeqsAndPars(Poset poset, List<int> sequentialIndices, List<int> parallelIndices){
+    public void addEdgesFromSeqsAndPars(Poset poset, List<Integer> sequentialIndices, List<Integer> parallelIndices){
         int num = sequentialIndices.size() + parallelIndices.size();
-        List<int> chunksList = new ArrayList<int>;
+        List<Integer> chunksList = new ArrayList<Integer>();
         int prevSeq = -1 ;
-        for (count = 0; count<num; count++){
-            if (seqIndices.contains(count)){
-                chunksList.append(count - prevSeq);
+        for (int count = 0; count<num; count++){
+            if (sequentialIndices.contains(count)){
+                chunksList.add(count - prevSeq);
             }
         }
         int chunksNum = chunksList.size();
         for (int chunkCount = 0; chunkCount<chunksNum -1; chunkCount++){
-            for (prevChunkIndexer = 0; prevChunkIndexer < chunksList(chunkCount); prevChunkIndexer++){
-                for (newChunkIndexer = 0; prevChunkIndexer < chunksList(chunkCount+1); prevChunkIndexer++){
-                    poset.addEdge(poset.getNode(sumList(chunksList, 0, i-1)+newChunkIndexer), poset.getNode(sumList(chunksList, 0, i-2)+prevChunkIndexer));
+            for (int prevChunkIndexer = 0; prevChunkIndexer < chunksList.get(chunkCount); prevChunkIndexer++){
+                for (int newChunkIndexer = 0; prevChunkIndexer < chunksList.get(chunkCount+1); prevChunkIndexer++){
+                    poset.addEdge(poset.getNode(sumList(chunksList, 0, chunkCount-1)+newChunkIndexer), poset.getNode(sumList(chunksList, 0, chunkCount-2)+prevChunkIndexer));
                 }
             }
         }
     }
 
-    public int sumList(List<int> listo, int start, int stop){
-        tot = 0;
-        for (ind=start; ind<=stop; ind++){
-            tot+listo.get(ind);
+    public int sumList(List<Integer> listo, int start, int stop){
+        int tot = 0;
+        for (int ind=start; ind<=stop; ind++){
+            tot+=listo.get(ind);
         }
-        return tot
+        return tot;
     }
 
     //add implementation
     public final void generateInfoFromAddedVector(){
         numCommands = addedVector.size();
         commandsVector = new Command[numCommands];
-        statesVector = new Command[numCommands];
-        prevStatesVector = new Command[numCommands];
+        statesVector = new int[numCommands];
+        prevStatesVector = new int[numCommands];
         dependencyMatrix = new int[numCommands][numCommands];
         timeoutVector = new double[numCommands];
         Poset _poset = new Poset(numCommands);
-        List<int> seqIndices = new ArrayList<int>;
-        List<int> parIndices = new ArrayList<int>;
+        List<Integer> seqIndices = new ArrayList<Integer>();
+        List<Integer> parIndices = new ArrayList<Integer>();
         for (int ind = 1; ind< numCommands; ind++ ){
             prevStatesVector[ind] = -2;
             statesVector[ind] = -1;
@@ -96,9 +96,9 @@ public class CommandPoset extends Command {
             timeoutVector[ind] = addedVector.get(ind).getTimeOut();
             addedType type = addedVector.get(ind).getType();
             switch (type){
-                CASE SEQUENTIAL:
+                case SEQUENTIAL:
                     seqIndices.add(ind);
-                CASE PARALLEL:
+                case PARALLEL:
                     parIndices.add(ind);
             }
         }
@@ -123,7 +123,7 @@ public class CommandPoset extends Command {
     }
 
     public boolean goodToRun(int commandIndex){
-        for (int otherInd = 0; otherInd < numCommands, otherInd++){
+        for (int otherInd = 0; otherInd < numCommands; otherInd++){
             if (dependencyMatrix[commandIndex][otherInd] == 1 && statesVector[otherInd] != 1){
                 return false;
             }
@@ -132,7 +132,7 @@ public class CommandPoset extends Command {
     }
 
     public boolean statesVectorChangedQ(){
-        ans = (prevStatesVector == statesVector);
+        boolean ans = (prevStatesVector == statesVector);
         prevStatesVector = statesVector;
         return ans;
     }
@@ -141,7 +141,7 @@ public class CommandPoset extends Command {
         if (timeoutVector[commandIndex] == -1){
             return false;
         } else {
-            time = commandsVector[commandIndex].timeSinceIntialized();
+            double time = commandsVector[commandIndex].timeSinceIntialized();
             return !(time == 0 || time<timeoutVector[commandIndex]);
         }
     }
@@ -193,7 +193,7 @@ public class CommandPoset extends Command {
             commandsVector[cmdInd]._cancel();
         }
         for (int i = 0; i< numCommands; i++){
-            statesVector[i]=1
+            statesVector[i]=1;
         }
     }
 
@@ -234,22 +234,28 @@ public class CommandPoset extends Command {
   public synchronized boolean isInterruptible(){
     if (!super.isInterruptible()) {
         return false;
-    } 
+    } else{
+        for (int ind = 0; ind<numCommands; ind++){
+            if (! commandsVector[ind].isInterruptible()){
+                return false;
+            } 
 
-    for (int ind = 0; ind<numCommands; ind++){
-        if (! commandsVector[ind].isInterruptible()){
-            return false
-        }
-    
-    return true;
+        return true;
+
+
     }
+}
+
+    
+
     
         
   }
-    public static class Adder {
+        final class Adder {
         private final Command _command;
         private final double _timeout;
         private final addedType _type;
+
 
     
         public Adder(Command command, double timeOut, addedType type) {
@@ -274,3 +280,5 @@ public class CommandPoset extends Command {
         
 
 }
+
+*/

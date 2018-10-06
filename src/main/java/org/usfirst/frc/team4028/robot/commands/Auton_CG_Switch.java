@@ -21,24 +21,32 @@ public class Auton_CG_Switch extends CommandGroup {
 	double elevatorWaitTime;
 	
 	public Auton_CG_Switch(boolean isSwitchLeft) {
-        /*
+        
 		if (isSwitchLeft) 
 			toSwitch = Paths.getPath(Center.L_SWITCH);
 		else
 			toSwitch = Paths.getPath(Center.R_SWITCH);
 
         elevatorWaitTime = 1.0;
-
+        addParallel(new Auton_ParallelStarter());
         addSequential(new Simultaneous_Command(Arrays.asList(new Command[] {
-            new Auton_RunTimedMotionProfileCommand(toSwitch, 3.0),
+                new PrintCommand(Double.toString(timeSinceInitialized())),
+                new Auton_RunTimedMotionProfileCommand(toSwitch, 3.0),
            
-            new Series_Command(Arrays.asList(new Command[] {
+                new Series_Command(Arrays.asList(new Command[] {
+                    new PrintCommand("Series Command Started"),
+                    new PrintCommand(Double.toString(timeSinceInitialized())),
+                    new PrintCommand("Preparing to Start Wait Command"),
                     new WaitCommand(elevatorWaitTime),
-                    new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SWITCH_HEIGHT)
-            }))
-        })));
+                    new PrintCommand("Wait Command Terminated"),
+                    new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SWITCH_HEIGHT),
+                    new PrintCommand("Elevator Command Terminated"),
+                 })),
+                        })));
         // addSequential( new PrintCommand("YIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEEYIPEE"));
         // Outfeed cube for 0.2s
+
+        System.out.println("Preparing to Outfeed Cube");
         addSequential(new CG_OutfeedCube(), 1);
         addSequential(new PrintTimeFromStart());
         // Move Elevator back to floor
@@ -46,15 +54,15 @@ public class Auton_CG_Switch extends CommandGroup {
                 new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.INFEED_HEIGHT),
                 new Chassis_DriveSetDistanceAction(-20.0)
         })));
-        */
-
-        addSequential(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SWITCH_HEIGHT));
-        addSequential(new PrintCommand("It Thought Wrong"));
-        addSequential(new PrintCommand("It Thought Wrong"));
-        addSequential(new PrintCommand("It Thought Wrong"));
-        addSequential(new PrintCommand("It Thought Wrong"));
-        addSequential(new PrintCommand("It Thought Wrong"));
         
+        /*
+        addParallel(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SWITCH_HEIGHT));
+        addSequential(new PrintCommand("It Thought Wrong"));
+        addSequential(new PrintCommand("It Thought Wrong"));
+        addSequential(new PrintCommand("It Thought Wrong"));
+        addSequential(new PrintCommand("It Thought Wrong"));
+        addSequential(new PrintCommand("It Thought Wrong"));
+        */
         
 	}
 	
