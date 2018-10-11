@@ -1,11 +1,6 @@
 package org.usfirst.frc.team4028.robot;
 
 // #region
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.Date;
-
-import org.usfirst.frc.team4028.robot.auton.baseclasses.AutonBase;
 import org.usfirst.frc.team4028.robot.commands.Auton_CG_BaseLine;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -188,8 +183,7 @@ public class Dashboard {
 		//return null;
 	}
 	
-	public void outputToDashboard()
-	{
+	public void outputToDashboard() {
 		SmartDashboard.putString("AUTON SELECTED", _autonModeChooser.getSelected().toString());
 		// 	    	SmartDashboard.putString("FMS Debug Msg", _fmsDebugMsg);
 	}

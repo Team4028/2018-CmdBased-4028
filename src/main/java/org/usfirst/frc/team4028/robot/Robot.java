@@ -56,7 +56,7 @@ public class Robot extends TimedRobot
 	// class level working variables
 	private DataLogger _dataLogger = null;
 	private String _buildMsg = "?";
- 	long _lastScanEndTimeInMSec;
+ 	long _lastScanEndTimeInMSec = 0;
  	long _lastDashboardWriteTimeMSec;
  	MovingAverage _scanTimeSamples;
  	
@@ -176,7 +176,7 @@ public class Robot extends TimedRobot
 		Scheduler.getInstance().run();
 		
 		// ============= Refresh Dashboard =============
-		_dashboard.outputToDashboard();
+		outputAllToDashboard();
 		
 		// ============= Optionally Log Data =============
 		logAllData();
@@ -195,7 +195,7 @@ public class Robot extends TimedRobot
 		// limit spamming
     	long scanCycleDeltaInMSecs = new Date().getTime() - _lastScanEndTimeInMSec;
     	// add scan time sample to calc scan time rolling average
-    	_scanTimeSamples.add(new BigDecimal(scanCycleDeltaInMSecs));
+    	//_scanTimeSamples.add(new BigDecimal(scanCycleDeltaInMSecs));
     	
     	if((new Date().getTime() - _lastDashboardWriteTimeMSec) > 100) {
     		// each subsystem should add a call to a outputToSmartDashboard method
@@ -210,9 +210,9 @@ public class Robot extends TimedRobot
     		// write the overall robot dashboard info
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
 	    	
-	    	BigDecimal movingAvg = _scanTimeSamples.getAverage();
+	    	//BigDecimal movingAvg = _scanTimeSamples.getAverage();
 	    	DecimalFormat df = new DecimalFormat("####");
-	    	SmartDashboard.putString("Scan Time (2 sec roll avg)", df.format(movingAvg) + " mSec");
+	    	//SmartDashboard.putString("Scan Time (2 sec roll avg)", df.format(movingAvg) + " mSec");
     		// snapshot last time
     		_lastDashboardWriteTimeMSec = new Date().getTime();
     	}

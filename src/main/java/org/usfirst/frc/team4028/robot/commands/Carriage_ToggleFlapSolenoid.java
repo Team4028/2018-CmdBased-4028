@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.commands;
+ package org.usfirst.frc.team4028.robot.commands;
 
 //#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.subsystems.Carriage;
@@ -24,7 +24,7 @@ public class Carriage_ToggleFlapSolenoid extends Command {
   }
 
   // Called repeatedly when this Command is scheduled to run
-  @Override
+  @Override  
   protected void execute() {
     if(_elevator.isFlapUpEnabledHeight()){
       if(_thumbstick.getY() > 0){
@@ -32,7 +32,7 @@ public class Carriage_ToggleFlapSolenoid extends Command {
       }
       else if(_thumbstick.getY() < 0){
         _carriage.tiltCarriageDown();
-      }
+      } 
     }
   }
 
