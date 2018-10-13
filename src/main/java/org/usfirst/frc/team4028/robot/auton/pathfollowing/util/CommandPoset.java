@@ -2,9 +2,10 @@ package org.usfirst.frc.team4028.robot.auton.pathfollowing.util;
 
 import java.util.*;
 
-/*
+
 import edu.wpi.first.wpilibj.command.Command;
 
+/*
 public class CommandPoset extends Command {
 
     enum addedType 
@@ -282,3 +283,5 @@ public class CommandPoset extends Command {
 }
 
 */
+
+

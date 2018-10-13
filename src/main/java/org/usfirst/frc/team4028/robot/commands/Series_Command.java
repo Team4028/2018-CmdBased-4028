@@ -55,11 +55,9 @@ public class Series_Command extends Command
 		for (Command command : commands) {
 			_remainingCommands.add(command);
 			_curCommand = null; }
-		}
+	}
 
     protected void initialize() {    
-               
-
     }
 
     

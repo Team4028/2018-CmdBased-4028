@@ -67,6 +67,7 @@ public class Robot extends TimedRobot
 	@Override
 	public void robotInit() 
 	{
+		_chassis.stop();
 		Paths.buildPaths();
 		_buildMsg = GeneralUtilities.WriteBuildInfoToDashboard(ROBOT_NAME);
 		_oi = OI.getInstance();

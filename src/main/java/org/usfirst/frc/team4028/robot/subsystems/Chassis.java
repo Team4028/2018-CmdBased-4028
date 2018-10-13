@@ -124,9 +124,9 @@ public class Chassis extends Subsystem
 				return;
 				
 			case DRIVE_SET_DISTANCE:
-				moveToTargetPosDriveSetDistance();
 				GeneralUtilities.setPIDFGains(_leftMaster, MOTION_MAGIC_STRAIGHT_PIDF_GAINS);
 				GeneralUtilities.setPIDFGains(_rightMaster, MOTION_MAGIC_STRAIGHT_PIDF_GAINS);
+				moveToTargetPosDriveSetDistance();
 				return;
 				
 			case FOLLOW_PATH:
@@ -208,21 +208,20 @@ public class Chassis extends Subsystem
 	
 	public void setMotionMagicCmdInches(double Distance)
 	{
+		_chassisState=ChassisState.DRIVE_SET_DISTANCE;
 		_leftMtrDriveSetDistanceCmd = _leftMaster.getSelectedSensorPosition(0)+ InchestoNU(Distance);
 		_rightMtrDriveSetDistanceCmd = _rightMaster.getSelectedSensorPosition(0)+InchestoNU(Distance);
+
+		System.out.println("Target Position: " + _leftMtrDriveSetDistanceCmd);
+		System.out.println("Current Position: " + _leftMaster.getSelectedSensorPosition(0));
 		setHighGear(false);
-		_leftMaster.config_kP(0, 0.15, 10);
-		_leftMaster.config_kI(0, 0, 10);
-		_leftMaster.config_kD(0, 1.5, 10);
-		_leftMaster.config_kF(0, 0.095, 10);
-		_rightMaster.config_kP(0, 0.15, 10);
-		_rightMaster.config_kI(0, 0, 10);
-		_rightMaster.config_kD(0, 1.5, 10);
-		_rightMaster.config_kF(0, 0.095, 10);
+
 		_leftMaster.configMotionCruiseVelocity(5000, 10);
 		_leftMaster.configMotionAcceleration(5500, 10);
 		_rightMaster.configMotionCruiseVelocity(5000, 10);
 		_rightMaster.configMotionAcceleration(5500, 10);
+		
+
 
 	}
 
@@ -330,11 +329,18 @@ public class Chassis extends Subsystem
 		}
 	}
 	public synchronized boolean isDoneWithPath() {
-        if (_chassisState == ChassisState.FOLLOW_PATH && _pathFollower != null)
-            return _pathFollower.isFinished();
-        else
+		if (_chassisState == ChassisState.FOLLOW_PATH && _pathFollower != null){
+			if (_pathFollower.isFinished()){
+				System.out.println("Chassis Done With Path");
+				return true;
+			}
+			else{
+				return false;
+			}
+		} else {
            // System.out.println("Robot is not in path following mode");
-            return true;
+			return true;
+		}
     }
 
     /** Path following e-stop */
