@@ -25,7 +25,7 @@ public class Auton_RunTimedMotionProfileCommand extends Command
     protected void initialize() {
         RobotState.getInstance().reset(Timer.getFPGATimestamp(), _path.getStartPose());
 		_chassis.setWantDrivePath(_path, _path.isReversed());
-		_chassis.setHighGear(true);
+		//_chassis.setHighGear(true);
 		_startTime = Timer.getFPGATimestamp();
     }
     @Override

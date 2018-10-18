@@ -8,6 +8,7 @@ import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths.Center;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITION;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -31,6 +32,7 @@ public class Auton_CG_Switch extends CommandGroup {
 			toSwitch = Paths.getPath(Center.R_SWITCH);
 
         elevatorWaitTime = 1.0;
+        addParallel(new Infeed_MoveInfeedArmsToPresetPosition(INFEED_ARM_TARGET_POSITION.STORE));
         addParallel(new Auton_ParallelStarter());
         addSequential(new Simultaneous_Command(Arrays.asList(new Command[] {
                 /*new PrintCommand("Time to Print Command: "+ Double.toString(timeSinceInitialized())),*/

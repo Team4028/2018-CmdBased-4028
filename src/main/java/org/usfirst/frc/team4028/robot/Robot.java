@@ -86,6 +86,7 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
+
 	}
 
 	/**
@@ -99,6 +100,7 @@ public class Robot extends TimedRobot
 
 		_chassis.recordAutonStartTime();
 		_chassis.zeroSensors();
+		_chassis.setHighGear(true);
 
 		int retries = 100;
 		

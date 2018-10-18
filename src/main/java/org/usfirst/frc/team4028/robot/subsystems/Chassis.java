@@ -216,10 +216,10 @@ public class Chassis extends Subsystem
 		System.out.println("Current Position: " + _leftMaster.getSelectedSensorPosition(0));
 		setHighGear(false);
 
-		_leftMaster.configMotionCruiseVelocity(5000, 10);
-		_leftMaster.configMotionAcceleration(5500, 10);
-		_rightMaster.configMotionCruiseVelocity(5000, 10);
-		_rightMaster.configMotionAcceleration(5500, 10);
+		_leftMaster.configMotionCruiseVelocity(31256, 10);
+		_leftMaster.configMotionAcceleration(62513, 10);
+		_rightMaster.configMotionCruiseVelocity(31256, 10);
+		_rightMaster.configMotionAcceleration(62513, 10);
 		
 
 
@@ -233,6 +233,7 @@ public class Chassis extends Subsystem
 	public void stop()
 	{
 		setLeftRightCommand(ControlMode.PercentOutput, 0, 0);
+		setHighGear(true);
 
 	}
 
@@ -492,4 +493,5 @@ public class Chassis extends Subsystem
 		SmartDashboard.putNumber("Chassis: Angle", GeneralUtilities.roundDouble(get_Heading(), 2));
 		SmartDashboard.putString("Chassis: Robot Pose", "N/A"); //RobotState.getInstance().getLatestFieldToVehicle().getValue().toString());
 	}
+
 }
