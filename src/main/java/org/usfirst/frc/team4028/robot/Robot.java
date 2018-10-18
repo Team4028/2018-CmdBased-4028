@@ -7,6 +7,7 @@
 
 package org.usfirst.frc.team4028.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 // #region Import Statements
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -19,7 +20,6 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 
-import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths;
 import org.usfirst.frc.team4028.robot.commands.Elevator_ZeroElevator;
 import org.usfirst.frc.team4028.robot.commands.Infeed_ZeroInfeedArms;
@@ -49,9 +49,10 @@ public class Robot extends TimedRobot
 	private Climber _climber = Climber.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
+	private static OI _oi;
 
 
-	private AutonExecuter _autonExecuter = null;
+
 	
 	// class level working variables
 	private DataLogger _dataLogger = null;
@@ -66,8 +67,10 @@ public class Robot extends TimedRobot
 	@Override
 	public void robotInit() 
 	{
+		_chassis.stop();
 		Paths.buildPaths();
 		_buildMsg = GeneralUtilities.WriteBuildInfoToDashboard(ROBOT_NAME);
+		_oi = OI.getInstance();
 	}
 
 	/**
@@ -83,6 +86,7 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
+
 	}
 
 	/**
@@ -93,20 +97,23 @@ public class Robot extends TimedRobot
 		_chassis.stop();
 		_dashboard.getSelectedAuton().start();
 		Scheduler.getInstance().run();
-		//m_autonomousCommand = m_chooser.getSelected();
 
-		/*
-		 * String autoSelected = SmartDashboard.getString("Auto Selector",
-		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-		 * = new MyAutoCommand(); break; case "Default Auto": default:
-		 * autonomousCommand = new ExampleCommand(); break; }
-		 */
+		_chassis.recordAutonStartTime();
+		_chassis.zeroSensors();
+		_chassis.setHighGear(true);
 
-		// schedule the autonomous command (example)
-		//if (m_autonomousCommand != null) {
-		//	m_autonomousCommand.start();
-		//}
+		int retries = 100;
 		
+		while(!_dashboard.isGameDataReceived() && retries > 0) {
+			retries--;
+			try { 
+				Thread.sleep(5);
+			} catch (InterruptedException ie) {}
+		}
+		
+		if (retries == 0) {
+			DriverStation.reportError("Failed To Receive Game Data", false);
+		}
 		if (!_infeed.get_hasArmsBeenZeroed()) {
 			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();
 			reZeroInfeedArmsCommand.start();
@@ -128,6 +135,7 @@ public class Robot extends TimedRobot
 	{
 		Scheduler.getInstance().run();
 		_chassis.updateChassis(Timer.getFPGATimestamp());
+		// System.out.println(_chassis.isDoneWithPath());
 		
 		// ============= Refresh Dashboard =============
 		_dashboard.outputToDashboard();
@@ -145,13 +153,8 @@ public class Robot extends TimedRobot
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
-		//if (m_autonomousCommand != null) {
-		//	m_autonomousCommand.cancel();
-		//}
-		if (!(_autonExecuter == null))
-		{
-			_autonExecuter = null;
-		}
+
+
 		
 		if (!_infeed.get_hasArmsBeenZeroed()) {
 			Command reZeroInfeedArmsCommand = new Infeed_ZeroInfeedArms();

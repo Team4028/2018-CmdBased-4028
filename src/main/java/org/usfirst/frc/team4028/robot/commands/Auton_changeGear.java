@@ -9,15 +9,17 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  * This command implements support for Shifting Gears on the Drive Chassis
  */
-public class Chassis_ShiftGear extends Command 
+public class Auton_changeGear extends Command 
 {
+    private boolean highGearQ;
 	
 	private Chassis _chassis = Chassis.getInstance();
 
-    public Chassis_ShiftGear() {
+    public Auton_changeGear(boolean isHighGear) {
         // Use requires() here to declare subsystem dependencies
         requires(Chassis.getInstance());
         setInterruptible(true);
+        highGearQ = isHighGear; 
     }
 
     // Called just before this Command runs the first time
@@ -27,7 +29,7 @@ public class Chassis_ShiftGear extends Command
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	_chassis.toggleShifter();
+        _chassis.setHighGear(highGearQ);
     }
 
     // Make this return true when this Command no longer needs to run execute()
