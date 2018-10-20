@@ -15,8 +15,9 @@ import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
-//#endregion
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//#endregion
+
 
 /**
  * This class defines the Elevator Subsystem, it is responsible for:

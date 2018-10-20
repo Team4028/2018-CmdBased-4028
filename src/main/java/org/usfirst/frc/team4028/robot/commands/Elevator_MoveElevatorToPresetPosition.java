@@ -10,11 +10,12 @@ import edu.wpi.first.wpilibj.command.Command;
 
 public class Elevator_MoveElevatorToPresetPosition extends Command {
     private Elevator _elevator = Elevator.getInstance();
-    private Carriage _carriage;
+    private Carriage _carriage = Carriage.getInstance();
 	ELEVATOR_TARGET_POSITION _presetPosition;
 
     public Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION presetPosition) {
         requires(_elevator);
+        requires(_carriage);
         setInterruptible(true);
         _presetPosition = presetPosition;
     }
