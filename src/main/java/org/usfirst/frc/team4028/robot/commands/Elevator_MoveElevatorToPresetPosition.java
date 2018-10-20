@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4028.robot.commands;
 
 //#region  == Define Imports ==
+import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITION;
 
@@ -8,13 +9,15 @@ import edu.wpi.first.wpilibj.command.Command;
 //#endregion
 
 public class Elevator_MoveElevatorToPresetPosition extends Command {
-	private Elevator _elevator = Elevator.getInstance();
-    ELEVATOR_TARGET_POSITION _presetPosition;
+    private Elevator _elevator = Elevator.getInstance();
+    private Carriage _carriage = Carriage.getInstance();
+	ELEVATOR_TARGET_POSITION _presetPosition;
     long _startTime;
     long _endTime;
 
     public Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION presetPosition) {
         requires(_elevator);
+        requires(_carriage);
         setInterruptible(true);
         _presetPosition = presetPosition;
        
@@ -31,6 +34,9 @@ public class Elevator_MoveElevatorToPresetPosition extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+        if(!_elevator.isFlapUpEnabledHeight()){
+            _carriage.tiltCarriageDown();
+        }
     	_elevator.MoveToPresetPosition(_presetPosition);    	
     }
 

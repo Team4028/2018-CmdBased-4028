@@ -196,8 +196,7 @@ public class Dashboard {
 		//return null;
 	}
 	
-	public void outputToDashboard()
-	{
+	public void outputToDashboard() {
 		SmartDashboard.putString("AUTON SELECTED", _autonModeChooser.getSelected().toString());
 		// 	    	SmartDashboard.putString("FMS Debug Msg", _fmsDebugMsg);
 	}

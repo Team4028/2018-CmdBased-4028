@@ -24,8 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Infeed extends Subsystem 
 {
-	public enum INFEED_ARM_TARGET_POSITION 
-	{
+	public enum INFEED_ARM_TARGET_POSITION {
 		HOME,
 		INFEED,
 		WIDE,
