@@ -35,7 +35,7 @@ Chassis _chassis = Chassis.getInstance();
 
 
         addParallel(new Auton_ParallelStarter());
-        addSequential(new Auton_CG_PIDTune(_chassis, _leftMaster, RobotMap.LEFT_DRIVE_MASTER_CAN_ADDR, 2 , 100));
+        addSequential(new Auton_CG_PIDTune(_chassis, _leftMaster, RobotMap.LEFT_DRIVE_MASTER_CAN_ADDR, 1500 , 100));
 
         
 

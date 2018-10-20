@@ -16,11 +16,13 @@ public class Auton_CG_PIDTune extends CommandGroup {
 	public Auton_CG_PIDTune(Subsystem requiredSubsystem, TalonSRX talon, int srxParameterSlot,
 			double desiredVelocity, int numSamplesRequired) {
 
-		addSequential(new WaitCommand("safety_wait_command", 1.0));
+        addSequential(new WaitCommand("safety_wait_command", 1.0));
 
-		addSequential(new Auton_PIDTune_spinUp(requiredSubsystem, talon, ControlMode.PercentOutput, .2));
+        addSequential(new Auton_PIDTune_spinUp(requiredSubsystem, talon, ControlMode.PercentOutput, .2));
+        
+        addSequential(new PrintCommand("Spin Up Complete"));
 
-		addSequential(new WaitCommand("spin_up_wait_command", 2.0));
+        addSequential(new WaitCommand("spin_up_wait_command", 2.0));
 
 		addSequential(new Auton_PIDConfig(requiredSubsystem, talon, srxParameterSlot, desiredVelocity, numSamplesRequired, true));
 
