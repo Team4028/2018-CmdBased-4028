@@ -29,25 +29,19 @@ public class Climber_ToggleClimberServoPosition extends Command
     }
 
     // Called repeatedly when this Command is scheduled to run
-    protected void execute() 
-    {    	
-    	
-    	if(_climber.getIsServoCurrentTargetClosed() && _elevator.isClimberServoEnabledHeight())
-    	{
+    protected void execute() {    	
+    	if(_climber.getIsServoCurrentTargetClosed() && _elevator.isClimberServoEnabledHeight()) {
     		_climber.openServo();
     	}
     	else if(_climber.getIsServoCurrentTargetClosed() && !_elevator.isClimberServoEnabledHeight()) {
     		DriverStation.reportWarning("Here", true);
-    	}
-    	else
-    	{
+    	} else {
     		_climber.closeServo();
     	}
     }
 
     // Make this return true when this Command no longer needs to run execute()
-    protected boolean isFinished() 
-    {
+    protected boolean isFinished() {
     	// either we get to target position or we timed out
    	 	return _climber.getIsServoInPosition() || isTimedOut();
     }

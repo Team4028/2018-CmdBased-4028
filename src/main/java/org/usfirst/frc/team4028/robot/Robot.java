@@ -15,14 +15,12 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.Date;
-
 
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths;
 import org.usfirst.frc.team4028.robot.commands.Elevator_ZeroElevator;
 import org.usfirst.frc.team4028.robot.commands.Infeed_ZeroInfeedArms;
+import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.robot.subsystems.Climber;
@@ -49,15 +47,14 @@ public class Robot extends TimedRobot
 	private Climber _climber = Climber.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
-	private static OI _oi;
-
-
+	private OI _oi = OI.getInstance();
+	private SwitchableCameraServer _camera = SwitchableCameraServer.getInstance();
 
 	
 	// class level working variables
 	private DataLogger _dataLogger = null;
 	private String _buildMsg = "?";
- 	long _lastScanEndTimeInMSec;
+ 	long _lastScanEndTimeInMSec = 0;
  	long _lastDashboardWriteTimeMSec;
  	MovingAverage _scanTimeSamples;
  	
@@ -70,7 +67,8 @@ public class Robot extends TimedRobot
 		_chassis.stop();
 		Paths.buildPaths();
 		_buildMsg = GeneralUtilities.WriteBuildInfoToDashboard(ROBOT_NAME);
-		_oi = OI.getInstance();
+
+		outputAllToDashboard();
 	}
 
 	/**
@@ -139,6 +137,7 @@ public class Robot extends TimedRobot
 		
 		// ============= Refresh Dashboard =============
 		_dashboard.outputToDashboard();
+		outputAllToDashboard();
 		
 		// ============= Optionally Log Data =============
 		logAllData();
@@ -174,11 +173,10 @@ public class Robot extends TimedRobot
 	 * This function is called periodically during operator control.
 	 */
 	@Override
-	public void teleopPeriodic() 
-	{
+	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		
 		// ============= Refresh Dashboard =============
+		outputAllToDashboard();
 		_dashboard.outputToDashboard();
 		
 		// ============= Optionally Log Data =============
@@ -189,16 +187,14 @@ public class Robot extends TimedRobot
 	 * This function is called periodically during test mode.
 	 */
 	@Override
-	public void testPeriodic() 
-	{
-	}
+	public void testPeriodic() {}
 	
 	/** Method to Push Data to ShuffleBoard */
 	private void outputAllToDashboard() {
 		// limit spamming
     	long scanCycleDeltaInMSecs = new Date().getTime() - _lastScanEndTimeInMSec;
     	// add scan time sample to calc scan time rolling average
-    	_scanTimeSamples.add(new BigDecimal(scanCycleDeltaInMSecs));
+    	//_scanTimeSamples.add(new BigDecimal(scanCycleDeltaInMSecs));
     	
     	if((new Date().getTime() - _lastDashboardWriteTimeMSec) > 100) {
     		// each subsystem should add a call to a outputToSmartDashboard method
@@ -213,9 +209,9 @@ public class Robot extends TimedRobot
     		// write the overall robot dashboard info
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
 	    	
-	    	BigDecimal movingAvg = _scanTimeSamples.getAverage();
-	    	DecimalFormat df = new DecimalFormat("####");
-	    	SmartDashboard.putString("Scan Time (2 sec roll avg)", df.format(movingAvg) + " mSec");
+	    	//BigDecimal movingAvg = _scanTimeSamples.getAverage();
+	    	//DecimalFormat df = new DecimalFormat("####");
+	    	//SmartDashboard.putString("Scan Time (2 sec roll avg)", df.format(movingAvg) + " mSec");
     		// snapshot last time
     		_lastDashboardWriteTimeMSec = new Date().getTime();
     	}

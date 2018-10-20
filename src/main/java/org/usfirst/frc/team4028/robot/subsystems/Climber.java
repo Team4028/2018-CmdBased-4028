@@ -108,15 +108,13 @@ public class Climber extends Subsystem
 		}
 	}
 
-	public void openServo()
-	{
+	public void openServo()	{
 		_targetServoPosition = SERVO_OPEN_POSITION;
 		_climberServo.set(_targetServoPosition);
 		_isClimberServoOpen = true;
 	}
 	
-	public void closeServo()
-	{
+	public void closeServo() {
 		_targetServoPosition = SERVO_CLOSED_POSITION;
 		_climberServo.set(_targetServoPosition);
 		_isClimberServoOpen = false;

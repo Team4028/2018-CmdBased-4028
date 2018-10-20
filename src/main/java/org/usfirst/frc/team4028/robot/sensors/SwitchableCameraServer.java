@@ -11,8 +11,7 @@ import edu.wpi.cscore.VideoMode;
 // #endregion
 
 // This class encapsulates interactions with the Diver / Operator Camera
-public class SwitchableCameraServer
-{
+public class SwitchableCameraServer {
 	// =================================================================================================================
 	// Define Enums for the Camera
 	public enum CAMERA_CHOICE {
@@ -42,14 +41,12 @@ public class SwitchableCameraServer
     // ==========================
     private static SwitchableCameraServer _instance = new SwitchableCameraServer();
 
-	public static SwitchableCameraServer getInstance() 
-	{
+	public static SwitchableCameraServer getInstance() {
 		return _instance;
 	}
 
 	// private constructor
-	private SwitchableCameraServer() 
-	{
+	private SwitchableCameraServer() {
 		// set values to limit bandwidth usage
 	 	final int width = 320; // 160; // 320; //640;
 		final int height = 240; //90; //180; //480;
@@ -60,8 +57,7 @@ public class SwitchableCameraServer
 		// =======================
 		//  drivers camera (MegaPixel USB Camera)
 		// ======================= 
-		if (Files.exists(Paths.get(USB1_DEVICE_PATH), LinkOption.NOFOLLOW_LINKS)) 
-		{
+		if (Files.exists(Paths.get(USB1_DEVICE_PATH), LinkOption.NOFOLLOW_LINKS)) {
 			System.out.println ("...camera1 exists");
 			_cameraRoboRioUsbPort1 = new UsbCamera(USB1_NAME, USB1_DEVICE_PATH);
 			_cameraRoboRioUsbPort1.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
@@ -72,8 +68,7 @@ public class SwitchableCameraServer
 		// =======================
 		//  carriage camera (Microsoft LifeCam)
 		// ======================= 
-		if (Files.exists(Paths.get(USB2_DEVICE_PATH), LinkOption.NOFOLLOW_LINKS)) 
-		{
+		if (Files.exists(Paths.get(USB2_DEVICE_PATH), LinkOption.NOFOLLOW_LINKS)) {
 			System.out.println ("...camera2 exists");
 			_cameraRoboRioUsbPort2 = new UsbCamera(USB2_NAME, USB2_DEVICE_PATH);
 			_cameraRoboRioUsbPort2.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
@@ -82,25 +77,19 @@ public class SwitchableCameraServer
 		}
 		
 		// set the initial camera
-		if(_cameraRoboRioUsbPort1 != null)
-		{
+		if(_cameraRoboRioUsbPort1 != null) {
 			setCamera(CAMERA_CHOICE.DRIVER);
 		}
-		else if(_cameraRoboRioUsbPort2 != null)
-		{
+		else if(_cameraRoboRioUsbPort2 != null)	{
 			setCamera(CAMERA_CHOICE.CARRIAGE);
 		}
 	}
 	
 	// swap between the 2 installed cameras
-	public void toggle()
-	{
-		if (_currentCamera == CAMERA_CHOICE.DRIVER)
-		{
+	public void toggle() {
+		if (_currentCamera == CAMERA_CHOICE.DRIVER)	{
 			setCamera(CAMERA_CHOICE.CARRIAGE);
-		}	
-		else 
-		{
+		} else {
 			setCamera(CAMERA_CHOICE.DRIVER);
 		}
 	}
@@ -113,37 +102,27 @@ public class SwitchableCameraServer
 
 		To accomplish this we dynamically set the source of the MjpegServer to one of the cameras
 	*/
-	public void setCamera(CAMERA_CHOICE cameraChoice)
-	{
-		switch(cameraChoice)
-		{
+	public void setCamera(CAMERA_CHOICE cameraChoice) {
+		switch(cameraChoice) {
 			case DRIVER:
-				if ((_currentCamera == CAMERA_CHOICE.UNKNOWN) 
-						|| (_currentCamera == CAMERA_CHOICE.CARRIAGE && _cameraRoboRioUsbPort1 != null))
-				{
+			if ((_currentCamera == CAMERA_CHOICE.UNKNOWN) 
+						|| (_currentCamera == CAMERA_CHOICE.CARRIAGE && _cameraRoboRioUsbPort1 != null)) {
 					_rawVideoServer.setSource(_cameraRoboRioUsbPort1);
 					_currentCamera = CAMERA_CHOICE.DRIVER;
 					System.out.println ("current camera ==> chg'd to : " + _cameraRoboRioUsbPort1.getName());
-				}
-				else
-				{
+				} else {
 					System.out.println ("current camera ==> cannot be changed!");
 				}
-
 				break;
 				
 			case CARRIAGE:
-				if (_currentCamera == CAMERA_CHOICE.DRIVER && _cameraRoboRioUsbPort2 != null)
-				{
+				if (_currentCamera == CAMERA_CHOICE.DRIVER && _cameraRoboRioUsbPort2 != null) {
 					_rawVideoServer.setSource(_cameraRoboRioUsbPort2);
 					_currentCamera = CAMERA_CHOICE.CARRIAGE;		
 					System.out.println ("current camera ==> chg'd to: " + _cameraRoboRioUsbPort2.getName());
-				}
-				else
-				{
+				} else {
 					System.out.println ("current camera ==> cannot be changed!");
 				}
-
 				break;
 
 			case UNKNOWN:

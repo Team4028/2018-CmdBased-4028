@@ -108,7 +108,7 @@ public class OI {
 		// =========== Operator ======================================
 		OperatorController = new BeakXboxController(RobotMap.OPERATOR_GAMEPAD_USB_PORT);
 		//==========================================================
-		
+		System.out.println("Creating Gamepad");
 		// Operator Controller -> Command Mapping
 		OperatorController.a.whenPressed(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.INFEED_HEIGHT));
 		OperatorController.y.whenPressed(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SCALE_HEIGHT));
