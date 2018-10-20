@@ -28,6 +28,8 @@ private TalonSRX _talon;
 private StringBuilder _sb;
 private beakCircularBuffer cBuffSpeed;
 private beakCircularBuffer cBuffError;
+private TalonSRX[] _slavesList = {};
+
 
 private computeMean meanComputer = new computeMean();
 
@@ -41,6 +43,20 @@ public Auton_PIDConfig(Subsystem requiredSubsystem, TalonSRX talon, int srxParam
     this._paramterSlot = srxParameterSlot;
     this._sb = new StringBuilder();
     this._desiredVelocity = desiredVelocity;
+    requires(requiredSubsystem);
+}
+
+public Auton_PIDConfig(Subsystem requiredSubsystem, TalonSRX talon, int srxParameterSlot, double desiredVelocity,
+        int numSamplesRequired, boolean isF, TalonSRX[] slaveTalons) {
+    this._fQ = isF;
+    this._talon = talon;
+    this._samplesRequired = numSamplesRequired;
+    this._samplesGathered = 0;
+    this.cBuffSpeed = new beakCircularBuffer(_samplesRequired);
+    this._paramterSlot = srxParameterSlot;
+    this._sb = new StringBuilder();
+    this._desiredVelocity = desiredVelocity;
+    this._slavesList = slaveTalons;
     requires(requiredSubsystem);
 }
 
@@ -87,10 +103,16 @@ protected void end() {
         double kF = 1023 / meanComputer.mean(cBuffSpeed.toArray());
         _talon.config_kF(_paramterSlot, kF, 10);
         System.out.println("Calculated F gain = " + kF);
+        for (TalonSRX slave : _slavesList){
+            slave.config_kF(_paramterSlot, kF, 10);
+        }
     } else {
         double kP = .1*1023/meanComputer.mean(cBuffError.toArray());
         _talon.config_kP(_paramterSlot, kP, 10);
         System.out.println("Calculated P Gain = " + kP);
+        for (TalonSRX slave : _slavesList){
+            slave.config_kF(_paramterSlot, kP, 10);
+        }
     }
 
 

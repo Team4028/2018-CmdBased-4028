@@ -33,9 +33,11 @@ Chassis _chassis = Chassis.getInstance();
         _rightMaster.setInverted(false);
         _rightSlave.setInverted(false);
 
+        TalonSRX[] listOSlaves = {_rightMaster, _rightSlave, _leftSlave};
+
 
         addParallel(new Auton_ParallelStarter());
-        addSequential(new Auton_CG_PIDTune(_chassis, _leftMaster, RobotMap.LEFT_DRIVE_MASTER_CAN_ADDR, 1500 , 100));
+        addSequential(new Auton_CG_PIDTune(_chassis, _leftMaster, RobotMap.LEFT_DRIVE_MASTER_CAN_ADDR, 1500 , 100, listOSlaves ));
 
         
 
