@@ -12,10 +12,15 @@ public class Carriage_ToggleFlapSolenoid extends Command {
   Carriage _carriage = Carriage.getInstance();
   Elevator _elevator = Elevator.getInstance();
   Thumbstick _thumbstick;
+  boolean _isFlapUp;
 
   public Carriage_ToggleFlapSolenoid(Thumbstick thumbstick) {
     requires(_carriage);
     _thumbstick = thumbstick;
+  }
+  public Carriage_ToggleFlapSolenoid(boolean isFlapUp) {
+    requires(_carriage);
+    _isFlapUp = isFlapUp;
   }
 
   // Called just before this Command runs the first time
@@ -26,14 +31,29 @@ public class Carriage_ToggleFlapSolenoid extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override  
   protected void execute() {
-    if(_elevator.isFlapUpEnabledHeight()){
-      if(_thumbstick.getY() > 0){
-        _carriage.tiltCarriageUp();
+    if(_thumbstick !=null)
+    {
+      if(_elevator.isFlapUpEnabledHeight()){
+        if(_thumbstick.getY() > 0){
+          _carriage.tiltCarriageUp();
+        }
+        else if(_thumbstick.getY() < 0){
+          _carriage.tiltCarriageDown();
+        }
       }
-      else if(_thumbstick.getY() < 0){
-        _carriage.tiltCarriageDown();
-      } 
     }
+    else
+    {
+      if(_elevator.isFlapUpEnabledHeight()){
+        if(_thumbstick.getY() > 0){
+          _carriage.tiltCarriageUp();
+        }
+        else if(_thumbstick.getY() < 0){
+          _carriage.tiltCarriageDown();
+        }
+      }
+    }
+
   }
 
   // Make this return true when this Command no longer needs to run execute()

@@ -21,6 +21,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -68,7 +69,7 @@ public class Chassis extends Subsystem
     private static final int[] MOTION_MAGIC_TURN_VEL_ACC = {80 * 150, 170 * 150};
 	private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 170 * 150};
 	
-	ChassisState _chassisState;
+	ChassisState _chassisState = ChassisState.UNKNOWN;
 	Path _currentPath;
 	PathFollower _pathFollower;
 	double _leftEncoderPrevDistance, _rightEncoderPrevDistance = 0;
@@ -123,9 +124,9 @@ public class Chassis extends Subsystem
 				return;
 				
 			case DRIVE_SET_DISTANCE:
-				moveToTargetPosDriveSetDistance();
 				GeneralUtilities.setPIDFGains(_leftMaster, MOTION_MAGIC_STRAIGHT_PIDF_GAINS);
 				GeneralUtilities.setPIDFGains(_rightMaster, MOTION_MAGIC_STRAIGHT_PIDF_GAINS);
+				moveToTargetPosDriveSetDistance();
 				return;
 				
 			case FOLLOW_PATH:
@@ -142,6 +143,8 @@ public class Chassis extends Subsystem
 				return;
 		}
 	}
+
+
 
 	
 	/* ===== Chassis State: PERCENT VBUS ===== */
@@ -205,21 +208,20 @@ public class Chassis extends Subsystem
 	
 	public void setMotionMagicCmdInches(double Distance)
 	{
+		_chassisState=ChassisState.DRIVE_SET_DISTANCE;
 		_leftMtrDriveSetDistanceCmd = _leftMaster.getSelectedSensorPosition(0)+ InchestoNU(Distance);
 		_rightMtrDriveSetDistanceCmd = _rightMaster.getSelectedSensorPosition(0)+InchestoNU(Distance);
+
+		System.out.println("Target Position: " + _leftMtrDriveSetDistanceCmd);
+		System.out.println("Current Position: " + _leftMaster.getSelectedSensorPosition(0));
 		setHighGear(false);
-		_leftMaster.config_kP(0, 0.15, 10);
-		_leftMaster.config_kI(0, 0, 10);
-		_leftMaster.config_kD(0, 1.5, 10);
-		_leftMaster.config_kF(0, 0.095, 10);
-		_rightMaster.config_kP(0, 0.15, 10);
-		_rightMaster.config_kI(0, 0, 10);
-		_rightMaster.config_kD(0, 1.5, 10);
-		_rightMaster.config_kF(0, 0.095, 10);
-		_leftMaster.configMotionCruiseVelocity(5000, 10);
-		_leftMaster.configMotionAcceleration(5500, 10);
-		_rightMaster.configMotionCruiseVelocity(5000, 10);
-		_rightMaster.configMotionAcceleration(5500, 10);
+
+		_leftMaster.configMotionCruiseVelocity(31256, 10);
+		_leftMaster.configMotionAcceleration(62513, 10);
+		_rightMaster.configMotionCruiseVelocity(31256, 10);
+		_rightMaster.configMotionAcceleration(62513, 10);
+		
+
 
 	}
 
@@ -231,6 +233,7 @@ public class Chassis extends Subsystem
 	public void stop()
 	{
 		setLeftRightCommand(ControlMode.PercentOutput, 0, 0);
+		setHighGear(true);
 
 	}
 
@@ -276,6 +279,27 @@ public class Chassis extends Subsystem
 	// PATH FOLLOWING
 	//===================================================================================
 
+	public void zeroEncoders(){
+		_leftMaster.getSensorCollection().setQuadraturePosition(0, 10);
+		_rightMaster.getSensorCollection().setQuadraturePosition(0, 10);
+	}
+
+	public void zeroGyro(){
+		_navX.zeroYaw();
+	}
+
+	public void zeroSensors(){
+		zeroEncoders();
+		zeroGyro();
+	}
+
+	public double _autonStartTime;
+
+
+	public void recordAutonStartTime(){
+		_autonStartTime = Timer.getFPGATimestamp();
+	}
+
 	public synchronized void setWantDrivePath(Path path, boolean reversed) {
         if (_currentPath != path || _chassisState != ChassisState.FOLLOW_PATH) {
 			_leftEncoderPrevDistance = get_leftPos()/ENCODER_COUNTS_PER_WHEEL_REV * Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI;
@@ -306,20 +330,34 @@ public class Chassis extends Subsystem
 		}
 	}
 	public synchronized boolean isDoneWithPath() {
-        if (_chassisState == ChassisState.FOLLOW_PATH && _pathFollower != null)
-            return _pathFollower.isFinished();
-        else
-            System.out.println("Robot is not in path following mode");
-            return true;
+		if (_chassisState == ChassisState.FOLLOW_PATH && _pathFollower != null){
+			if (_pathFollower.isFinished()){
+				System.out.println("Chassis Done With Path");
+				return true;
+			}
+			else{
+				return false;
+			}
+		} else {
+           // System.out.println("Robot is not in path following mode");
+			return true;
+		}
     }
 
     /** Path following e-stop */
     public synchronized void forceDoneWithPath() {
         if (_chassisState == ChassisState.FOLLOW_PATH && _pathFollower != null)
             _pathFollower.forceFinish();
-        else
-            System.out.println("Robot is not in path following mode");
-    }
+		else{}
+		
+           // System.out.println("Robot is not in path following mode");
+	}
+	public synchronized double getRemainingPathDistance() {
+		if (_pathFollower != null) {
+			return _pathFollower.remainingPathLength();
+		} 
+		return 0;
+	}
 
 
 
@@ -455,4 +493,5 @@ public class Chassis extends Subsystem
 		SmartDashboard.putNumber("Chassis: Angle", GeneralUtilities.roundDouble(get_Heading(), 2));
 		SmartDashboard.putString("Chassis: Robot Pose", "N/A"); //RobotState.getInstance().getLatestFieldToVehicle().getValue().toString());
 	}
+
 }

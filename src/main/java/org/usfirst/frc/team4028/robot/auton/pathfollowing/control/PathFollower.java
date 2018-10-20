@@ -24,6 +24,9 @@ public class PathFollower {
     double remainingPathLength;
     boolean hasAutoStopCounterStarted;
     double autoStopCounterInitTime;
+    boolean checkedSteerQ = false;
+    boolean checkedVeloFinishedQ = false;
+    boolean checkedVeloOnTargetQ = false;
 
     /** Create a new PathFollower for a given path */
     public PathFollower(Path path, boolean reversed, double maxAccel, double maxDecel, double inertiaSteeringGain) {
@@ -94,8 +97,27 @@ public class PathFollower {
     }
     
     public boolean isFinished() {
-        return (mSteeringController.isFinished() && mVelocityController.isFinishedProfile()
-                && mVelocityController.onTarget()) || overrideFinished;
+        /*checkedSteerQ = false;
+        checkedVeloFinishedQ = false;
+        checkedVeloOnTargetQ = false;
+        if (mSteeringController.isFinished() && !checkedSteerQ){
+            System.out.println("Steering Control Finished");
+            checkedSteerQ = true;
+        } if (mVelocityController.isFinishedProfile() && !checkedVeloFinishedQ){
+            System.out.println("Velocity Control Finished");
+            checkedVeloFinishedQ = true;
+        } if (mVelocityController.onTarget() && !checkedVeloOnTargetQ){
+            System.out.println("Velocity Control On Target");
+            checkedVeloOnTargetQ = true;
+        }
+        */
+        if ((mSteeringController.isFinished() && mVelocityController.isFinishedProfile()
+        && mVelocityController.onTarget()) || overrideFinished){
+            //System.out.println("Path Follower Finishing");
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void forceFinish() {

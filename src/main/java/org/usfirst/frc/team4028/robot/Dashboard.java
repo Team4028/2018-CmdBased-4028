@@ -1,7 +1,14 @@
 package org.usfirst.frc.team4028.robot;
 
 // #region
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.Date;
+
+
 import org.usfirst.frc.team4028.robot.commands.Auton_CG_BaseLine;
+import org.usfirst.frc.team4028.robot.commands.Auton_CG_Switch;
+import org.usfirst.frc.team4028.robot.commands.Auton_DoNothing;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -102,17 +109,17 @@ public class Dashboard {
 	
 	/** Returns the autonBase object associated with the auton selected on the dashboard */
 	public CommandGroup getSelectedAuton() {
-		return new Auton_CG_BaseLine();
-		/*_isStartingLeft = (_autonStartingSideChooser.getSelected() == STARTING_SIDE.LEFT);
+		//return new Auton_CG_BaseLine();
+		_isStartingLeft = (_autonStartingSideChooser.getSelected() == STARTING_SIDE.LEFT);
 		
 		switch(_autonModeChooser.getSelected()) {
 			case DO_NOTHING:
-				return new DoNothing();
+				return new Auton_DoNothing();
 			case AUTO_RUN:
-				return new AutoRun();
+				return new Auton_CG_BaseLine();
 			case SWITCH:
-				return new Switch(_isSwitchLeft);
-			case DOUBLE_SWITCH:
+				return new Auton_CG_Switch(_isSwitchLeft);
+			/*case DOUBLE_SWITCH:
 				return new DoubleSwitch(_isSwitchLeft);
 			case SCALE:
 				return new Scale(_isScaleLeft, _isStartingLeft);
@@ -176,10 +183,10 @@ public class Dashboard {
 				
 			case TEST_AUTON:
 				return new TestAuton();
-				
+				*/
 			default:
-				return new DoNothing(); 
-		}*/
+				return new Auton_DoNothing(); 
+		}
 		//return null;
 	}
 	

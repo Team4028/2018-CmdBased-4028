@@ -12,17 +12,24 @@ public class Elevator_MoveElevatorToPresetPosition extends Command {
     private Elevator _elevator = Elevator.getInstance();
     private Carriage _carriage = Carriage.getInstance();
 	ELEVATOR_TARGET_POSITION _presetPosition;
+    long _startTime;
+    long _endTime;
 
     public Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION presetPosition) {
         requires(_elevator);
         requires(_carriage);
         setInterruptible(true);
         _presetPosition = presetPosition;
+       
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
         _elevator.resetElevatorBumpValue();
+        System.out.println("TARGET CALLED");
+        System.out.println("TARGET CALLED");
+        System.out.println("TARGET CALLED");
+        _startTime = System.currentTimeMillis();
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -35,7 +42,27 @@ public class Elevator_MoveElevatorToPresetPosition extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-    	return false;
+        if (Elevator.getInstance().get_isAtTargetPosition())
+        {
+            System.out.println("AAHHHHHHHHHHHHHHHHH");
+            System.out.println("AAHHHHHHHHHHHHHHHHH");
+            System.out.println("AAHHHHHHHHHHHHHHHHH");
+            System.out.println("AAHHHHHHHHHHHHHHHHH");
+            System.out.println("AAHHHHHHHHHHHHHHHHH");
+            System.out.println("AAHHHHHHHHHHHHHHHHH");
+            System.out.println("AAHHHHHHHHHHHHHHHHH");
+            _endTime = System.currentTimeMillis();
+            System.out.println("Second Call Start Minus Eend:  " + (_endTime - _startTime)); 
+            return true;
+        }
+        else{
+            return false;
+        }
+        
+
+    }
+
+    private void PrintTimeFromStart() {
     }
 
     // Called once after isFinished returns true
