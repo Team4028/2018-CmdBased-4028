@@ -7,8 +7,10 @@ import java.util.Date;
 
 
 import org.usfirst.frc.team4028.robot.commands.Auton_CG_BaseLine;
+import org.usfirst.frc.team4028.robot.commands.Auton_CG_ChassisTune;
 import org.usfirst.frc.team4028.robot.commands.Auton_CG_Switch;
 import org.usfirst.frc.team4028.robot.commands.Auton_DoNothing;
+import org.usfirst.frc.team4028.robot.commands.Auton_CG_PIDTune;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -40,6 +42,7 @@ public class Dashboard {
 		TRIPLE_SCALE,
 		TRIPLE_SCALE_SAME_SIDE,
 		EXPERIMENTAL,
+		AUTO_TUNE,
 		TEST_AUTON
 	}
 	private enum STARTING_SIDE {
@@ -75,6 +78,7 @@ public class Dashboard {
 		_autonModeChooser.addObject("#EasyMoney8SecondTripleScale", AUTON_MODE.TRIPLE_SCALE);
 		_autonModeChooser.addObject("Triple Scale SAME SIDE ONLY", AUTON_MODE.TRIPLE_SCALE_SAME_SIDE);
 		_autonModeChooser.addObject("DO NOT SELECT", AUTON_MODE.TEST_AUTON);
+		_autonModeChooser.addObject("Tune Chassis", AUTON_MODE.AUTO_TUNE);
 		SmartDashboard.putData("AUTON MODE: ", _autonModeChooser);
 		
 		_autonStartingSideChooser.addDefault("LEFT", STARTING_SIDE.LEFT);
@@ -119,6 +123,8 @@ public class Dashboard {
 				return new Auton_CG_BaseLine();
 			case SWITCH:
 				return new Auton_CG_Switch(_isSwitchLeft);
+			case AUTO_TUNE:
+			return new Auton_CG_ChassisTune();
 			/*case DOUBLE_SWITCH:
 				return new DoubleSwitch(_isSwitchLeft);
 			case SCALE:

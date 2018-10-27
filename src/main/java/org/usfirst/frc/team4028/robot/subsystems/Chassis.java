@@ -43,7 +43,7 @@ public class Chassis extends Subsystem
 	
 	private NavXGyro _navX = NavXGyro.getInstance();
 	
-	private static final double ENCODER_COUNTS_PER_WHEEL_REV = 30725.425;		// account for gear boxes
+	public static final double ENCODER_COUNTS_PER_WHEEL_REV = 30725.425;		// account for gear boxes
 
 	public double _leftMtrDriveSetDistanceCmd;
 	public double _rightMtrDriveSetDistanceCmd;
@@ -51,6 +51,11 @@ public class Chassis extends Subsystem
 	private boolean _isTurnRight;
 	private static final double ENCODER_ROTATIONS_PER_DEGREE = 46.15/3600;
 	private RobotState _robotState = RobotState.getInstance();
+	private double _leftMasterVelocityLoggingLastLogTime;
+	private double _leftMasterVelocityLoggingThisTime;
+	private double _leftMasterPreviousVelocity = 0;
+	private double _leftMasterCurrentVelocity = 0;
+	private boolean _isFirstTimeLoggingAccel = true;
 
 	public enum ChassisState
 	{
@@ -110,6 +115,8 @@ public class Chassis extends Subsystem
 		_shifter = new DoubleSolenoid(RobotMap.PCM_CAN_ADDR, RobotMap.SHIFTER_EXTEND_PCM_PORT, RobotMap.SHIFTER_RETRACT_PCM_PORT);
 	
 	}
+
+
 	public void updateChassis(double timestamp){
 		switch(_chassisState) {
 			case UNKNOWN:
@@ -427,9 +434,13 @@ public class Chassis extends Subsystem
 		return NU *Constants.DRIVE_WHEEL_DIAMETER_IN*Math.PI / ENCODER_COUNTS_PER_WHEEL_REV;
 	}
 
-	private static double inchesPerSecToNU(double inches_per_second) 
+	public static double inchesPerSecToNU(double inches_per_second) 
 	{
         return inches_per_second * ENCODER_COUNTS_PER_WHEEL_REV / (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI * 10);
+	}
+
+	public static double NUper100msToInchesPerSec(double NU_per_100ms){
+		return NU_per_100ms*10*Constants.DRIVE_WHEEL_DIAMETER_IN*Math.PI/(ENCODER_COUNTS_PER_WHEEL_REV);
 	}
 	public double getLeftSpeedRPM() {
 		return _leftMaster.getSelectedSensorVelocity(0) * (600 / ENCODER_COUNTS_PER_WHEEL_REV);
@@ -444,7 +455,24 @@ public class Chassis extends Subsystem
 
     public double getRightVelocityInchesPerSec() {
         return rpmToInchesPerSecond(getRightSpeedRPM());
-    }
+	}
+	
+	private double getAcceleration(){
+		this._leftMasterVelocityLoggingLastLogTime = this._leftMasterVelocityLoggingThisTime;
+		this._leftMasterVelocityLoggingThisTime = Timer.getFPGATimestamp();
+		this._leftMasterPreviousVelocity = this._leftMasterCurrentVelocity;
+		this._leftMasterCurrentVelocity = NUper100msToInchesPerSec(_leftMaster.getSelectedSensorVelocity(0));
+		if (! this._isFirstTimeLoggingAccel){
+			double dt = this._leftMasterVelocityLoggingThisTime - this._leftMasterVelocityLoggingLastLogTime;
+			double dv = this._leftMasterCurrentVelocity - this._leftMasterPreviousVelocity;
+			double accel = dv/dt;
+			return accel;
+		} else {
+			this._isFirstTimeLoggingAccel = false;
+			return 0;
+		}
+
+	}
 	
 	private void estimateRobotState( double timestamp)
 	{
@@ -471,7 +499,7 @@ public class Chassis extends Subsystem
 		logData.AddData("Right Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(-get_rightVelocityInchesPerSec(), 2)));
 		//logData.AddData("Right Target Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(_rightTargetVelocity, 2)));
 		logData.AddData("Right Output Current", String.valueOf(GeneralUtilities.roundDouble(_rightMaster.getOutputCurrent(), 2)));
-		
+		logData.AddData("Chassis Acceleration [in/s/s]", String.valueOf(GeneralUtilities.roundDouble(getAcceleration(), 2)));
 		//logData.AddData("Pose X", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().x()));
 		//logData.AddData("Pose Y", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().y()));
 		//logData.AddData("Pose Angle", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getRotation().getDegrees()));
@@ -480,6 +508,8 @@ public class Chassis extends Subsystem
 		//logData.AddData("Center Target Velocity", String.valueOf(GeneralUtilities.roundDouble(_centerTargetVelocity, 2)));
 
 	}
+
+
 	
 	public void updateDashboard() 
 	{
