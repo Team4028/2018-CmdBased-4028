@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.usfirst.frc.team4028.robot.RobotMap;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
+import org.usfirst.frc.team4028.robot.util.GeneralUtilities;
 
 public class Auton_CG_ChassisTune extends CommandGroup{
 
@@ -24,6 +25,7 @@ Chassis _chassis = Chassis.getInstance();
         _rightMaster = new TalonSRX(RobotMap.RIGHT_DRIVE_MASTER_CAN_ADDR);
         _rightSlave = new TalonSRX(RobotMap.RIGHT_DRIVE_SLAVE_CAN_ADDR);
     
+
         _leftSlave.follow(_leftMaster);
         _rightSlave.follow(_leftMaster);
         _rightMaster.follow(_leftMaster);
@@ -33,11 +35,24 @@ Chassis _chassis = Chassis.getInstance();
         _rightMaster.setInverted(false);
         _rightSlave.setInverted(false);
 
+        _leftMaster.setIntegralAccumulator(0, 0, 10);
+        _leftSlave.setIntegralAccumulator(0, 0, 10);
+        _rightMaster.setIntegralAccumulator(0, 0, 10);
+        _rightSlave.setIntegralAccumulator(0, 0, 10);
+
+        double[] zeroes = {.1,0,0,0};
+
+        GeneralUtilities.setPIDFGains(_leftMaster, zeroes);
+        GeneralUtilities.setPIDFGains(_leftSlave, zeroes);
+        GeneralUtilities.setPIDFGains(_rightMaster, zeroes);
+        GeneralUtilities.setPIDFGains(_rightSlave, zeroes);
+
+
         TalonSRX[] listOSlaves = {_rightMaster, _rightSlave, _leftSlave};
 
 
         addParallel(new Auton_ParallelStarter());
-        addSequential(new Auton_CG_PIDTune(_chassis, _leftMaster, RobotMap.LEFT_DRIVE_MASTER_CAN_ADDR, 1500 , 100, listOSlaves ));
+        addSequential(new Auton_CG_PIDTune(_chassis, _leftMaster, 0, Chassis.getInstance().inchesPerSecToNU(180) , 100, listOSlaves));
 
         
 

@@ -12,6 +12,9 @@ import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.beakCircularBuffe
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
+import org.usfirst.frc.team4028.robot.subsystems.Chassis;
+
+
 class Auton_PIDConfig extends Command{
 
 
@@ -40,6 +43,7 @@ public Auton_PIDConfig(Subsystem requiredSubsystem, TalonSRX talon, int srxParam
     this._samplesRequired = numSamplesRequired;
     this._samplesGathered = 0;
     this.cBuffSpeed = new beakCircularBuffer(_samplesRequired);
+    this.cBuffError = new beakCircularBuffer(_samplesRequired);
     this._paramterSlot = srxParameterSlot;
     this._sb = new StringBuilder();
     this._desiredVelocity = desiredVelocity;
@@ -53,6 +57,7 @@ public Auton_PIDConfig(Subsystem requiredSubsystem, TalonSRX talon, int srxParam
     this._samplesRequired = numSamplesRequired;
     this._samplesGathered = 0;
     this.cBuffSpeed = new beakCircularBuffer(_samplesRequired);
+    this.cBuffError = new beakCircularBuffer(_samplesRequired);
     this._paramterSlot = srxParameterSlot;
     this._sb = new StringBuilder();
     this._desiredVelocity = desiredVelocity;
@@ -69,12 +74,15 @@ protected void initialize() {
 protected void execute() {
     double outputSignal = _talon.getMotorOutputVoltage() / _talon.getBusVoltage();
 
+    double closedLoopError = Math.PI;
+
     if (_fQ){
         double speed = _talon.getSelectedSensorVelocity(_paramterSlot);
         cBuffSpeed.addLast(speed);
     } else {
-        double closedLoopError = _talon.getClosedLoopError(_paramterSlot);
-        cBuffError.addLast(closedLoopError);
+
+        cBuffError.addLast(Math.abs((double)_talon.getClosedLoopError(_paramterSlot)));
+    
     }
 
     _samplesGathered++;
@@ -86,10 +94,11 @@ protected void execute() {
     _sb.append(speed);
     _sb.append("\n");
     */
+    
 
-    // if (samplesGathered % 10 == 0) {
-    //     System.out.println(_sb.toString());
-    // }
+    if (_samplesGathered % 10 == 0) {
+         System.out.println("Closed loop error: " + _talon.getClosedLoopError(_paramterSlot));
+     }
 }
 
 // Make this return true when this Command no longer needs to run execute()
@@ -100,7 +109,7 @@ protected boolean isFinished() {
 // Called once after isFinished returns true
 protected void end() {
     if (_fQ){
-        double kF = 1023 / meanComputer.mean(cBuffSpeed.toArray());
+        double kF =  1023/ meanComputer.mean(cBuffSpeed.toArray());
         _talon.config_kF(_paramterSlot, kF, 10);
         System.out.println("Calculated F gain = " + kF);
         for (TalonSRX slave : _slavesList){
