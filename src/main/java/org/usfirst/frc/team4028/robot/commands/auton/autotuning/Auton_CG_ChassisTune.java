@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.commands;
+package org.usfirst.frc.team4028.robot.commands.auton.autotuning;
 
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Command;
@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.usfirst.frc.team4028.robot.RobotMap;
+import org.usfirst.frc.team4028.robot.commands.auton.Auton_ParallelStarter;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.robot.util.GeneralUtilities;
 
@@ -52,7 +53,7 @@ Chassis _chassis = Chassis.getInstance();
 
 
         addParallel(new Auton_ParallelStarter());
-        addSequential(new Auton_CG_PIDTune(_chassis, _leftMaster, 0, Chassis.getInstance().inchesPerSecToNU(180) , 100, listOSlaves));
+        addSequential(new Auton_CG_PIDTune(_chassis, _leftMaster, 0, Chassis.getInstance().inchesPerSecToNU(180) , 35, listOSlaves));
 
         
 

@@ -1,6 +1,8 @@
-package org.usfirst.frc.team4028.robot.commands;
+package org.usfirst.frc.team4028.robot.commands.auton.autotuning;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import org.usfirst.frc.team4028.robot.commands.PrintCommand;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
@@ -33,7 +35,7 @@ public class Auton_CG_PIDTune extends CommandGroup {
 
 		addSequential(new Auton_PIDTune_spinUp(requiredSubsystem, talon, ControlMode.Velocity, desiredVelocity));
 
-		addSequential(new WaitCommand("spin_up_wait_command", 5.0));
+		addSequential(new WaitCommand("spin_up_wait_command", .85));
 
 		addSequential(new Auton_PIDConfig(requiredSubsystem, talon, srxParameterSlot, desiredVelocity, numSamplesRequired, false));
 
@@ -58,9 +60,11 @@ public class Auton_CG_PIDTune extends CommandGroup {
 
 		addSequential(new Auton_PIDTune_spinDown(requiredSubsystem, talon));
 
+		addSequential(new WaitCommand(1.0));
+
 		addSequential(new Auton_PIDTune_spinUp(requiredSubsystem, talon, ControlMode.Velocity, desiredVelocity));
 
-		addSequential(new WaitCommand("spin_up_wait_command", 3.0));
+		//addSequential(new WaitCommand("spin_up_wait_command", 0.85));
 
 		addSequential(new Auton_PIDConfig(requiredSubsystem, talon, srxParameterSlot, desiredVelocity, numSamplesRequired, false, listOTalons));
 

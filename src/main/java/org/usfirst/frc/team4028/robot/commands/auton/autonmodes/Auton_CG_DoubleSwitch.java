@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.commands;
+package org.usfirst.frc.team4028.robot.commands.auton.autonmodes;
 
 import java.util.Arrays;
 
@@ -11,6 +11,8 @@ import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITI
 //import org.usfirst.frc.team4028.robot.auton.paths.Paths.Center;
 //import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
+import org.usfirst.frc.team4028.robot.commands.*;
+import org.usfirst.frc.team4028.robot.commands.auton.*;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
