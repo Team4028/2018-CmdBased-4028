@@ -3,7 +3,7 @@ package org.usfirst.frc.team4028.robot.subsystems;
 //#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.RobotMap;
-import org.usfirst.frc.team4028.robot.auton.pathfollowing.RobotState;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.PoseTracking.RobotState;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.Path;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.PathFollower;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.RigidTransform;
@@ -384,7 +384,14 @@ public class Chassis extends Subsystem
     public double get_rightVelocityInchesPerSec() {
         return rpmToInchesPerSecond(get_rightSpeed());
 	}
+
+	public double get_leftVelocitySetpoint() {
+		return NUPer100msToInchesPerSec(_leftTargetVelocity);
+	}
 	
+	public double get_rightVelocitySetpoint(){
+		return NUPer100msToInchesPerSec(_rightTargetVelocity);
+	}
 
 	private synchronized boolean get_isHighGear() {
 		return _shifter.get() == Constants.SHIFTER_HIGH_GEAR_POS;
@@ -422,7 +429,7 @@ public class Chassis extends Subsystem
 	private static double InchestoNU (double inches){
 		return inches * ENCODER_COUNTS_PER_WHEEL_REV/(Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI);
 	}
-	private static double NUtoInches (double NU)
+	public static double NUtoInches (double NU)
 	{
 		return NU *Constants.DRIVE_WHEEL_DIAMETER_IN*Math.PI / ENCODER_COUNTS_PER_WHEEL_REV;
 	}
@@ -431,6 +438,12 @@ public class Chassis extends Subsystem
 	{
         return inches_per_second * ENCODER_COUNTS_PER_WHEEL_REV / (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI * 10);
 	}
+
+	private static double NUPer100msToInchesPerSec(double nu_per_100_ms){
+		return nu_per_100_ms * 10 * Math.PI * Constants.DRIVE_WHEEL_DIAMETER_IN / (ENCODER_COUNTS_PER_WHEEL_REV);
+	}
+
+
 	public double getLeftSpeedRPM() {
 		return _leftMaster.getSelectedSensorVelocity(0) * (600 / ENCODER_COUNTS_PER_WHEEL_REV);
 	}
@@ -451,11 +464,12 @@ public class Chassis extends Subsystem
 		final double left_distance = NUtoInches(get_leftPos());
 		final double right_distance = NUtoInches(get_rightPos());
 		final Rotation gyro_angle = Rotation.fromDegrees(get_Heading());
+		final double Vr = get_rightVelocityInchesPerSec();
+		final double Vl = get_leftVelocityInchesPerSec();
 		final Twist odometry_velocity = _robotState.generateOdometryFromSensors(
 				left_distance - _leftEncoderPrevDistance, right_distance - _rightEncoderPrevDistance, gyro_angle);
-		final Twist predicted_velocity = Kinematics.forwardKinematics(getLeftVelocityInchesPerSec(),
-				getRightVelocityInchesPerSec());
-		_robotState.addObservations(timestamp, odometry_velocity, predicted_velocity);
+		final Twist predicted_velocity = Kinematics.forwardKinematics(Vl,Vr);		
+		_robotState.addObservations(timestamp, odometry_velocity, predicted_velocity, Vr, Vl);
 		_leftEncoderPrevDistance = left_distance;
 		_rightEncoderPrevDistance = right_distance;
 	}

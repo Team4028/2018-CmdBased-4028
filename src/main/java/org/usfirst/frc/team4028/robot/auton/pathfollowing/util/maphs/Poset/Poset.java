@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.auton.pathfollowing.util;
+package org.usfirst.frc.team4028.robot.auton.pathfollowing.util.maphs.Poset;
 
 import java.util.*;
 
@@ -122,6 +122,7 @@ public class Poset {
         }
         
     }
+
 
     public static class edge{
         int fromNodeIdentifier;

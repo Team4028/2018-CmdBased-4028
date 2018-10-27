@@ -1,9 +1,11 @@
-package org.usfirst.frc.team4028.robot.auton.pathfollowing;
+package org.usfirst.frc.team4028.robot.auton.pathfollowing.PoseTracking;
 
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.*;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.*;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.maphs.matrix.Matrix;
 
 import java.util.Map;
+
 
 /**
  * RobotState keeps track of the robot pose relative to its start point throughout the match for use in autonomous.
@@ -18,6 +20,8 @@ public class RobotState {
         return instance_;
     }
 
+    private extendedChassisKallman _kallmanFilter = extendedChassisKallman.getInstance();
+
     private static final int kObservationBufferSize = 100;
     
     // FPGATimestamp -> RigidTransform2d or Rotation2d
@@ -27,6 +31,7 @@ public class RobotState {
     
     private RobotState() {
         reset(0, new RigidTransform());
+
     }
 
     /** Resets the field to robot transform (robot's position on the field) */
@@ -50,11 +55,15 @@ public class RobotState {
     }
 
     public synchronized void addObservations(double timestamp, Twist measured_velocity,
-            Twist predicted_velocity) {
-        addFieldToVehicleObservation(timestamp,
-                Kinematics.integrateForwardKinematics(getLatestFieldToVehicle().getValue(), measured_velocity));
+            Twist predicted_velocity, double Vr, double Vl) {
+        RigidTransform measuredPose = Kinematics.integrateForwardKinematics(getLatestFieldToVehicle().getValue(), measured_velocity);
+        Matrix measurementVector = measuredPose.getKallmanStateVector(Vr, Vl);
+        _kallmanFilter.update(measurementVector, timestamp);
+        RigidTransform observation =_kallmanFilter.getLatestPose();
+        addFieldToVehicleObservation(timestamp,observation);
         _vehicleVelocityPredicted = predicted_velocity;
     }
+
 
     public synchronized Twist generateOdometryFromSensors(double left_encoder_delta_distance,
             double right_encoder_delta_distance, Rotation current_gyro_angle) {
@@ -72,4 +81,6 @@ public class RobotState {
     public synchronized Twist getPredictedVelocity() {
         return _vehicleVelocityPredicted;
     }
+
+
 }

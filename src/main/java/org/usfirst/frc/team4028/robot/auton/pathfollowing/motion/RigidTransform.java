@@ -4,6 +4,7 @@ import static org.usfirst.frc.team4028.robot.util.GeneralUtilities.epsilonEquals
 
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.Interpolable;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.maphs.matrix.Matrix;
 
 public class RigidTransform implements Interpolable<RigidTransform>{
     protected static final RigidTransform kIdentity = new RigidTransform();
@@ -138,6 +139,15 @@ public class RigidTransform implements Interpolable<RigidTransform>{
         }
         final Twist twist = RigidTransform.log(inverse().transformBy(other));
         return transformBy(RigidTransform.exp(twist.scaled(x)));
+    }
+
+    public Matrix getKallmanStateVector(double Vr, double Vl){
+        double[][] vectorAsArray = { {this._translation._x},
+                                     {this._translation._y},
+                                     {this._rotation.getDegrees()},
+                                     {Vr},
+                                     {Vl}};
+        return new Matrix(vectorAsArray);
     }
     
     @Override
