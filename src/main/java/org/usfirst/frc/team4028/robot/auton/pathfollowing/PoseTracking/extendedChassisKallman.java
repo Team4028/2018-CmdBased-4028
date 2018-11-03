@@ -96,8 +96,8 @@ public class extendedChassisKallman extends extendedKallmanFilter {
         double partialXDotPartialX = 0;
         double partialXDotPartialY = 0;
         double partialXDotPartialTheta =-1*(Vr+Vl)*Constants.TRACK_SCRUBBING_FACTOR*Math.sin(curThetaRadians)/2;
-        double partialXDotPartialVr = .5*Math.cos(curThetaRadians);
-        double partialXDotPartialVl = .5*Math.cos(curThetaRadians);
+        double partialXDotPartialVr = .5*Math.cos(curThetaRadians)*Constants.TRACK_SCRUBBING_FACTOR;
+        double partialXDotPartialVl = .5*Math.cos(curThetaRadians)*Constants.TRACK_SCRUBBING_FACTOR;
 
         //partial Ydots
         double partialYDotPartialX = 0;
@@ -187,5 +187,33 @@ public class extendedChassisKallman extends extendedKallmanFilter {
         Rotation rotation = Rotation.fromDegrees(theta);
         RigidTransform pose = new RigidTransform(translation, rotation);
         return pose;
+    }
+
+    private Matrix rigidTransformationToPoseVector(RigidTransform rTransform){
+        return poseVectorFromConfigurationVector(rTransform.getKallmanStateVector(0, 0));
+    }
+
+    private Matrix poseCovarianceMatrixFromConfigurationCovarianceMatrix(Matrix configCovarianceMatrix){
+        return configCovarianceMatrix.getMatrix(0, 0, 2, 2);
+    }
+
+    private Matrix poseVectorFromConfigurationVector(Matrix configVector){
+        return configVector.getMatrix(0, 0, 0, 2);
+    }
+
+    public Matrix getLatestCovariance(){
+        Matrix covarMatrix = super.getLatestCovariance();
+        return covarMatrix;
+    }
+
+    private double multivariateNormalPDF(Matrix mu, Matrix sigma, Matrix x){
+        return (Math.exp(-.5*(x.minus(mu).transpose().times(sigma).times(x.minus(mu)).get(0,0)))/(Math.sqrt(8*Math.pow(Math.PI,3)*sigma.det())));
+    }
+
+    public double getProbabilityOfPose(RigidTransform pose){
+        Matrix sigmaMatrix = poseCovarianceMatrixFromConfigurationCovarianceMatrix(super.getLatestCovariance());
+        Matrix poseMatrix = rigidTransformationToPoseVector(pose);
+        Matrix muVector = poseVectorFromConfigurationVector(super.getLatestState());
+        return multivariateNormalPDF(muVector, sigmaMatrix, poseMatrix);
     }
 }
