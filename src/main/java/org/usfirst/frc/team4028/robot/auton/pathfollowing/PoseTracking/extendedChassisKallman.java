@@ -33,6 +33,8 @@ public class extendedChassisKallman extends extendedKallmanFilter {
     }
     
 	private extendedChassisKallman() {
+        startRunning();
+        initialize();
     }
 
     public Matrix initNoiseDistributionJacobianG(){
@@ -188,6 +190,7 @@ public class extendedChassisKallman extends extendedKallmanFilter {
         RigidTransform pose = new RigidTransform(translation, rotation);
         return pose;
     }
+
 
     private Matrix rigidTransformationToPoseVector(RigidTransform rTransform){
         return poseVectorFromConfigurationVector(rTransform.getKallmanStateVector(0, 0));

@@ -275,7 +275,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
    */
 
    public double get (int i, int j) {
-      return A[i][j];
+      return A[j][i];
    }
 
    /** Get a submatrix.
@@ -394,7 +394,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
       try {
          for (int i = i0; i <= i1; i++) {
             for (int j = j0; j <= j1; j++) {
-               A[i][j] = X.get(i-i0,j-j0);
+               A[i][j] = X.get(j-j0, i-i0);
             }
          }
       } catch(ArrayIndexOutOfBoundsException e) {
@@ -413,7 +413,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
       try {
          for (int i = 0; i < r.length; i++) {
             for (int j = 0; j < c.length; j++) {
-               A[r[i]][c[j]] = X.get(i,j);
+               A[r[i]][c[j]] = X.get(j,i);
             }
          }
       } catch(ArrayIndexOutOfBoundsException e) {
@@ -433,7 +433,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
       try {
          for (int i = 0; i < r.length; i++) {
             for (int j = j0; j <= j1; j++) {
-               A[r[i]][j] = X.get(i,j-j0);
+               A[r[i]][j] = X.get(j-j0, i);
             }
          }
       } catch(ArrayIndexOutOfBoundsException e) {
@@ -453,7 +453,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
       try {
          for (int i = i0; i <= i1; i++) {
             for (int j = 0; j < c.length; j++) {
-               A[i][c[j]] = X.get(i-i0,j);
+               A[i][c[j]] = X.get(j, i-i0);
             }
          }
       } catch(ArrayIndexOutOfBoundsException e) {
@@ -1066,7 +1066,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
        for (int j = 0; j< m1.n + m2.n; j++){
           if (i<m1.m){
             if (j<m1.n){
-              Arr[i][j] = m1.get(i, j);
+              Arr[i][j] = m1.get(j,i);
             } else {
               Arr[i][j]=0;
             }
@@ -1074,7 +1074,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
             if (j<m1.n){
               Arr[i][j] = 0;
             } else {
-              Arr[i][j] = m2.get(i-m1.m, j-m1.n);
+              Arr[i][j] = m2.get(j-m1.n, i-m1.m);
             }
           }
        }

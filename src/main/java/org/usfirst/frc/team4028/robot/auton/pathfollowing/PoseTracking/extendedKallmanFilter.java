@@ -27,6 +27,8 @@ public abstract class extendedKallmanFilter {
     Matrix mapStateToMeasurementJacobianH;
     Matrix constantPartOfMatrixQ;
     boolean hasStarted = false;
+    boolean isFirstCycle = true;
+    boolean isSecondCycle = false;
     int dim;
     public abstract Matrix dynamicsFunctionPhi(Matrix x, double deltaT);
     public abstract Matrix mapXtoZFunctionH(Matrix z);
@@ -151,8 +153,16 @@ public abstract class extendedKallmanFilter {
     }
 
     public void update(Matrix measurement, double timeStamp){
+        if (this.isFirstCycle){
+            this.isFirstCycle = false;
+            this.isSecondCycle = true;
+        } else {
         predict(timeStamp);
         filter(measurement);
+        if (isSecondCycle){
+            isSecondCycle = false;
+        }
+        }
     }
 
 }

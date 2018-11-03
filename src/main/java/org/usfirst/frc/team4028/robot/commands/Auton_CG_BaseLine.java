@@ -14,9 +14,9 @@ public class Auton_CG_BaseLine extends CommandGroup
     Path _baseLine = Paths.getPath(Center.AUTO_RUN);
     public Auton_CG_BaseLine()
     {
-        //addParallel(new Auton_ParallelStarter());
-        //addSequential(new Auton_RunMotionProfileAction(_baseLine));
         addParallel(new Auton_ParallelStarter());
-        addSequential(new Chassis_DriveSetDistanceAction(30));    
+        addSequential(new Auton_RunMotionProfileAction(_baseLine));
+        //addParallel(new Auton_ParallelStarter());
+        //addSequential(new Chassis_DriveSetDistanceAction(30));    
     }
 }

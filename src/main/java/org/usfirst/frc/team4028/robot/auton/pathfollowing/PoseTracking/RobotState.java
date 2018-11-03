@@ -84,6 +84,14 @@ public class RobotState {
         return _distanceDriven;
     }
 
+    public synchronized boolean isFirstKallmanCycle(){
+        return _kallmanFilter.isFirstCycle;
+    }
+
+    public synchronized boolean isSecondKallmanCycle(){
+        return _kallmanFilter.isSecondCycle;
+    }
+
     public synchronized Twist getPredictedVelocity() {
         return _vehicleVelocityPredicted;
     }
