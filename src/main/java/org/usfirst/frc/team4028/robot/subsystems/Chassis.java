@@ -57,6 +57,8 @@ public class Chassis extends Subsystem
 	private double _leftMasterCurrentVelocity = 0;
 	private boolean _isFirstTimeLoggingAccel = true;
 
+	public double _maxSpeedForPIDTuning;
+
 	public enum ChassisState
 	{
 		UNKNOWN,
@@ -66,10 +68,10 @@ public class Chassis extends Subsystem
 		DRIVE_SET_DISTANCE
 	}
 	
-	private static final double[] MOTION_MAGIC_TURN_PIDF_GAINS = {0.25, 0.0, 30.0, 0.095};
+	private static final double[] MOTION_MAGIC_TURN_PIDF_GAINS =    {0.25, 0.0, 30.0, 0.095};
 	private static final double[] MOTION_MAGIC_STRAIGHT_PIDF_GAINS = {0.15, 0.0, 20.0, 0.095};
 	private static final double[] LOW_GEAR_VELOCITY_PIDF_GAINS = {0.15, 0.0, 1.5, 0.085}; 
-	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS = {0.09, 0.0, 1.3, 0.044}; 
+	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS =   {.075, 0, 0, .037}; // {0.09, 0.0, 1.3, 0.044}; 
     
     private static final int[] MOTION_MAGIC_TURN_VEL_ACC = {80 * 150, 170 * 150};
 	private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 170 * 150};

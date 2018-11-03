@@ -49,11 +49,13 @@ Chassis _chassis = Chassis.getInstance();
         GeneralUtilities.setPIDFGains(_rightSlave, zeroes);
 
 
+        _leftMaster.configClosedloopRamp(1.5, 10);
+
         TalonSRX[] listOSlaves = {_rightMaster, _rightSlave, _leftSlave};
 
 
         addParallel(new Auton_ParallelStarter());
-        addSequential(new Auton_CG_PIDTune(_chassis, _leftMaster, 0, Chassis.getInstance().inchesPerSecToNU(180) , 35, listOSlaves));
+        addSequential(new Auton_CG_PIDTune(_chassis, _leftMaster, 0, Chassis.getInstance().inchesPerSecToNU(180) , 50, 30, listOSlaves));
 
         
 

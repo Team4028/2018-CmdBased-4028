@@ -98,7 +98,7 @@ public class Robot extends TimedRobot
 
 		_chassis.recordAutonStartTime();
 		_chassis.zeroSensors();
-		_chassis.setHighGear(true);
+		_chassis.setHighGear(false);
 
 		int retries = 100;
 		
