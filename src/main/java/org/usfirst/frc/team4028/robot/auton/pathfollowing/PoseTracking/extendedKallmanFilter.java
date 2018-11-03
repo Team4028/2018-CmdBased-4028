@@ -22,7 +22,7 @@ public abstract class extendedKallmanFilter {
     Matrix instantaneousPhysicalUncertaintyMatrixQ; 
     Matrix instantaneousMeasurementUncertaintyMatrixR; 
     Matrix localStateMapMatrixPhi; 
-    Matrix kallmanGainMatrixK; 
+    Matrix kalmanGainMatrixK; 
     Matrix noiseDistributionJacobianG; 
     Matrix mapStateToMeasurementJacobianH;
     Matrix constantPartOfMatrixQ;
@@ -125,23 +125,23 @@ public abstract class extendedKallmanFilter {
 
 
     public void filter(Matrix newMeasurement){
-        computeKallmanGain();
+        computekalmanGain();
         updateStateEstimate(newMeasurement);
         updateCovarianceMatrix();
     }
 
-    public void computeKallmanGain(){
+    public void computekalmanGain(){
         updateH();
         updateR();
-        this.kallmanGainMatrixK = this.predictedCovarianceMatrixP.times(this.mapStateToMeasurementJacobianH.transpose()).times(this.mapStateToMeasurementJacobianH.times(this.predictedCovarianceMatrixP).times(this.mapStateToMeasurementJacobianH.transpose()).plus(this.instantaneousMeasurementUncertaintyMatrixR).inverse());
+        this.kalmanGainMatrixK = this.predictedCovarianceMatrixP.times(this.mapStateToMeasurementJacobianH.transpose()).times(this.mapStateToMeasurementJacobianH.times(this.predictedCovarianceMatrixP).times(this.mapStateToMeasurementJacobianH.transpose()).plus(this.instantaneousMeasurementUncertaintyMatrixR).inverse());
     }
 
     public void updateStateEstimate(Matrix newMeasurement){
-        this.predictedConfigVectorX.plusEquals(this.kallmanGainMatrixK.times(newMeasurement.minus(this.mapXtoZFunctionH(this.predictedConfigVectorX))));
+        this.predictedConfigVectorX.plusEquals(this.kalmanGainMatrixK.times(newMeasurement.minus(this.mapXtoZFunctionH(this.predictedConfigVectorX))));
     }
 
     public void updateCovarianceMatrix(){
-        this.predictedCovarianceMatrixP = Matrix.identity(this.dim, this.dim).minus(this.kallmanGainMatrixK.times(this.mapStateToMeasurementJacobianH)).times(this.predictedCovarianceMatrixP);
+        this.predictedCovarianceMatrixP = Matrix.identity(this.dim, this.dim).minus(this.kalmanGainMatrixK.times(this.mapStateToMeasurementJacobianH)).times(this.predictedCovarianceMatrixP);
     }
 
     public Matrix getLatestState(){

@@ -141,7 +141,7 @@ public class RigidTransform implements Interpolable<RigidTransform>{
         return transformBy(RigidTransform.exp(twist.scaled(x)));
     }
 
-    public Matrix getKallmanStateVector(double Vr, double Vl){
+    public Matrix getkalmanStateVector(double Vr, double Vl){
         double[][] vectorAsArray = { {this._translation._x},
                                      {this._translation._y},
                                      {this._rotation.getDegrees()},

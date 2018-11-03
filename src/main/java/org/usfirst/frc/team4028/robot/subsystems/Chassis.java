@@ -52,8 +52,8 @@ public class Chassis extends Subsystem
 	private boolean _isTurnRight;
 	private static final double ENCODER_ROTATIONS_PER_DEGREE = 46.15/3600;
 	private RobotState _robotState = RobotState.getInstance();
-	private Matrix _expirimentalKallmanStateMatrix;
-	private Matrix _expirimentalKallmanCovarianceMatrix;
+	private Matrix _expirimentalkalmanStateMatrix;
+	private Matrix _expirimentalkalmanCovarianceMatrix;
 
 	public enum ChassisState
 	{
@@ -437,6 +437,8 @@ public class Chassis extends Subsystem
 		return NU *Constants.DRIVE_WHEEL_DIAMETER_IN*Math.PI / ENCODER_COUNTS_PER_WHEEL_REV;
 	}
 
+	public static final double NUperInchConstant = Constants.DRIVE_WHEEL_DIAMETER_IN*Math.PI / ENCODER_COUNTS_PER_WHEEL_REV;
+
 	private static double inchesPerSecToNU(double inches_per_second) 
 	{
         return inches_per_second * ENCODER_COUNTS_PER_WHEEL_REV / (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI * 10);
@@ -475,8 +477,8 @@ public class Chassis extends Subsystem
 		_robotState.addObservations(timestamp, odometry_velocity, predicted_velocity, Vr, Vl);
 		_leftEncoderPrevDistance = left_distance;
 		_rightEncoderPrevDistance = right_distance;
-		_expirimentalKallmanStateMatrix = _robotState.getKallmanCurrentStateVector();
-		_expirimentalKallmanCovarianceMatrix = _robotState.getKallmanCurrentCovarianceMatrix();
+		_expirimentalkalmanStateMatrix = _robotState.getkalmanCurrentStateVector();
+		_expirimentalkalmanCovarianceMatrix = _robotState.getkalmanCurrentCovarianceMatrix();
 	}
 	//=====================================================================================
 	// Support Methods
@@ -499,32 +501,32 @@ public class Chassis extends Subsystem
 		logData.AddData("Left Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(get_leftVelocityInchesPerSec(), 2)));
 		
 
-		if (!(RobotState.getInstance().isFirstKallmanCycle() || RobotState.getInstance().isSecondKallmanCycle())){
-			//Kallman Estimated Vals
-			logData.AddData("Kallman X", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getKallmanCurrentStateVector().get(0,0), 3)));
-			logData.AddData("Kallman Y", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getKallmanCurrentStateVector().get(0,1), 3)));
-			logData.AddData("Kallman Theta", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getKallmanCurrentStateVector().get(0,2), 3)));
-			logData.AddData("Kallman Vr", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getKallmanCurrentStateVector().get(0,3), 3)));
-			logData.AddData("Kallman Vl", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getKallmanCurrentStateVector().get(0,4), 3)));
+		if (!(RobotState.getInstance().isFirstkalmanCycle() || RobotState.getInstance().isSecondkalmanCycle())){
+			//kalman Estimated Vals
+			logData.AddData("kalman X", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getkalmanCurrentStateVector().get(0,0), 3)));
+			logData.AddData("kalman Y", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getkalmanCurrentStateVector().get(0,1), 3)));
+			logData.AddData("kalman Theta", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getkalmanCurrentStateVector().get(0,2), 3)));
+			logData.AddData("kalman Vr", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getkalmanCurrentStateVector().get(0,3), 3)));
+			logData.AddData("kalman Vl", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getkalmanCurrentStateVector().get(0,4), 3)));
 			
 
-			//Kallman Esitmated Covariances
+			//kalman Esitmated Covariances
 			String[] vars = {"X", "Y", "Theta", "Vr", "Vl"};
 			for (int i = 0; i <5; i++){
 				for (int j = 0; j<5; j++){
-					logData.AddData("Cov(" + vars[i] + "," + vars[j] + ")", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getKallmanCurrentCovarianceMatrix().get(i,j), 3)));
+					logData.AddData("Cov(" + vars[i] + "," + vars[j] + ")", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getkalmanCurrentCovarianceMatrix().get(i,j), 3)));
 				}
 			}
 
 	    } else {
-			logData.AddData("Kallman X", String.valueOf(0));
-			logData.AddData("Kallman Y", String.valueOf(0));
-			logData.AddData("Kallman Theta", String.valueOf(0));
-			logData.AddData("Kallman Vr", String.valueOf(0));
-			logData.AddData("Kallman Vl", String.valueOf(0));
+			logData.AddData("kalman X", String.valueOf(0));
+			logData.AddData("kalman Y", String.valueOf(0));
+			logData.AddData("kalman Theta", String.valueOf(0));
+			logData.AddData("kalman Vr", String.valueOf(0));
+			logData.AddData("kalman Vl", String.valueOf(0));
 			
 
-			//Kallman Esitmated Covariances
+			//kalman Esitmated Covariances
 			String[] vars = {"X", "Y", "Theta", "Vr", "Vl"};
 			for (int i = 0; i <5; i++){
 				for (int j = 0; j<5; j++){

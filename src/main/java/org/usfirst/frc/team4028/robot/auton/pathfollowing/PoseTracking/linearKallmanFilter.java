@@ -15,7 +15,7 @@ public class linearKallmanFilter{
     private double dt;
     private Matrix diffEqMatrixF;
     private Matrix localStateMapMatrixPhi;
-    private Matrix kallmanGainMatrixK;
+    private Matrix kalmanGainMatrixK;
     private Matrix noiseDistributionMatrixG;
     private Matrix instantaneousPhysicalUncertaintyMatrixQ;
     private Matrix instantaneousMeasurementUncertaintyMatrixR;
@@ -68,20 +68,20 @@ public class linearKallmanFilter{
         this.predictedCovarianceMatrixP = this.localStateMapMatrixPhi.times(this.currentCovarianceMatrixP).times(this.localStateMapMatrixPhi.transpose()).plus(this.noiseDistributionMatrixG.times(this.instantaneousPhysicalUncertaintyMatrixQ).times(this.noiseDistributionMatrixG.transpose()));
     }
 
-    private void computeKallmanGain(){
-        this.kallmanGainMatrixK = this.predictedCovarianceMatrixP.times(this.mapStateToMeasurementMatrixH.transpose()).times(this.mapStateToMeasurementMatrixH.times(this.predictedCovarianceMatrixP).times(this.mapStateToMeasurementMatrixH.transpose()).plus(this.instantaneousMeasurementUncertaintyMatrixR).inverse());
+    private void computekalmanGain(){
+        this.kalmanGainMatrixK = this.predictedCovarianceMatrixP.times(this.mapStateToMeasurementMatrixH.transpose()).times(this.mapStateToMeasurementMatrixH.times(this.predictedCovarianceMatrixP).times(this.mapStateToMeasurementMatrixH.transpose()).plus(this.instantaneousMeasurementUncertaintyMatrixR).inverse());
     }
 
     private void filterStateEstimate(Matrix newMeasurement){
-        this.predictedConfigVectorX = this.predictedConfigVectorX.plus(this.kallmanGainMatrixK.times(newMeasurement.minus(this.mapStateToMeasurementMatrixH.times(this.predictedConfigVectorX))));
+        this.predictedConfigVectorX = this.predictedConfigVectorX.plus(this.kalmanGainMatrixK.times(newMeasurement.minus(this.mapStateToMeasurementMatrixH.times(this.predictedConfigVectorX))));
     }
 
     private void filterCovariance(){
-        this.predictedCovarianceMatrixP = Matrix.identity(this.dim, this.dim).minus(this.kallmanGainMatrixK.times(this.mapStateToMeasurementMatrixH)).times(this.predictedCovarianceMatrixP);
+        this.predictedCovarianceMatrixP = Matrix.identity(this.dim, this.dim).minus(this.kalmanGainMatrixK.times(this.mapStateToMeasurementMatrixH)).times(this.predictedCovarianceMatrixP);
     }
 
     public void filter(Matrix newMeasurement){
-        computeKallmanGain();
+        computekalmanGain();
         filterStateEstimate(newMeasurement);
         filterCovariance();
     }

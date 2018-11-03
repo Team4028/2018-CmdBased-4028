@@ -20,7 +20,7 @@ public class RobotState {
         return instance_;
     }
 
-    private extendedChassisKallman _kallmanFilter = extendedChassisKallman.getInstance();
+    private extendedChassisKallman _kalmanFilter = extendedChassisKallman.getInstance();
 
     private static final int kObservationBufferSize = 100;
     
@@ -58,17 +58,17 @@ public class RobotState {
             Twist predicted_velocity, double Vr, double Vl) {
         RigidTransform measuredPose = Kinematics.integrateForwardKinematics(getLatestFieldToVehicle().getValue(), measured_velocity);
         addFieldToVehicleObservation(timestamp,measuredPose);
-        Matrix measurementVector = measuredPose.getKallmanStateVector(Vr, Vl);
-        _kallmanFilter.update(measurementVector, timestamp);
+        Matrix measurementVector = measuredPose.getkalmanStateVector(Vr, Vl);
+        _kalmanFilter.update(measurementVector, timestamp);
         _vehicleVelocityPredicted = predicted_velocity;
     }
 
-    public synchronized Matrix getKallmanCurrentStateVector(){
-        return _kallmanFilter.getLatestState();
+    public synchronized Matrix getkalmanCurrentStateVector(){
+        return _kalmanFilter.getLatestState();
     }
 
-    public synchronized Matrix getKallmanCurrentCovarianceMatrix(){
-        return _kallmanFilter.getLatestCovariance();
+    public synchronized Matrix getkalmanCurrentCovarianceMatrix(){
+        return _kalmanFilter.getLatestCovariance();
     }
 
     public synchronized Twist generateOdometryFromSensors(double left_encoder_delta_distance,
@@ -84,12 +84,12 @@ public class RobotState {
         return _distanceDriven;
     }
 
-    public synchronized boolean isFirstKallmanCycle(){
-        return _kallmanFilter.isFirstCycle;
+    public synchronized boolean isFirstkalmanCycle(){
+        return _kalmanFilter.isFirstCycle;
     }
 
-    public synchronized boolean isSecondKallmanCycle(){
-        return _kallmanFilter.isSecondCycle;
+    public synchronized boolean isSecondkalmanCycle(){
+        return _kalmanFilter.isSecondCycle;
     }
 
     public synchronized Twist getPredictedVelocity() {

@@ -811,7 +811,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
 
    public Matrix mExp(){
      assert m==n;
-     //our jacobian for extended Chassis Kallman filtering is singular, but it is nilpotent, and so the second degree taylor expansion is exact
+     //our jacobian for extended Chassis kalman filtering is singular, but it is nilpotent, and so the second degree taylor expansion is exact
      if (this.eig().getV().rank() != m){
        return identity(m, n).plus(this).plus(this.times(this).times(.5));
      }

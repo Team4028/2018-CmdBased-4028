@@ -34,7 +34,6 @@ public class extendedChassisKallman extends extendedKallmanFilter {
     
 	private extendedChassisKallman() {
         startRunning();
-        initialize();
     }
 
     public Matrix initNoiseDistributionJacobianG(){
@@ -163,6 +162,7 @@ public class extendedChassisKallman extends extendedKallmanFilter {
     }
 
     public Matrix dynamicsFunctionPhi(Matrix x, double deltaT){
+
         double curX = x.get(0,0);
         double curY = x.get(0,1);
         double curTheta = x.get(0,2);
@@ -173,7 +173,7 @@ public class extendedChassisKallman extends extendedKallmanFilter {
         RigidTransform curPose = new RigidTransform(new Translation(curX, curY), Rotation.fromDegrees(curTheta));
         Twist twistGenerated = Kinematics.forwardKinematics(Vr, Vl).scaled(Constants.TRACK_SCRUBBING_FACTOR*deltaT);
         RigidTransform newPose = curPose.transformBy(RigidTransform.exp(twistGenerated));
-        return newPose.getKallmanStateVector(newVr, newVl );
+        return newPose.getkalmanStateVector(newVr, newVl );
     }
 
     public RigidTransform getLatestPose(){
@@ -193,7 +193,7 @@ public class extendedChassisKallman extends extendedKallmanFilter {
 
 
     private Matrix rigidTransformationToPoseVector(RigidTransform rTransform){
-        return poseVectorFromConfigurationVector(rTransform.getKallmanStateVector(0, 0));
+        return poseVectorFromConfigurationVector(rTransform.getkalmanStateVector(0, 0));
     }
 
     private Matrix poseCovarianceMatrixFromConfigurationCovarianceMatrix(Matrix configCovarianceMatrix){
