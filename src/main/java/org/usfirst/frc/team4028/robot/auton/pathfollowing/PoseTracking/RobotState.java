@@ -57,13 +57,19 @@ public class RobotState {
     public synchronized void addObservations(double timestamp, Twist measured_velocity,
             Twist predicted_velocity, double Vr, double Vl) {
         RigidTransform measuredPose = Kinematics.integrateForwardKinematics(getLatestFieldToVehicle().getValue(), measured_velocity);
+        addFieldToVehicleObservation(timestamp,measuredPose);
         Matrix measurementVector = measuredPose.getKallmanStateVector(Vr, Vl);
         _kallmanFilter.update(measurementVector, timestamp);
-        RigidTransform observation =_kallmanFilter.getLatestPose();
-        addFieldToVehicleObservation(timestamp,observation);
         _vehicleVelocityPredicted = predicted_velocity;
     }
 
+    public synchronized Matrix getKallmanCurrentStateVector(){
+        return _kallmanFilter.getLatestState();
+    }
+
+    public synchronized Matrix getKallmanCurrentCovarianceMatrix(){
+        return _kallmanFilter.getLatestCovariance();
+    }
 
     public synchronized Twist generateOdometryFromSensors(double left_encoder_delta_distance,
             double right_encoder_delta_distance, Rotation current_gyro_angle) {

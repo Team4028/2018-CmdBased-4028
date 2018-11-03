@@ -10,6 +10,7 @@ import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.RigidTransform;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.Rotation;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.Twist;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.Kinematics;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.maphs.matrix.Matrix;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -51,6 +52,8 @@ public class Chassis extends Subsystem
 	private boolean _isTurnRight;
 	private static final double ENCODER_ROTATIONS_PER_DEGREE = 46.15/3600;
 	private RobotState _robotState = RobotState.getInstance();
+	private Matrix _expirimentalKallmanStateMatrix;
+	private Matrix _expirimentalKallmanCovarianceMatrix;
 
 	public enum ChassisState
 	{
@@ -472,23 +475,47 @@ public class Chassis extends Subsystem
 		_robotState.addObservations(timestamp, odometry_velocity, predicted_velocity, Vr, Vl);
 		_leftEncoderPrevDistance = left_distance;
 		_rightEncoderPrevDistance = right_distance;
+		_expirimentalKallmanStateMatrix = _robotState.getKallmanCurrentStateVector();
+		_expirimentalKallmanCovarianceMatrix = _robotState.getKallmanCurrentCovarianceMatrix();
 	}
 	//=====================================================================================
 	// Support Methods
 	//=====================================================================================
 	public void updateLogData(LogDataBE logData) 
 	{
-		logData.AddData("Left Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(get_leftVelocityInchesPerSec(), 2)));
+		
 		//logData.AddData("Left Target Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(_leftTargetVelocity, 2)));
 		logData.AddData("Left Output Current", String.valueOf(GeneralUtilities.roundDouble(_leftMaster.getOutputCurrent(), 2)));
 		
-		logData.AddData("Right Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(-get_rightVelocityInchesPerSec(), 2)));
+		
 		//logData.AddData("Right Target Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(_rightTargetVelocity, 2)));
 		logData.AddData("Right Output Current", String.valueOf(GeneralUtilities.roundDouble(_rightMaster.getOutputCurrent(), 2)));
 		
-		//logData.AddData("Pose X", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().x()));
-		//logData.AddData("Pose Y", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().y()));
-		//logData.AddData("Pose Angle", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getRotation().getDegrees()));
+		//Currently Estimated Vals
+		logData.AddData("Pose X", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().x()));
+		logData.AddData("Pose Y", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().y()));
+		logData.AddData("Pose Angle", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getRotation().getDegrees()));
+		logData.AddData("Right Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(-get_rightVelocityInchesPerSec(), 2)));
+		logData.AddData("Left Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(get_leftVelocityInchesPerSec(), 2)));
+		
+
+		//Kallman Estimated Vals
+		logData.AddData("Kallman X", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getKallmanCurrentStateVector().get(0,0), 3)));
+		logData.AddData("Kallman Y", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getKallmanCurrentStateVector().get(0,1), 3)));
+		logData.AddData("Kallman Theta", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getKallmanCurrentStateVector().get(0,2), 3)));
+		logData.AddData("Kallman Vr", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getKallmanCurrentStateVector().get(0,3), 3)));
+		logData.AddData("Kallman Vl", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getKallmanCurrentStateVector().get(0,4), 3)));
+		
+
+		//Kallman Esitmated Covariances
+		String[] vars = {"X", "Y", "Theta", "Vr", "Vl"};
+		for (int i = 0; i <5; i++){
+			for (int j = 0; j<5; j++){
+				logData.AddData("Cov(" + vars[i] + "," + vars[j] + ")", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getKallmanCurrentCovarianceMatrix().get(i,j), 3)));
+			}
+		}
+
+		
 		//logData.AddData("Remaining Distance", String.valueOf(getRemainingPathDistance()));
 		
 		//logData.AddData("Center Target Velocity", String.valueOf(GeneralUtilities.roundDouble(_centerTargetVelocity, 2)));
