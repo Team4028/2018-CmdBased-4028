@@ -1,9 +1,15 @@
-package org.usfirst.frc.team4028.robot.commands;
+package org.usfirst.frc.team4028.robot.commands.auton.autonmodes;
 
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths.Left;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths.Right;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.Path;
+import org.usfirst.frc.team4028.robot.commands.CG_OutfeedCube;
+import org.usfirst.frc.team4028.robot.commands.Carriage_ToggleFlapSolenoid;
+import org.usfirst.frc.team4028.robot.commands.Chassis_DriveSetDistanceAction;
+import org.usfirst.frc.team4028.robot.commands.Elevator_MoveElevatorToPresetPosition;
+import org.usfirst.frc.team4028.robot.commands.auton.Auton_RunTimedMotionProfileCommand;
+import org.usfirst.frc.team4028.robot.commands.auton.Auton_WaitUntilRemaingDistance;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITION;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -55,9 +61,9 @@ public class Auton_CG_Scale extends CommandGroup
         }
 
         addParallel(new Auton_RunTimedMotionProfileCommand(toScale, 3));
-            addSequential(new WaitCommand(elevatorWaitTime));
+        addSequential(new WaitCommand(elevatorWaitTime));
         addParallel(new Elevator_MoveElevatorToPresetPosition(ELEVATOR_TARGET_POSITION.SCALE_HEIGHT));
-            addSequential(new Carriage_ToggleFlapSolenoid(actuateFlapJack));
+        addSequential(new Carriage_ToggleFlapSolenoid(actuateFlapJack));
         addSequential(new Auton_WaitUntilRemaingDistance(remainingPathDistance));
         addSequential(new CG_OutfeedCube());
         addSequential(new Chassis_DriveSetDistanceAction(-10));

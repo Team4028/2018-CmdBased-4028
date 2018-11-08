@@ -3,13 +3,14 @@ package org.usfirst.frc.team4028.robot.subsystems;
 //#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.RobotMap;
-import org.usfirst.frc.team4028.robot.auton.pathfollowing.RobotState;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.poseTracking.RobotState;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.Path;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.PathFollower;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.RigidTransform;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.Rotation;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.Twist;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.Kinematics;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.maphs.matrix.Matrix;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -43,7 +44,7 @@ public class Chassis extends Subsystem
 	
 	private NavXGyro _navX = NavXGyro.getInstance();
 	
-	public static final double ENCODER_COUNTS_PER_WHEEL_REV = 30725.425;		// account for gear boxes
+	private static final double ENCODER_COUNTS_PER_WHEEL_REV = 30725.425;		// account for gear boxes
 
 	public double _leftMtrDriveSetDistanceCmd;
 	public double _rightMtrDriveSetDistanceCmd;
@@ -51,13 +52,8 @@ public class Chassis extends Subsystem
 	private boolean _isTurnRight;
 	private static final double ENCODER_ROTATIONS_PER_DEGREE = 46.15/3600;
 	private RobotState _robotState = RobotState.getInstance();
-	private double _leftMasterVelocityLoggingLastLogTime;
-	private double _leftMasterVelocityLoggingThisTime;
-	private double _leftMasterPreviousVelocity = 0;
-	private double _leftMasterCurrentVelocity = 0;
-	private boolean _isFirstTimeLoggingAccel = true;
-
-	public double _maxSpeedForPIDTuning;
+	private Matrix _expirimentalkalmanStateMatrix;
+	private Matrix _expirimentalkalmanCovarianceMatrix;
 
 	public enum ChassisState
 	{
@@ -68,10 +64,10 @@ public class Chassis extends Subsystem
 		DRIVE_SET_DISTANCE
 	}
 	
-	private static final double[] MOTION_MAGIC_TURN_PIDF_GAINS =    {0.25, 0.0, 30.0, 0.095};
+	private static final double[] MOTION_MAGIC_TURN_PIDF_GAINS = {0.25, 0.0, 30.0, 0.095};
 	private static final double[] MOTION_MAGIC_STRAIGHT_PIDF_GAINS = {0.15, 0.0, 20.0, 0.095};
 	private static final double[] LOW_GEAR_VELOCITY_PIDF_GAINS = {0.15, 0.0, 1.5, 0.085}; 
-	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS =   {.075, 0, 0, .037}; // {0.09, 0.0, 1.3, 0.044}; 
+	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS = {0.09, 0.0, 1.3, 0.044}; 
     
     private static final int[] MOTION_MAGIC_TURN_VEL_ACC = {80 * 150, 170 * 150};
 	private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 170 * 150};
@@ -117,8 +113,6 @@ public class Chassis extends Subsystem
 		_shifter = new DoubleSolenoid(RobotMap.PCM_CAN_ADDR, RobotMap.SHIFTER_EXTEND_PCM_PORT, RobotMap.SHIFTER_RETRACT_PCM_PORT);
 	
 	}
-
-
 	public void updateChassis(double timestamp){
 		switch(_chassisState) {
 			case UNKNOWN:
@@ -393,7 +387,14 @@ public class Chassis extends Subsystem
     public double get_rightVelocityInchesPerSec() {
         return rpmToInchesPerSecond(get_rightSpeed());
 	}
+
+	public double get_leftVelocitySetpoint() {
+		return NUPer100msToInchesPerSec(_leftTargetVelocity);
+	}
 	
+	public double get_rightVelocitySetpoint(){
+		return NUPer100msToInchesPerSec(_rightTargetVelocity);
+	}
 
 	private synchronized boolean get_isHighGear() {
 		return _shifter.get() == Constants.SHIFTER_HIGH_GEAR_POS;
@@ -431,19 +432,23 @@ public class Chassis extends Subsystem
 	private static double InchestoNU (double inches){
 		return inches * ENCODER_COUNTS_PER_WHEEL_REV/(Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI);
 	}
-	private static double NUtoInches (double NU)
+	public static double NUtoInches (double NU)
 	{
 		return NU *Constants.DRIVE_WHEEL_DIAMETER_IN*Math.PI / ENCODER_COUNTS_PER_WHEEL_REV;
 	}
+
+	public static final double NUperInchConstant = Constants.DRIVE_WHEEL_DIAMETER_IN*Math.PI / ENCODER_COUNTS_PER_WHEEL_REV;
 
 	public static double inchesPerSecToNU(double inches_per_second) 
 	{
         return inches_per_second * ENCODER_COUNTS_PER_WHEEL_REV / (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI * 10);
 	}
 
-	public static double NUper100msToInchesPerSec(double NU_per_100ms){
-		return NU_per_100ms*10*Constants.DRIVE_WHEEL_DIAMETER_IN*Math.PI/(ENCODER_COUNTS_PER_WHEEL_REV);
+	private static double NUPer100msToInchesPerSec(double nu_per_100_ms){
+		return nu_per_100_ms * 10 * Math.PI * Constants.DRIVE_WHEEL_DIAMETER_IN / (ENCODER_COUNTS_PER_WHEEL_REV);
 	}
+
+
 	public double getLeftSpeedRPM() {
 		return _leftMaster.getSelectedSensorVelocity(0) * (600 / ENCODER_COUNTS_PER_WHEEL_REV);
 	}
@@ -457,61 +462,85 @@ public class Chassis extends Subsystem
 
     public double getRightVelocityInchesPerSec() {
         return rpmToInchesPerSecond(getRightSpeedRPM());
-	}
-	
-	private double getAcceleration(){
-		this._leftMasterVelocityLoggingLastLogTime = this._leftMasterVelocityLoggingThisTime;
-		this._leftMasterVelocityLoggingThisTime = Timer.getFPGATimestamp();
-		this._leftMasterPreviousVelocity = this._leftMasterCurrentVelocity;
-		this._leftMasterCurrentVelocity = NUper100msToInchesPerSec(_leftMaster.getSelectedSensorVelocity(0));
-		if (! this._isFirstTimeLoggingAccel){
-			double dt = this._leftMasterVelocityLoggingThisTime - this._leftMasterVelocityLoggingLastLogTime;
-			double dv = this._leftMasterCurrentVelocity - this._leftMasterPreviousVelocity;
-			double accel = dv/dt;
-			return accel;
-		} else {
-			this._isFirstTimeLoggingAccel = false;
-			return 0;
-		}
-
-	}
+    }
 	
 	private void estimateRobotState( double timestamp)
 	{
 		final double left_distance = NUtoInches(get_leftPos());
 		final double right_distance = NUtoInches(get_rightPos());
 		final Rotation gyro_angle = Rotation.fromDegrees(get_Heading());
+		final double Vr = get_rightVelocityInchesPerSec();
+		final double Vl = get_leftVelocityInchesPerSec();
 		final Twist odometry_velocity = _robotState.generateOdometryFromSensors(
 				left_distance - _leftEncoderPrevDistance, right_distance - _rightEncoderPrevDistance, gyro_angle);
-		final Twist predicted_velocity = Kinematics.forwardKinematics(getLeftVelocityInchesPerSec(),
-				getRightVelocityInchesPerSec());
-		_robotState.addObservations(timestamp, odometry_velocity, predicted_velocity);
+		final Twist predicted_velocity = Kinematics.forwardKinematics(Vl,Vr);		
+		_robotState.addObservations(timestamp, odometry_velocity, predicted_velocity, Vr, Vl);
 		_leftEncoderPrevDistance = left_distance;
 		_rightEncoderPrevDistance = right_distance;
+		_expirimentalkalmanStateMatrix = _robotState.getkalmanCurrentStateVector();
+		_expirimentalkalmanCovarianceMatrix = _robotState.getkalmanCurrentCovarianceMatrix();
 	}
 	//=====================================================================================
 	// Support Methods
 	//=====================================================================================
 	public void updateLogData(LogDataBE logData) 
 	{
-		logData.AddData("Left Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(get_leftVelocityInchesPerSec(), 2)));
+		
 		//logData.AddData("Left Target Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(_leftTargetVelocity, 2)));
 		logData.AddData("Left Output Current", String.valueOf(GeneralUtilities.roundDouble(_leftMaster.getOutputCurrent(), 2)));
 		
-		logData.AddData("Right Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(-get_rightVelocityInchesPerSec(), 2)));
+		
 		//logData.AddData("Right Target Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(_rightTargetVelocity, 2)));
 		logData.AddData("Right Output Current", String.valueOf(GeneralUtilities.roundDouble(_rightMaster.getOutputCurrent(), 2)));
-		logData.AddData("Chassis Acceleration [in/s/s]", String.valueOf(GeneralUtilities.roundDouble(getAcceleration(), 2)));
-		//logData.AddData("Pose X", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().x()));
-		//logData.AddData("Pose Y", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().y()));
-		//logData.AddData("Pose Angle", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getRotation().getDegrees()));
+		
+		//Currently Estimated Vals
+		logData.AddData("Pose X", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().x()));
+		logData.AddData("Pose Y", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().y()));
+		logData.AddData("Pose Angle", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getRotation().getDegrees()));
+		logData.AddData("Right Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(-get_rightVelocityInchesPerSec(), 2)));
+		logData.AddData("Left Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(get_leftVelocityInchesPerSec(), 2)));
+		
+
+		if (!(RobotState.getInstance().isFirstkalmanCycle() || RobotState.getInstance().isSecondkalmanCycle())){
+			//kalman Estimated Vals
+			logData.AddData("kalman X", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getkalmanCurrentStateVector().get(0,0), 3)));
+			logData.AddData("kalman Y", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getkalmanCurrentStateVector().get(0,1), 3)));
+			logData.AddData("kalman Theta", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getkalmanCurrentStateVector().get(0,2), 3)));
+			logData.AddData("kalman Vr", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getkalmanCurrentStateVector().get(0,3), 3)));
+			logData.AddData("kalman Vl", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getkalmanCurrentStateVector().get(0,4), 3)));
+			
+
+			//kalman Esitmated Covariances
+			String[] vars = {"X", "Y", "Theta", "Vr", "Vl"};
+			for (int i = 0; i <5; i++){
+				for (int j = 0; j<5; j++){
+					logData.AddData("Cov(" + vars[i] + "," + vars[j] + ")", String.valueOf(GeneralUtilities.roundDouble(RobotState.getInstance().getkalmanCurrentCovarianceMatrix().get(i,j), 3)));
+				}
+			}
+
+	    } else {
+			logData.AddData("kalman X", String.valueOf(0));
+			logData.AddData("kalman Y", String.valueOf(0));
+			logData.AddData("kalman Theta", String.valueOf(0));
+			logData.AddData("kalman Vr", String.valueOf(0));
+			logData.AddData("kalman Vl", String.valueOf(0));
+			
+
+			//kalman Esitmated Covariances
+			String[] vars = {"X", "Y", "Theta", "Vr", "Vl"};
+			for (int i = 0; i <5; i++){
+				for (int j = 0; j<5; j++){
+					logData.AddData("Cov(" + vars[i] + "," + vars[j] + ")", String.valueOf(0));
+				}
+			}
+		}
+
+		
 		//logData.AddData("Remaining Distance", String.valueOf(getRemainingPathDistance()));
 		
 		//logData.AddData("Center Target Velocity", String.valueOf(GeneralUtilities.roundDouble(_centerTargetVelocity, 2)));
 
 	}
-
-
 	
 	public void updateDashboard() 
 	{

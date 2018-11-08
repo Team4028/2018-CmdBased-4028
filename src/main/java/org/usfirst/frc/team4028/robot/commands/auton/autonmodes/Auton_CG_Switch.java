@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.commands;
+package org.usfirst.frc.team4028.robot.commands.auton.autonmodes;
 
 import java.util.Arrays;
 
@@ -17,8 +17,19 @@ import edu.wpi.first.wpilibj.command.WaitCommand;
 
 
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.Path;
+import org.usfirst.frc.team4028.robot.commands.CG_OutfeedCube;
+import org.usfirst.frc.team4028.robot.commands.Carriage_RunCarriageWheels;
+import org.usfirst.frc.team4028.robot.commands.Chassis_DriveSetDistanceAction;
+import org.usfirst.frc.team4028.robot.commands.Elevator_MoveElevatorToPresetPosition;
+import org.usfirst.frc.team4028.robot.commands.Infeed_MoveInfeedArmsToPresetPosition;
+import org.usfirst.frc.team4028.robot.commands.Infeed_RunInfeedWheels;
+import org.usfirst.frc.team4028.robot.commands.PrintTimeFromStart;
+import org.usfirst.frc.team4028.robot.commands.Series_Command;
+import org.usfirst.frc.team4028.robot.commands.Simultaneous_Command;
 import org.usfirst.frc.team4028.robot.commands.Carriage_RunCarriageWheels.CARRIAGE_WHEELS_FUNCTION;
 import org.usfirst.frc.team4028.robot.commands.Infeed_RunInfeedWheels.INFEED_WHEELS_FUNCTION;
+import org.usfirst.frc.team4028.robot.commands.auton.Auton_ParallelStarter;
+import org.usfirst.frc.team4028.robot.commands.auton.Auton_RunTimedMotionProfileCommand;
 
 public class Auton_CG_Switch extends CommandGroup {
 	Path toSwitch;

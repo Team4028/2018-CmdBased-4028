@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.commands;
+package org.usfirst.frc.team4028.robot.commands.auton.autotuning;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 

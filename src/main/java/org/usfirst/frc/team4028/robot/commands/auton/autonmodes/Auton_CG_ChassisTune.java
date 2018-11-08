@@ -1,6 +1,5 @@
-package org.usfirst.frc.team4028.robot.commands;
+package org.usfirst.frc.team4028.robot.commands.auton.autonmodes;
 
-import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 

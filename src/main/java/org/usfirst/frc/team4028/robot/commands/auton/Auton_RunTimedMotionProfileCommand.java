@@ -1,6 +1,6 @@
-package org.usfirst.frc.team4028.robot.commands;
+package org.usfirst.frc.team4028.robot.commands.auton;
 
-import org.usfirst.frc.team4028.robot.auton.pathfollowing.RobotState;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.poseTracking.RobotState;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.Path;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 

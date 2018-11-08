@@ -5,12 +5,10 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Date;
 
-
-import org.usfirst.frc.team4028.robot.commands.Auton_CG_BaseLine;
 import org.usfirst.frc.team4028.robot.commands.Auton_CG_ChassisTune;
-import org.usfirst.frc.team4028.robot.commands.Auton_CG_Switch;
-import org.usfirst.frc.team4028.robot.commands.Auton_DoNothing;
-import org.usfirst.frc.team4028.robot.commands.Auton_CG_PIDTune;
+import org.usfirst.frc.team4028.robot.commands.auton.autonmodes.Auton_CG_BaseLine;
+import org.usfirst.frc.team4028.robot.commands.auton.autonmodes.Auton_CG_Switch;
+import org.usfirst.frc.team4028.robot.commands.auton.autonmodes.Auton_DoNothing;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -124,7 +122,7 @@ public class Dashboard {
 			case SWITCH:
 				return new Auton_CG_Switch(_isSwitchLeft);
 			case AUTO_TUNE:
-			return new Auton_CG_ChassisTune();
+				return new Auton_CG_ChassisTune();
 			/*case DOUBLE_SWITCH:
 				return new DoubleSwitch(_isSwitchLeft);
 			case SCALE:
@@ -191,7 +189,7 @@ public class Dashboard {
 				return new TestAuton();
 				*/
 			default:
-				return new Auton_DoNothing(); 
+				return new Auton_DoNothing();
 		}
 		//return null;
 	}

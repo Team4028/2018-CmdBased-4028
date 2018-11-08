@@ -1,9 +1,11 @@
-package org.usfirst.frc.team4028.robot.auton.pathfollowing;
+package org.usfirst.frc.team4028.robot.auton.pathfollowing.poseTracking;
 
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.*;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.*;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.maphs.matrix.Matrix;
 
 import java.util.Map;
+
 
 /**
  * RobotState keeps track of the robot pose relative to its start point throughout the match for use in autonomous.
@@ -18,6 +20,8 @@ public class RobotState {
         return instance_;
     }
 
+    private extendedChassisKallman _kalmanFilter = extendedChassisKallman.getInstance();
+
     private static final int kObservationBufferSize = 100;
     
     // FPGATimestamp -> RigidTransform2d or Rotation2d
@@ -27,6 +31,7 @@ public class RobotState {
     
     private RobotState() {
         reset(0, new RigidTransform());
+
     }
 
     /** Resets the field to robot transform (robot's position on the field) */
@@ -50,10 +55,20 @@ public class RobotState {
     }
 
     public synchronized void addObservations(double timestamp, Twist measured_velocity,
-            Twist predicted_velocity) {
-        addFieldToVehicleObservation(timestamp,
-                Kinematics.integrateForwardKinematics(getLatestFieldToVehicle().getValue(), measured_velocity));
+            Twist predicted_velocity, double Vr, double Vl) {
+        RigidTransform measuredPose = Kinematics.integrateForwardKinematics(getLatestFieldToVehicle().getValue(), measured_velocity);
+        addFieldToVehicleObservation(timestamp,measuredPose);
+        Matrix measurementVector = measuredPose.getkalmanStateVector(Vr, Vl);
+        _kalmanFilter.update(measurementVector, timestamp);
         _vehicleVelocityPredicted = predicted_velocity;
+    }
+
+    public synchronized Matrix getkalmanCurrentStateVector(){
+        return _kalmanFilter.getLatestState();
+    }
+
+    public synchronized Matrix getkalmanCurrentCovarianceMatrix(){
+        return _kalmanFilter.getLatestCovariance();
     }
 
     public synchronized Twist generateOdometryFromSensors(double left_encoder_delta_distance,
@@ -69,7 +84,17 @@ public class RobotState {
         return _distanceDriven;
     }
 
+    public synchronized boolean isFirstkalmanCycle(){
+        return _kalmanFilter.isFirstCycle;
+    }
+
+    public synchronized boolean isSecondkalmanCycle(){
+        return _kalmanFilter.isSecondCycle;
+    }
+
     public synchronized Twist getPredictedVelocity() {
         return _vehicleVelocityPredicted;
     }
+
+
 }

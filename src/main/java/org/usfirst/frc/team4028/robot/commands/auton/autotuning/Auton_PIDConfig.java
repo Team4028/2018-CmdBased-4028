@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.commands;
+package org.usfirst.frc.team4028.robot.commands.auton.autotuning;
 
 
 
@@ -12,10 +12,8 @@ import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.beakCircularBuffe
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 
-
-class Auton_PIDConfig extends Command{
+public class Auton_PIDConfig extends Command{
 
 
 public enum VARIABLE_TUNING
@@ -40,7 +38,7 @@ private int _firstSampleCollectedInd;
 private int _lastSamplesCollectedInd;
 
 private TalonSRX[] _slavesList = {};
-private VARIABLE_TUNING _variableTuning;
+public VARIABLE_TUNING _variableTuning;
 
 
 private computeMean meanComputer = new computeMean();

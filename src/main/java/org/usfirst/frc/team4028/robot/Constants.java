@@ -51,6 +51,7 @@ public class Constants
 	public static final double WARP_SPEED = 100;
 	public static final double KEEEEEEEEEEEEEEEEEEENS_SPEED = 0;
 	public static final double PREDATOR_SPEED = 140;
+	public static final double MAX_SPEED_HIGH_GEAR = 180;
 
 	public static final double TRACK_SCRUBBING_FACTOR = 0.9;
 	// Units: setpoint, error, and output are in inches per second. 

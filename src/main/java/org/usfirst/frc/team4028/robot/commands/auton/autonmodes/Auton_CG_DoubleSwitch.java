@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.commands;
+package org.usfirst.frc.team4028.robot.commands.auton.autonmodes;
 
 import java.util.Arrays;
 
@@ -7,6 +7,15 @@ import java.util.Arrays;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths.Center;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.Path;
+import org.usfirst.frc.team4028.robot.commands.CG_InfeedCube;
+import org.usfirst.frc.team4028.robot.commands.CG_OutfeedCube;
+import org.usfirst.frc.team4028.robot.commands.Elevator_MoveElevatorToPresetPosition;
+import org.usfirst.frc.team4028.robot.commands.Infeed_MoveInfeedArmsToPresetPosition;
+import org.usfirst.frc.team4028.robot.commands.PrintTimeFromStart;
+import org.usfirst.frc.team4028.robot.commands.Series_Command;
+import org.usfirst.frc.team4028.robot.commands.Simultaneous_Command;
+import org.usfirst.frc.team4028.robot.commands.auton.Auton_RunMotionProfileAction;
+import org.usfirst.frc.team4028.robot.commands.auton.Auton_RunTimedMotionProfileCommand;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITION;
 //import org.usfirst.frc.team4028.robot.auton.paths.Paths.Center;
 //import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
