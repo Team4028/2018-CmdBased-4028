@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.auton.pathfollowing.PoseTracking;
+package org.usfirst.frc.team4028.robot.auton.pathfollowing.poseTracking;
 
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.*;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.*;
@@ -31,7 +31,6 @@ public class RobotState {
     
     private RobotState() {
         reset(0, new RigidTransform());
-
     }
 
     /** Resets the field to robot transform (robot's position on the field) */

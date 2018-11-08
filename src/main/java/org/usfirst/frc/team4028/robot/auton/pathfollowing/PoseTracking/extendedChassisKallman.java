@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.auton.pathfollowing.PoseTracking;
+package org.usfirst.frc.team4028.robot.auton.pathfollowing.poseTracking;
 
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.maphs.matrix.Matrix;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.Kinematics;
