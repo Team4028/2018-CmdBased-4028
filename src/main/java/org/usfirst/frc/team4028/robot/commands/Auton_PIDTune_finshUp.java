@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.commands.auton.autotuning;
+package org.usfirst.frc.team4028.robot.commands;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -13,11 +13,11 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class Auton_PIDTune_finshUp extends Command {
 
 	public TalonSRX _talon;
-	public int _parameterSlot;
+	public int parameterSlot;
 
 	public Auton_PIDTune_finshUp(Subsystem requiredSubsystem, TalonSRX talon, int srxParameterSlot) {
-		_talon = talon;
-		_parameterSlot = srxParameterSlot;
+		this._talon = talon;
+		this.parameterSlot = srxParameterSlot;
 		requires(requiredSubsystem);
 	}
 
@@ -40,9 +40,9 @@ public class Auton_PIDTune_finshUp extends Command {
         System.out.println("//////////////////////////////////////////////////////////////////////////");
         System.out.println("//////////////////////////////////////////////////////////////////////////");
 		System.out.println(
-				"Talon F gain set to: " + _talon.configGetParameter(ParamEnum.eProfileParamSlot_F, _parameterSlot, 10));
+				"Talon F gain set to: " + _talon.configGetParameter(ParamEnum.eProfileParamSlot_F, parameterSlot, 10));
 		System.out.println(
-                "Talon P gain set to: " + _talon.configGetParameter(ParamEnum.eProfileParamSlot_P, _parameterSlot, 10));
+                "Talon P gain set to: " + _talon.configGetParameter(ParamEnum.eProfileParamSlot_P, parameterSlot, 10));
         System.out.println("//////////////////////////////////////////////////////////////////////////");
         System.out.println("//////////////////////////////////////////////////////////////////////////");
 	}

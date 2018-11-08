@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.commands.auton.autotuning;
+package org.usfirst.frc.team4028.robot.commands;
 
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Command;
@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.usfirst.frc.team4028.robot.RobotMap;
-import org.usfirst.frc.team4028.robot.commands.auton.Auton_ParallelStarter;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.robot.util.GeneralUtilities;
 
@@ -55,7 +54,11 @@ Chassis _chassis = Chassis.getInstance();
 
 
         addParallel(new Auton_ParallelStarter());
+<<<<<<< HEAD:src/main/java/org/usfirst/frc/team4028/robot/commands/auton/autotuning/Auton_CG_ChassisTune.java
         addSequential(new Auton_CG_PIDTune(_chassis, _leftMaster, 0, Chassis.getInstance().inchesPerSecToNU(180) , 50, 30, listOSlaves));
+=======
+        addSequential(new Auton_CG_PIDTune(_chassis, _leftMaster, 0, Chassis.getInstance().inchesPerSecToNU(180) , 100, listOSlaves));
+>>>>>>> parent of 95f1fda... Reorganized Folder Structure within auton commands:src/main/java/org/usfirst/frc/team4028/robot/commands/Auton_CG_ChassisTune.java
 
         
 

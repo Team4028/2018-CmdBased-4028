@@ -464,15 +464,12 @@ public class Chassis extends Subsystem
 		this._leftMasterVelocityLoggingThisTime = Timer.getFPGATimestamp();
 		this._leftMasterPreviousVelocity = this._leftMasterCurrentVelocity;
 		this._leftMasterCurrentVelocity = NUper100msToInchesPerSec(_leftMaster.getSelectedSensorVelocity(0));
-		if (! this._isFirstTimeLoggingAccel)
-		{
+		if (! this._isFirstTimeLoggingAccel){
 			double dt = this._leftMasterVelocityLoggingThisTime - this._leftMasterVelocityLoggingLastLogTime;
 			double dv = this._leftMasterCurrentVelocity - this._leftMasterPreviousVelocity;
 			double accel = dv/dt;
 			return accel;
-		} 
-		else 
-		{
+		} else {
 			this._isFirstTimeLoggingAccel = false;
 			return 0;
 		}

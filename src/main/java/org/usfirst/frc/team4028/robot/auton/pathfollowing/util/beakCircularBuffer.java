@@ -4,18 +4,18 @@ import edu.wpi.first.wpilibj.CircularBuffer;
 
 public class beakCircularBuffer extends CircularBuffer {
 
-	int _size = 0;
+	int size = 0;
 
 	public beakCircularBuffer(int size) {
 		super(size);
-		_size = size;
+		this.size = size;
 	}
 
 	public double[] toArray() {
-		double[] arr = new double[_size];
+		double[] arr = new double[this.size];
 
 		for (int i = 0; i < arr.length; i++) {
-			arr[i] = get(i);
+			arr[i] = this.get(i);
 		}
 
 		return arr;

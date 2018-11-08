@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.commands.auton;
+package org.usfirst.frc.team4028.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 

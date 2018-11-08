@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.commands.auton;
+package org.usfirst.frc.team4028.robot.commands;
 
 //#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;

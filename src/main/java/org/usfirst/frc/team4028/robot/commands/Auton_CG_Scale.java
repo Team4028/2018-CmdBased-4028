@@ -1,12 +1,10 @@
-package org.usfirst.frc.team4028.robot.commands.auton.autonmodes;
+package org.usfirst.frc.team4028.robot.commands;
 
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths.Left;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.Paths.Right;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.Path;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_TARGET_POSITION;
-import org.usfirst.frc.team4028.robot.commands.*;
-import org.usfirst.frc.team4028.robot.commands.auton.*;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
