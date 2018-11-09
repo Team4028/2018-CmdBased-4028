@@ -519,8 +519,8 @@ public class Chassis extends Subsystem
 			}
 
 	    } else {
-			logData.AddData("kalman X", String.valueOf(0));
-			logData.AddData("kalman Y", String.valueOf(0));
+			logData.AddData("kalman X", String.valueOf(46));
+			logData.AddData("kalman Y", String.valueOf(20));
 			logData.AddData("kalman Theta", String.valueOf(0));
 			logData.AddData("kalman Vr", String.valueOf(0));
 			logData.AddData("kalman Vl", String.valueOf(0));
