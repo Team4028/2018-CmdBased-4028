@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.auton.pathfollowing.poseTracking;
+package org.usfirst.frc.team4028.robot.auton.pathfollowing.PoseTracking;
 
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.maphs.matrix.Matrix;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.Kinematics;
@@ -34,6 +34,7 @@ public class extendedChassisKallman extends extendedKallmanFilter {
     
 	private extendedChassisKallman() {
         startRunning();
+        super.initialize();
     }
 
     public Matrix initNoiseDistributionJacobianG(){

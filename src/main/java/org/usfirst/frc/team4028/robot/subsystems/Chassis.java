@@ -3,7 +3,7 @@ package org.usfirst.frc.team4028.robot.subsystems;
 //#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.RobotMap;
-import org.usfirst.frc.team4028.robot.auton.pathfollowing.poseTracking.RobotState;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.PoseTracking.RobotState;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.Path;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.PathFollower;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.RigidTransform;
@@ -519,8 +519,8 @@ public class Chassis extends Subsystem
 			}
 
 	    } else {
-			logData.AddData("kalman X", String.valueOf(0));
-			logData.AddData("kalman Y", String.valueOf(0));
+			logData.AddData("kalman X", String.valueOf(46));
+			logData.AddData("kalman Y", String.valueOf(20));
 			logData.AddData("kalman Theta", String.valueOf(0));
 			logData.AddData("kalman Vr", String.valueOf(0));
 			logData.AddData("kalman Vl", String.valueOf(0));

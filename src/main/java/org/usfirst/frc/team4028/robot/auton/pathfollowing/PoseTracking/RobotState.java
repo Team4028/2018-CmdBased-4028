@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.auton.pathfollowing.poseTracking;
+package org.usfirst.frc.team4028.robot.auton.pathfollowing.PoseTracking;
 
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.*;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.util.*;
@@ -94,6 +94,5 @@ public class RobotState {
     public synchronized Twist getPredictedVelocity() {
         return _vehicleVelocityPredicted;
     }
-
-
+    
 }
