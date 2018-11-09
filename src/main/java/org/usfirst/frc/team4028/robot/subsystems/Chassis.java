@@ -3,7 +3,7 @@ package org.usfirst.frc.team4028.robot.subsystems;
 //#region  == Define Imports ==
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.RobotMap;
-import org.usfirst.frc.team4028.robot.auton.pathfollowing.poseTracking.RobotState;
+import org.usfirst.frc.team4028.robot.auton.pathfollowing.posetracking.RobotState;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.Path;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.PathFollower;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.motion.RigidTransform;

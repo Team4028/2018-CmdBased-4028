@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.commands.auton;
+package org.usfirst.frc.team4028.robot.commands;
 
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.posetracking.RobotState;
 import org.usfirst.frc.team4028.robot.auton.pathfollowing.control.Path;
