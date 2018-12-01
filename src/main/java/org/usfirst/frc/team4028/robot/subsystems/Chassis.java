@@ -116,7 +116,8 @@ public class Chassis extends Subsystem
 	public void updateChassis(double timestamp){
 		switch(_chassisState) {
 			case UNKNOWN:
-			return;
+				return;
+
 			case PERCENT_VBUS:
 				return;
 				
@@ -223,9 +224,6 @@ public class Chassis extends Subsystem
 		_leftMaster.configMotionAcceleration(62513, 10);
 		_rightMaster.configMotionCruiseVelocity(31256, 10);
 		_rightMaster.configMotionAcceleration(62513, 10);
-		
-
-
 	}
 
 	public void moveToTargetPosDriveSetDistance ()
@@ -281,7 +279,11 @@ public class Chassis extends Subsystem
 	//====================================================================================
 	// PATH FOLLOWING
 	//===================================================================================
-
+	  /**
+	 * Sets all sensors back to zero
+	 *
+	 * @return Zeros the values of the sensors.
+	 */
 	public void zeroEncoders(){
 		_leftMaster.getSensorCollection().setQuadraturePosition(0, 10);
 		_rightMaster.getSensorCollection().setQuadraturePosition(0, 10);
@@ -297,7 +299,6 @@ public class Chassis extends Subsystem
 	}
 
 	public double _autonStartTime;
-
 
 	public void recordAutonStartTime(){
 		_autonStartTime = Timer.getFPGATimestamp();
@@ -361,13 +362,6 @@ public class Chassis extends Subsystem
 		} 
 		return 0;
 	}
-
-
-
-
-
-
-
 
 	//=====================================================================================
 	// Property Accessors
