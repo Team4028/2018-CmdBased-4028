@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4028.robot.auton.pathfollowing.util.maphs.complex;
 
-
 import java.io.Serializable;
 import java.util.Formattable;
 import java.util.Formatter;
