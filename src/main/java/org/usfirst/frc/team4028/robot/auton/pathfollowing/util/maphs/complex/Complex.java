@@ -19,9 +19,6 @@ import java.util.Formatter;
 public class Complex extends Number 
 	implements Formattable, Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -7417547029717136577L;
 	
 	public static final int ZERO = 0;
